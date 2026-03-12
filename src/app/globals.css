@@ -1,0 +1,203 @@
+@import "tailwindcss";
+
+@theme {
+  --color-encore-bg: #F2F0EB;
+  --color-encore-bg-section: #E8E5DF;
+  --color-encore-bg-card: #EDEAE4;
+  --color-encore-green: #1B3C2D;
+  --color-encore-green-muted: #8BA898;
+  --color-encore-amber: #C08A4A;
+  --color-encore-amber-light: #D4A060;
+  --color-encore-text-primary: #1B3C2D;
+  --color-encore-text-sub: #6B6B6B;
+  --color-encore-text-muted: #AEAAA3;
+  --color-encore-border: #D8D4CD;
+  --color-encore-white: #FFFFFF;
+  --color-encore-error: #C0392B;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  --font-en: "Helvetica Neue", Arial, sans-serif;
+  --font-ja: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.07);
+  --shadow-phone: 0 28px 80px rgba(0,0,0,0.28), 0 0 0 2px #1a1a1a;
+
+  --animate-ripple-out: ripple-out 0.55s ease-out forwards;
+  --animate-badge-pop: badge-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-cal-pop: cal-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-tab-slide-in: tab-slide-in 0.2s ease;
+  --animate-stepper-change: stepper-change 0.15s ease;
+}
+
+@keyframes ripple-out {
+  to { transform: scale(70); opacity: 0; }
+}
+@keyframes badge-pop {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+@keyframes cal-pop {
+  from { transform: scale(0.6); }
+  to { transform: scale(1); }
+}
+@keyframes tab-slide-in {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes stepper-change {
+  0% { transform: scale(1.3); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: #CCC9C2;
+  font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+  color: #1B3C2D;
+  min-height: 100vh;
+}
+
+/* Ripple effect */
+.encore-ripple {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  transform: scale(0);
+  animation: ripple-out 0.55s ease-out forwards;
+  pointer-events: none;
+  margin: -4px 0 0 -4px;
+}
+
+/* Active tab underline animation */
+.encore-tab-active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #1B3C2D;
+  animation: tab-slide-in 0.2s ease;
+}
+
+/* Calendar tooltip tail variants */
+.encore-tooltip-tail-top::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 22px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #1B3C2D;
+}
+
+.encore-tooltip-tail-left::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 14px;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 8px solid #1B3C2D;
+}
+
+.encore-tooltip-tail-right::before {
+  content: '';
+  position: absolute;
+  right: -8px;
+  top: 14px;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 8px solid #1B3C2D;
+}
+
+/* Ingredient badge pop animation */
+.encore-badge-pop {
+  animation: badge-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Calendar cell selected animation */
+.encore-cal-pop {
+  animation: cal-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Bottom sheet */
+.encore-bottom-sheet-panel {
+  background: #F2F0EB;
+  border-radius: 24px 24px 0 0;
+  padding: 0 20px 40px;
+  max-width: 540px;
+  margin: 0 auto;
+  width: 100%;
+  transform: translateY(110%);
+  transition: transform 0.36s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.encore-bottom-sheet-panel.open {
+  transform: translateY(0);
+}
+
+/* Notification dismiss transition */
+.encore-notification {
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.35s ease, padding 0.35s ease;
+  max-height: 200px;
+}
+.encore-notification.dismissed {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Toggle knob */
+.encore-toggle-knob {
+  transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Stepper value animation */
+.encore-stepper-val {
+  animation: stepper-change 0.15s ease;
+}
+
+/* Week strip scrollbar hide */
+.encore-week-strip {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.encore-week-strip::-webkit-scrollbar {
+  display: none;
+}
+
+/* Horizontal Tabs scrollbar hide */
+.encore-tab-strip {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.encore-tab-strip::-webkit-scrollbar {
+  display: none;
+}
+
+/* Sidebar scrollbar hide */
+.encore-sidebar {
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.encore-sidebar::-webkit-scrollbar {
+  width: 0;
+}
+
+/* Cal range styles */
+.encore-cal-range-in .cal-date-inner {
+  background: rgba(27,60,45,0.1);
+  border-radius: 0;
+  width: 100%;
+}
