@@ -24,7 +24,7 @@ import CreditCard from '@/components/encore/CreditCard'
 import QuantityStepper from '@/components/encore/QuantityStepper'
 import TooltipBubble from '@/components/encore/TooltipBubble'
 import SplashScreen from '@/components/encore/SplashScreen'
-import ColorPalette from '@/components/encore/ColorPalette'
+import ColorPalette, { PaletteResetButton } from '@/components/encore/ColorPalette'
 import Typography from '@/components/encore/Typography'
 import Calendar, { ReservationCalendar, WeekStrip } from '@/components/encore/Calendar'
 import LiveCard from '@/components/encore/LiveCard'
@@ -47,55 +47,55 @@ const categories = [
   {
     label: 'Navigation',
     items: [
-      { id: 's04', num: '04', label: 'Nav Header' },
-      { id: 's05', num: '05', label: 'Tab Bar' },
-      { id: 's06', num: '06', label: 'Horizontal Tabs' },
+      { id: 's04', num: '03', label: 'Nav Header' },
+      { id: 's05', num: '04', label: 'Tab Bar' },
+      { id: 's06', num: '05', label: 'Horizontal Tabs' },
     ],
   },
   {
     label: 'Controls',
     items: [
-      { id: 's03', num: '03', label: 'Buttons' },
-      { id: 's27', num: '27', label: 'FAB' },
+      { id: 's03', num: '06', label: 'Buttons' },
+      { id: 's27', num: '07', label: 'FAB' },
       { id: 's08', num: '08', label: 'Input Fields' },
-      { id: 's29', num: '29', label: 'Select' },
-      { id: 's11', num: '11', label: 'Segmented Control' },
-      { id: 's12', num: '12', label: 'Search Bar' },
-      { id: 's20', num: '20', label: 'Toggle Switch' },
-      { id: 's22', num: '22', label: 'Qty Stepper' },
-      { id: 's31', num: '31', label: 'Color Picker' },
+      { id: 's29', num: '09', label: 'Select' },
+      { id: 's11', num: '10', label: 'Segmented Control' },
+      { id: 's12', num: '11', label: 'Search Bar' },
+      { id: 's20', num: '12', label: 'Toggle Switch' },
+      { id: 's22', num: '13', label: 'Qty Stepper' },
+      { id: 's31', num: '14', label: 'Color Picker' },
     ],
   },
   {
     label: 'Content',
     items: [
-      { id: 's25', num: '25', label: 'Live Card' },
-      { id: 's26', num: '26', label: 'Artist Card' },
-      { id: 's07', num: '07', label: 'List Rows' },
-      { id: 's09', num: '09', label: 'Product Cards' },
-      { id: 's10', num: '10', label: 'Ingredient Selector' },
-      { id: 's13', num: '13', label: 'Store Card' },
-      { id: 's14', num: '14', label: 'Order Summary' },
+      { id: 's25', num: '15', label: 'Live Card' },
+      { id: 's26', num: '16', label: 'Artist Card' },
+      { id: 's07', num: '17', label: 'List Rows' },
+      { id: 's09', num: '18', label: 'Product Cards' },
+      { id: 's10', num: '19', label: 'Ingredient Selector' },
+      { id: 's13', num: '20', label: 'Store Card' },
+      { id: 's14', num: '21', label: 'Order Summary' },
     ],
   },
   {
     label: 'Feedback',
     items: [
-      { id: 's15', num: '15', label: 'Empty State' },
-      { id: 's16', num: '16', label: 'Badges & Tags' },
-      { id: 's28', num: '28', label: 'Status Badge' },
-      { id: 's18', num: '18', label: 'Bottom Sheet' },
-      { id: 's19', num: '19', label: 'Notification' },
-      { id: 's23', num: '23', label: 'Tooltip Bubble' },
+      { id: 's15', num: '22', label: 'Empty State' },
+      { id: 's16', num: '23', label: 'Badges & Tags' },
+      { id: 's28', num: '24', label: 'Status Badge' },
+      { id: 's18', num: '25', label: 'Bottom Sheet' },
+      { id: 's19', num: '26', label: 'Notification' },
+      { id: 's23', num: '27', label: 'Tooltip Bubble' },
     ],
   },
   {
     label: 'Data Display',
     items: [
-      { id: 's17', num: '17', label: 'Rank Progress' },
-      { id: 's21', num: '21', label: 'Credit Card' },
-      { id: 's24', num: '24', label: 'Calendar' },
-      { id: 's30', num: '30', label: 'Bar Chart' },
+      { id: 's17', num: '28', label: 'Rank Progress' },
+      { id: 's21', num: '29', label: 'Credit Card' },
+      { id: 's24', num: '30', label: 'Calendar' },
+      { id: 's30', num: '31', label: 'Bar Chart' },
     ],
   },
 ]
@@ -107,19 +107,27 @@ function SectionBlock({
   num,
   title,
   children,
+  action,
 }: {
   id: string
   num: string
   title: string
   children: React.ReactNode
+  action?: React.ReactNode
 }) {
   return (
     <div id={id} style={{ marginBottom: 80, scrollMarginTop: 32 }}>
       <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-encore-text-muted)', marginBottom: 4 }}>
         {num}
       </div>
-      <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 22, fontWeight: 700, color: 'var(--color-encore-green)', marginBottom: 28, paddingBottom: 16, borderBottom: '1px solid var(--color-encore-border)' }}>
-        {title}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 22, fontWeight: 700,
+        color: 'var(--color-encore-green)', marginBottom: 28, paddingBottom: 16,
+        borderBottom: '1px solid var(--color-encore-border)',
+      }}>
+        <span>{title}</span>
+        {action && <div style={{ fontSize: 14 }}>{action}</div>}
       </div>
       {children}
     </div>
@@ -136,10 +144,10 @@ function Chip({ children }: { children: React.ReactNode }) {
       letterSpacing: '0.1em',
       textTransform: 'uppercase' as const,
       color: 'var(--color-encore-text-muted)',
-      background: 'var(--color-encore-bg-section)',
       borderRadius: 999,
-      padding: '3px 10px',
-      marginBottom: 6,
+      padding: '3px 0',
+      marginTop: 14,
+      marginBottom: -2,
     }}>
       {children}
     </div>
@@ -226,7 +234,7 @@ export default function Page() {
           left: 0,
           top: 0,
           height: '100vh',
-          width: 240,
+          width: 256,
           background: 'var(--color-encore-green)',
           zIndex: 100,
           display: 'flex',
@@ -263,7 +271,7 @@ export default function Page() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: 10,
-                    padding: '7px 18px',
+                    padding: '5px 18px',
                     textDecoration: 'none',
                     color: activeSection === id ? 'var(--color-encore-white)' : 'rgba(255,255,255,0.5)',
                     fontFamily: 'var(--font-google-sans), sans-serif',
@@ -286,7 +294,7 @@ export default function Page() {
       </nav>
 
       {/* Main */}
-      <main style={{ marginLeft: 240, padding: '52px 44px 100px' }}>
+      <main style={{ marginLeft: 256, padding: '52px 44px 100px' }}>
         {/* Page header */}
         <div style={{ marginBottom: 60 }}>
           <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase' as const, color: 'var(--color-encore-amber)', marginBottom: 8 }}>
@@ -296,8 +304,7 @@ export default function Page() {
             ENCORE UI Kit
           </div>
           <p style={{ fontSize: 13, color: 'var(--color-encore-text-sub)', lineHeight: 1.65 }}>
-            ENCOREアプリのデザイントークンとUIコンポーネント一覧。<br/>
-            Background <code>#F2F0EB</code> · Green <code>#1B3C2D</code> · Amber <code>#C08A4A</code>
+            ENCOREアプリのデザイントークンとUIコンポーネント一覧。
           </p>
         </div>
 
@@ -310,7 +317,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S01 Color Palette */}
-        <SectionBlock id="s01" num="01" title="Color Palette">
+        <SectionBlock id="s01" num="01" title="Color Palette" action={<PaletteResetButton />}>
           <ColorPalette />
         </SectionBlock>
 
@@ -320,7 +327,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S04 Nav Header */}
-        <SectionBlock id="s04" num="04" title="Navigation Header">
+        <SectionBlock id="s04" num="03" title="Navigation Header">
           <div className="flex flex-col gap-3" style={{ maxWidth: 375 }}>
             <Chip>Back Arrow</Chip>
             <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
@@ -339,32 +346,32 @@ export default function Page() {
         </SectionBlock>
 
         {/* S05 Tab Bar */}
-        <SectionBlock id="s05" num="05" title="Bottom Tab Bar">
+        <SectionBlock id="s05" num="04" title="Bottom Tab Bar">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
             <TabBar />
           </div>
         </SectionBlock>
 
         {/* S06 Horizontal Tabs */}
-        <SectionBlock id="s06" num="06" title="Horizontal Tabs">
+        <SectionBlock id="s06" num="05" title="Horizontal Tabs">
           <div className="flex flex-col gap-3" style={{ maxWidth: 375 }}>
             <Chip>2 tabs</Chip>
             <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
               <HorizontalTabs tabs={['参加済み', '参加予定']} defaultActive={1}>
-                <div style={{ padding: 24, fontSize: 13, color: 'var(--color-encore-text-muted)', textAlign: 'center' }}>コンテンツエリア</div>
+                <div style={{ padding: 24, fontSize: 12, color: 'var(--color-encore-text-muted)', textAlign: 'center' }}>コンテンツエリア</div>
               </HorizontalTabs>
             </div>
             <Chip>4 tabs (scrollable)</Chip>
             <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
               <HorizontalTabs tabs={['セトリ', 'グッズ', 'フォト', 'メモ']}>
-                <div style={{ padding: 24, fontSize: 13, color: 'var(--color-encore-text-muted)', textAlign: 'center' }}>コンテンツエリア</div>
+                <div style={{ padding: 24, fontSize: 12, color: 'var(--color-encore-text-muted)', textAlign: 'center' }}>コンテンツエリア</div>
               </HorizontalTabs>
             </div>
           </div>
         </SectionBlock>
 
         {/* S03 Buttons */}
-        <SectionBlock id="s03" num="03" title="Buttons">
+        <SectionBlock id="s03" num="06" title="Buttons">
           <div className="flex flex-wrap gap-5 items-start">
             <div className="flex flex-col gap-3" style={{ flex: 1, minWidth: 240 }}>
               <Chip>Primary</Chip>
@@ -407,7 +414,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S27 FAB */}
-        <SectionBlock id="s27" num="27" title="FAB">
+        <SectionBlock id="s27" num="07" title="FAB">
           <div className="flex flex-wrap gap-5 items-start">
             <div>
               <Chip>Round</Chip>
@@ -430,7 +437,7 @@ export default function Page() {
             <div style={{ flex: 1, minWidth: 280, maxWidth: 375 }}>
               <Chip>Profile Edit — with icons</Chip>
               <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '24px 20px', boxShadow: 'var(--shadow-card)', marginTop: 6 }}>
-                <div style={{ fontSize: 14, color: 'var(--color-encore-text-sub)', marginBottom: 20 }}>あなたのことを教えてください</div>
+                <div style={{ fontSize: 13, color: '#1A3A2D', marginBottom: 20 }}>あなたのことを教えてください</div>
                 <InputField label="ニックネーム" placeholder="ui pocket" defaultValue="ui pocket" icon={nicknameIcon} />
                 <InputField label="メールアドレス" placeholder="メールアドレス" type="email" icon={emailIcon} />
                 <InputField label="誕生日（入力しておくと良い事が…?）" placeholder="誕生日" icon={birthdayIcon} />
@@ -442,15 +449,15 @@ export default function Page() {
             <div style={{ flex: 1, minWidth: 280, maxWidth: 375 }}>
               <Chip>Text with counter</Chip>
               <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '24px 20px', boxShadow: 'var(--shadow-card)', marginTop: 6 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 16, color: 'var(--color-encore-green)' }}>何という名前で呼びますか？</div>
-                <InputField label="" placeholder="お好きなニックネームを入力" maxLength={20} showCounter />
+                <div style={{ fontSize: 13, fontWeight: 400, marginBottom: 16, color: 'var(--color-encore-green)' }}>何という名前で呼びますか？</div>
+                <InputField label="ニックネーム" placeholder="ui pocket" defaultValue="ui pocket" icon={nicknameIcon} maxLength={20} showCounter />
               </div>
             </div>
           </div>
         </SectionBlock>
 
         {/* S29 Select */}
-        <SectionBlock id="s29" num="29" title="Select">
+        <SectionBlock id="s29" num="09" title="Select">
           <div className="flex flex-wrap gap-5 items-start">
             <div style={{ flex: 1, minWidth: 280, maxWidth: 375 }}>
               <Chip>ライブタイプ選択</Chip>
@@ -479,7 +486,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S11 Segmented Control */}
-        <SectionBlock id="s11" num="11" title="Segmented Control">
+        <SectionBlock id="s11" num="10" title="Segmented Control">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
             <div style={{ padding: '16px 20px 4px', fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)' }}>このカードは何用ですか？</div>
             <SegmentedControl options={['👤 個人用', '🏢 ビジネス用', '🚪 その他']} />
@@ -487,14 +494,14 @@ export default function Page() {
         </SectionBlock>
 
         {/* S12 Search Bar */}
-        <SectionBlock id="s12" num="12" title="Search Bar">
+        <SectionBlock id="s12" num="11" title="Search Bar">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, padding: '8px 0', boxShadow: 'var(--shadow-card)' }}>
             <SearchBar />
           </div>
         </SectionBlock>
 
         {/* S20 Toggle */}
-        <SectionBlock id="s20" num="20" title="Toggle Switch">
+        <SectionBlock id="s20" num="12" title="Toggle Switch">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
             <div style={{ background: 'var(--color-encore-bg-section)', padding: '10px 20px', fontSize: 13, fontWeight: 400, color: 'var(--color-encore-text-sub)' }}>通知設定</div>
             <Toggle label="プッシュ通知" defaultChecked={true} />
@@ -506,7 +513,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S22 Qty Stepper */}
-        <SectionBlock id="s22" num="22" title="Qty Stepper">
+        <SectionBlock id="s22" num="13" title="Qty Stepper">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '24px 20px', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               {([
@@ -530,14 +537,14 @@ export default function Page() {
         </SectionBlock>
 
         {/* S31 Color Picker */}
-        <SectionBlock id="s31" num="31" title="Color Picker">
+        <SectionBlock id="s31" num="14" title="Color Picker">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '24px 20px', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
             <ColorPicker label="識別カラー" />
           </div>
         </SectionBlock>
 
         {/* S25 Live Card */}
-        <SectionBlock id="s25" num="25" title="Live Card">
+        <SectionBlock id="s25" num="15" title="Live Card">
           <div className="flex flex-col gap-3" style={{ maxWidth: 375 }}>
             <Chip>ワンマン / 予定</Chip>
             <LiveCard date="2026-05-15" liveType="ワンマン" liveStatus="予定" name="somei TOUR 2026 -BLISS-" artist="somei" venue="Zepp Tokyo" time="Open 18:00 / Start 19:00" />
@@ -551,7 +558,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S26 Artist Card */}
-        <SectionBlock id="s26" num="26" title="Artist Card">
+        <SectionBlock id="s26" num="16" title="Artist Card">
           <div className="flex flex-wrap gap-5 items-start">
             <div style={{ flex: 1, minWidth: 280, maxWidth: 375 }}>
               <Chip>Artist Card</Chip>
@@ -574,7 +581,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S07 List Rows */}
-        <SectionBlock id="s07" num="07" title="List Rows">
+        <SectionBlock id="s07" num="17" title="List Rows">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
             <div style={{ background: 'var(--color-encore-bg-section)', padding: '10px 20px', fontSize: 13, fontWeight: 400, color: 'var(--color-encore-text-sub)' }}>アカウント</div>
             <ListRow icon={paymentIcon} label="お支払い" showChevron />
@@ -593,7 +600,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S09 Product Cards */}
-        <SectionBlock id="s09" num="09" title="Product Cards">
+        <SectionBlock id="s09" num="18" title="Product Cards">
           <div className="flex flex-wrap gap-5 items-start">
             <div style={{ flex: 1, minWidth: 240, maxWidth: 320 }}>
               <Chip>Overlay Style</Chip>
@@ -624,7 +631,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S10 Ingredient Selector */}
-        <SectionBlock id="s10" num="10" title="Ingredient Selector">
+        <SectionBlock id="s10" num="19" title="Ingredient Selector">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
             <IngredientSelector title="ジャンル" description="ライブのジャンルを選択" ingredients={sampleIngredients1} />
             <IngredientSelector title="セトリメモ" description="印象に残った曲を記録しよう" ingredients={sampleIngredients2} />
@@ -639,14 +646,14 @@ export default function Page() {
         </SectionBlock>
 
         {/* S13 Store Card */}
-        <SectionBlock id="s13" num="13" title="Store Card">
+        <SectionBlock id="s13" num="20" title="Store Card">
           <div style={{ maxWidth: 375 }}>
             <StoreCard />
           </div>
         </SectionBlock>
 
         {/* S14 Order Summary */}
-        <SectionBlock id="s14" num="14" title="Order Summary">
+        <SectionBlock id="s14" num="21" title="Order Summary">
           <div style={{ maxWidth: 375 }}>
             <div style={{ borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
               <StatusBar />
@@ -657,7 +664,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S15 Empty State */}
-        <SectionBlock id="s15" num="15" title="Empty State">
+        <SectionBlock id="s15" num="22" title="Empty State">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
             <NavHeader title="HISTORY" titleEn variant="title-only" />
             <HorizontalTabs tabs={['参加済み', '参加予定']} defaultActive={1} />
@@ -667,7 +674,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S16 Badges */}
-        <SectionBlock id="s16" num="16" title="Badges & Tags">
+        <SectionBlock id="s16" num="23" title="Badges & Tags">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: 28, display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', boxShadow: 'var(--shadow-card)' }}>
             <Badge variant="green">FRIEND</Badge>
             <Badge variant="green">BEST FRIEND</Badge>
@@ -680,7 +687,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S28 Status Badge */}
-        <SectionBlock id="s28" num="28" title="Status Badge">
+        <SectionBlock id="s28" num="24" title="Status Badge">
           <div className="flex flex-col gap-5">
             <div>
               <Chip>Live Type</Chip>
@@ -704,7 +711,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S18 Bottom Sheet */}
-        <SectionBlock id="s18" num="18" title="Bottom Sheet">
+        <SectionBlock id="s18" num="25" title="Bottom Sheet">
           <div style={{ maxWidth: 375 }}>
             <Button variant="sm-secondary" onClick={() => setSheetOpen(true)}>▲ ボトムシートを開く</Button>
             <div style={{ marginTop: 16, background: 'rgba(0,0,0,0.35)', borderRadius: 16, overflow: 'hidden' }}>
@@ -736,7 +743,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S19 Notification */}
-        <SectionBlock id="s19" num="19" title="Notification Banner">
+        <SectionBlock id="s19" num="26" title="Notification Banner">
           <div style={{ maxWidth: 375, display: 'flex', flexDirection: 'column', gap: 12 }}>
             <span style={{ display: 'inline-block', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-encore-text-muted)', background: 'var(--color-encore-bg-section)', borderRadius: 999, padding: '3px 10px' }}>Dismissible</span>
             <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
@@ -750,7 +757,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S23 Tooltip Bubble */}
-        <SectionBlock id="s23" num="23" title="Tooltip / Callout Bubble">
+        <SectionBlock id="s23" num="27" title="Tooltip / Callout Bubble">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '32px 20px', maxWidth: 375, display: 'flex', flexDirection: 'column', gap: 20, boxShadow: 'var(--shadow-card)' }}>
             <TooltipBubble variant="tail-top">あと2曲セトリを追加できます</TooltipBubble>
             <TooltipBubble variant="chat-left">次のライブはいつですか？</TooltipBubble>
@@ -759,7 +766,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S17 Rank Progress */}
-        <SectionBlock id="s17" num="17" title="Rank Progress">
+        <SectionBlock id="s17" num="28" title="Rank Progress">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
             <div style={{ textAlign: 'center', padding: '24px 20px 8px' }}>
               <div style={{ fontSize: 12, color: 'var(--color-encore-text-sub)' }}>あなたのランクは</div>
@@ -771,7 +778,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S21 Credit Card */}
-        <SectionBlock id="s21" num="21" title="Credit Card UI">
+        <SectionBlock id="s21" num="29" title="Credit Card UI">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
             <NavHeader title="カードを登録" variant="close" />
             <div style={{ padding: 20 }}>
@@ -842,7 +849,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S24 Calendar */}
-        <SectionBlock id="s24" num="24" title="Calendar">
+        <SectionBlock id="s24" num="30" title="Calendar">
           <div className="flex flex-wrap gap-5 items-start">
             <div style={{ flex: 1, minWidth: 320, maxWidth: 375 }}>
               <Chip>Month Calendar — ライブ記録つき</Chip>
@@ -866,7 +873,7 @@ export default function Page() {
         </SectionBlock>
 
         {/* S30 Bar Chart */}
-        <SectionBlock id="s30" num="30" title="Bar Chart">
+        <SectionBlock id="s30" num="31" title="Bar Chart">
           <div className="flex flex-wrap gap-5 items-start">
             <div style={{ flex: 1, minWidth: 280 }}>
               <Chip>Horizontal — アーティスト別</Chip>

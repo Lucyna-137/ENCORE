@@ -1,8 +1,8 @@
 # ENCORE UI Kit — Claude 作業指示書
 
 ## プロジェクト概要
-- Next.js + TypeScript + Tailwind CSS v4 のコンポーネントショーケース（31コンポーネント）
-- **プロジェクト場所**: `/Users/alfa/Desktop/encore-ui`
+- Next.js + TypeScript + Tailwind CSS v4 のコンポーネントショーケース（32コンポーネント）
+- **プロジェクト場所**: `/Users/alfa/Desktop/ENCORE`
 - ライブ管理アプリ向けのデザインシステム
 - ブランド名「ENCORE」は仮名（確定後に全置換）
 - 最終目的: SwiftUI/Xcode での再実装リファレンス
@@ -26,30 +26,19 @@ src/
 │   ├── page.tsx          # メインショーケース（'use client'、全コンポーネント展示）
 │   └── globals.css       # Tailwind @theme + .encore-* カスタムクラス
 └── components/
-    └── encore/           # 31個のコンポーネント (.tsx)
+    └── encore/           # 32個のコンポーネント (.tsx)
 ```
 
-## デザイントークン（重要カラー）
-- 背景: `#F2F0EB`
-- Section BG: `#E9E8E4`
-- グリーン（プライマリ）: `#1B3C2D`
-- アンバー（アクセント）: `#C08A4A`
-- テキストSub: `rgba(27,60,45,0.55)`
-- テキストMuted: `rgba(27,60,45,0.35)`
-- ボーダー（グレー背景上）: `#BAC2BB`
-- ボーダーLight（白背景上）: `#E4E2DD`
-
-詳細は `design.md` を参照。
+## デザイントークン（クイックリファレンス）
+詳細は `design.md` を参照。よく使う値：
+- グリーン（プライマリ）: `#1A3A2D` / `var(--color-encore-green)`
+- ボーダー（グレー背景上）: `var(--color-encore-border)`
+- ボーダー（白背景上）: `var(--color-encore-border-light)`
 
 ## フォント方針
 - フォントスタック: `var(--font-google-sans), var(--font-noto-jp), sans-serif`（Google Sansを必ず先頭に）
 - フォントウェイトは **700と400の2種類のみ**（600・500・300は使用しない）
-- テキスト色は全て `#1B3C2D` ベース（透明度で階層表現）
-
-## ボーダー使い分けルール
-- `var(--color-encore-border)` → グレー背景（bg-section）上のセパレーター
-- `var(--color-encore-border-light)` → 白背景（bg）上の divider・アウトライン
-- RankProgress の装飾・Toggle のオフ色は `border`（デザイン上の意図）
+- テキスト色は全て `#1A3A2D` ベース（透明度で階層表現）
 
 ## コンポーネント修正の進め方
 1. React 版 (`src/components/encore/*.tsx`) を Read で確認
@@ -65,7 +54,10 @@ src/
 ### HorizontalTabs のオーバーフロー
 - `overflow-y: hidden` を付けるとスライドインジケーターがクリップされる
 - `.encore-tab-strip` は `overflow-x: auto` のみ（Y方向は指定しない）
-- タブ下線は `boxShadow: inset 0 -1px 0 border-light` + 絶対配置 div のスライドアニメ
+
+### InputField のカウンター配置（バグ注意）
+- カウンターはボーダー div の**外**（下）に置く
+- 内側に入れると `items-end` でアイコンがカウンター位置まで下がるバグが発生する
 
 ### マージンコラプス
 - `padding-top:0` の親 + `margin-top` の子 → コラプス発生
@@ -82,9 +74,22 @@ src/
 - `variant="close"` や `variant="back"` のとき、タイトルが長いとアイコンと被る
 - タイトル `<span>` に `paddingLeft/paddingRight: 52` を追加済み（variant !== 'title-only' のとき）
 
-## CSSクラス名
-グローバルCSS クラスは全て `.encore-*` プレフィックス:
-`.encore-ripple`, `.encore-tab-strip`, `.encore-bottom-sheet-panel`, `.encore-notification`, `.encore-toggle-knob`, `.encore-badge-pop`, `.encore-cal-pop`, `.encore-stepper-val`, `.encore-tooltip-tail-*`, `.encore-week-strip`, `.encore-sidebar`
+## CSS クラス名（globals.css）
+グローバル CSS クラスは全て `.encore-*` プレフィックス:
+
+| クラス | 用途 |
+|-------|------|
+| `.encore-ripple` | ボタンリップルエフェクト |
+| `.encore-tab-strip` | HorizontalTabs のタブ行（overflow-x: auto） |
+| `.encore-bottom-sheet-panel` | ボトムシートパネル |
+| `.encore-notification` | 通知バナー（dismiss トランジション） |
+| `.encore-toggle-knob` | トグルのつまみ |
+| `.encore-badge-pop` | バッジ出現アニメ |
+| `.encore-cal-pop` | カレンダーセル選択アニメ |
+| `.encore-stepper-val` | ステッパー数値変化アニメ |
+| `.encore-tooltip-tail-*` | ツールチップの矢印 |
+| `.encore-week-strip` | 週スクロール |
+| `.encore-sidebar` | サイドバー |
 
 ## デモコンテンツ方針
 - 全てライブ管理アプリのコンテキスト（食べ物・サラダ系テキストは廃止済み）

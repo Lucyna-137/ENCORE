@@ -39,7 +39,7 @@ export default function TabBar({ items = defaultItems, defaultActive = 2 }: TabB
           key={i}
           onClick={() => setActive(i)}
           className="flex flex-col items-center gap-1 cursor-pointer transition-opacity duration-150 active:opacity-60 select-none"
-          style={{ minWidth: 52, padding: '7px 12px 0', WebkitTapHighlightColor: 'transparent',
+          style={{ minWidth: 52, padding: '8px 12px 0', WebkitTapHighlightColor: 'transparent',
             color: active === i ? 'var(--color-encore-amber)' : 'var(--color-encore-text-muted)',
             transition: 'color 0.2s',
           }}

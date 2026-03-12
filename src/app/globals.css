@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-encore-bg: #F2F0EB;
+  --color-encore-bg: #FAF8F4;
   --color-encore-bg-section: #E9E8E4;
   --color-encore-bg-card: #EDEAE4;
-  --color-encore-green: #1B3C2D;
+  --color-encore-green: #1A3A2D;
   --color-encore-green-muted: #8BA898;
   --color-encore-amber: #C08A4A;
-  --color-encore-text-sub: rgba(27,60,45,0.55);
-  --color-encore-text-muted: rgba(27,60,45,0.35);
+  --color-encore-text-sub: rgba(26,58,45,0.55);
+  --color-encore-text-muted: rgba(26,58,45,0.35);
   --color-encore-border: #BAC2BB;
   --color-encore-border-light: #E4E2DD;
   --color-encore-white: #FFFFFF;

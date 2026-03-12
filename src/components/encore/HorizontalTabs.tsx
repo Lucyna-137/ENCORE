@@ -60,7 +60,7 @@ export default function HorizontalTabs({
               flex: 1,
               textAlign: 'center',
               padding: '13px 8px 12px',
-              fontSize: 14,
+              fontSize: 12,
               color: active === i ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)',
               fontWeight: 400,
               transition: 'color 0.2s',

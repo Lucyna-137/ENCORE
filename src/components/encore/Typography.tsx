@@ -14,7 +14,7 @@ export default function Typography() {
       }}
     >
       <div className="flex flex-col" style={{ gap: 20 }}>
-        <div className="flex items-baseline" style={{ gap: 20 }}>
+        <div className="flex items-start" style={{ gap: 20 }}>
           <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>
             Display<br/>32px 900 EN
           </div>
@@ -22,7 +22,7 @@ export default function Typography() {
             HELLO!
           </div>
         </div>
-        <div className="flex items-baseline" style={{ gap: 20 }}>
+        <div className="flex items-start" style={{ gap: 20 }}>
           <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>
             Title<br/>24px 800 EN
           </div>
@@ -30,7 +30,7 @@ export default function Typography() {
             REWARDS
           </div>
         </div>
-        <div className="flex items-baseline" style={{ gap: 20 }}>
+        <div className="flex items-start" style={{ gap: 20 }}>
           <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>
             Heading<br/>18px 700 JA
           </div>
@@ -38,7 +38,7 @@ export default function Typography() {
             こんにちは、ユーザーさん！
           </div>
         </div>
-        <div className="flex items-baseline" style={{ gap: 20 }}>
+        <div className="flex items-start" style={{ gap: 20 }}>
           <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>
             Section<br/>13px 700 EN caps
           </div>
@@ -46,7 +46,7 @@ export default function Typography() {
             HISTORY
           </div>
         </div>
-        <div className="flex items-baseline" style={{ gap: 20 }}>
+        <div className="flex items-start" style={{ gap: 20 }}>
           <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>
             Body<br/>15px Regular
           </div>
@@ -54,7 +54,7 @@ export default function Typography() {
             Vaundy LIVE TOUR 2026
           </div>
         </div>
-        <div className="flex items-baseline" style={{ gap: 20 }}>
+        <div className="flex items-start" style={{ gap: 20 }}>
           <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>
             Sub<br/>13px Regular
           </div>
@@ -62,7 +62,7 @@ export default function Typography() {
             Zepp Haneda・2026年4月12日(土)
           </div>
         </div>
-        <div className="flex items-baseline" style={{ gap: 20 }}>
+        <div className="flex items-start" style={{ gap: 20 }}>
           <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>
             Price<br/>15px 700
           </div>
@@ -70,7 +70,7 @@ export default function Typography() {
             ¥1,295
           </div>
         </div>
-        <div className="flex items-baseline" style={{ gap: 20 }}>
+        <div className="flex items-start" style={{ gap: 20 }}>
           <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>
             Link<br/>14px Amber
           </div>
@@ -78,7 +78,7 @@ export default function Typography() {
             これスキ！
           </button>
         </div>
-        <div className="flex items-baseline" style={{ gap: 20 }}>
+        <div className="flex items-start" style={{ gap: 20 }}>
           <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>
             Caption<br/>11px Muted
           </div>
