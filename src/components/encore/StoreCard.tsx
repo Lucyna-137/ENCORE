@@ -5,9 +5,9 @@ import HorizontalTabs from './HorizontalTabs'
 
 export default function StoreCard() {
   return (
-    <div style={{ background: '#F2F0EB', borderRadius: 16, overflow: 'hidden' }}>
+    <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden' }}>
       <HorizontalTabs
-        tabs={['🏠 ピックアップ', '🛵 デリバリー']}
+        tabs={['🎫 チケット', '📍 会場情報']}
         defaultActive={0}
       />
       <div style={{ padding: '16px 20px' }}>
@@ -25,14 +25,14 @@ export default function StoreCard() {
             className="absolute"
             style={{ fontSize: 40, top: '50%', left: '50%', transform: 'translate(-50%,-60%)' }}
           >
-            🏪
+            🎪
           </div>
           <div
             className="absolute bottom-0 left-0 right-0"
             style={{
               background: 'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 100%)',
               padding: '8px 12px',
-              fontFamily: '"Helvetica Neue", Arial, sans-serif',
+              fontFamily: 'var(--font-google-sans), sans-serif',
               fontSize: 10,
               fontWeight: 700,
               letterSpacing: '0.12em',
@@ -40,33 +40,33 @@ export default function StoreCard() {
               textTransform: 'uppercase',
             }}
           >
-            COREDO Muromachi Terrace
+            Zepp Haneda
           </div>
         </div>
-        <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6, color: '#1B3C2D' }}>
-          コレド室町テラス店
+        <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 6, color: 'var(--color-encore-green)' }}>
+          Zepp Haneda
         </div>
-        <div className="flex flex-wrap gap-3" style={{ fontSize: 12, color: '#6B6B6B', marginBottom: 6 }}>
-          <span>🕐 11:00–22:00</span>
+        <div className="flex flex-wrap gap-3" style={{ fontSize: 12, color: 'var(--color-encore-text-sub)', marginBottom: 6 }}>
+          <span>🕐 OPEN 17:00 / START 18:00</span>
           <span>·</span>
-          <span style={{ color: '#1B3C2D' }}>● 営業中</span>
+          <span style={{ color: 'var(--color-encore-green)' }}>● チケット発売中</span>
         </div>
-        <div style={{ fontSize: 12, color: '#6B6B6B', marginBottom: 12 }}>
-          いまなら5・15分で提供できます
+        <div style={{ fontSize: 12, color: 'var(--color-encore-text-sub)', marginBottom: 12 }}>
+          収容人数: 2,500名
         </div>
         <div className="flex gap-2">
-          {['店舗で食べる', '持ち帰る', '予約する'].map((label) => (
+          {['詳細を見る', 'チケット購入', '抽選に申込む'].map((label) => (
             <button
               key={label}
-              className="flex-1 transition-colors duration-150 hover:bg-[#D8D4CD] cursor-pointer"
+              className="flex-1 transition-colors duration-150 hover:bg-encore-border cursor-pointer"
               style={{
                 height: 36,
                 borderRadius: 999,
-                background: '#E8E5DF',
-                border: '1px solid #D8D4CD',
+                background: 'var(--color-encore-bg-section)',
+                border: '1px solid var(--color-encore-border-light)',
                 fontSize: 13,
-                fontFamily: '"Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif',
-                color: '#1B3C2D',
+                fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                color: 'var(--color-encore-green)',
               }}
             >
               {label}

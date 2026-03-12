@@ -5,7 +5,7 @@ export default function SplashScreen() {
     <div
       className="flex flex-col items-center justify-center"
       style={{
-        background: '#1B3C2D',
+        background: 'var(--color-encore-green)',
         gap: 18,
         padding: '60px 20px 80px',
       }}
@@ -27,9 +27,9 @@ export default function SplashScreen() {
       </div>
       <div
         style={{
-          fontFamily: '"Helvetica Neue", Arial, sans-serif',
+          fontFamily: 'var(--font-google-sans), sans-serif',
           fontSize: 15,
-          fontWeight: 900,
+          fontWeight: 700,
           letterSpacing: '0.18em',
           textTransform: 'uppercase' as const,
           color: 'rgba(255,255,255,0.9)',

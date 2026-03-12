@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import Button from './Button'
+import { CaretLeft, CaretRight } from '@phosphor-icons/react'
 
 // ===== Full Calendar =====
 
@@ -58,44 +59,40 @@ export default function Calendar() {
   const monthLabel = new Date(viewYear, viewMonth, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }).toUpperCase()
 
   return (
-    <div style={{ background: '#F2F0EB' }}>
+    <div style={{ background: 'var(--color-encore-bg)' }}>
       {/* Header */}
       <div className="flex items-center justify-between" style={{ padding: '16px 20px 10px' }}>
         <button
           onClick={prevMonth}
-          className="flex items-center justify-center rounded-full transition-colors duration-150 hover:bg-[#E8E5DF] active:bg-[#D8D4CD]"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', width: 36, height: 36, color: '#1B3C2D', WebkitTapHighlightColor: 'transparent' }}
+          className="flex items-center justify-center rounded-full transition-colors duration-150 hover:bg-encore-bg-section active:bg-encore-border"
+          style={{ background: 'none', border: 'none', cursor: 'pointer', width: 36, height: 36, color: 'var(--color-encore-green)', WebkitTapHighlightColor: 'transparent' }}
         >
-          <svg width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M7 1L1 6.5L7 12"/>
-          </svg>
+          <CaretLeft size={18} weight="light" />
         </button>
-        <div style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif', fontSize: 15, fontWeight: 800, color: '#1B3C2D', letterSpacing: '0.04em', textAlign: 'center' }}>
+        <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)', letterSpacing: '0.04em', textAlign: 'center' }}>
           {monthLabel}
         </div>
         <button
           onClick={nextMonth}
-          className="flex items-center justify-center rounded-full transition-colors duration-150 hover:bg-[#E8E5DF] active:bg-[#D8D4CD]"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', width: 36, height: 36, color: '#1B3C2D', WebkitTapHighlightColor: 'transparent' }}
+          className="flex items-center justify-center rounded-full transition-colors duration-150 hover:bg-encore-bg-section active:bg-encore-border"
+          style={{ background: 'none', border: 'none', cursor: 'pointer', width: 36, height: 36, color: 'var(--color-encore-green)', WebkitTapHighlightColor: 'transparent' }}
         >
-          <svg width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M1 1L7 6.5L1 12"/>
-          </svg>
+          <CaretRight size={18} weight="light" />
         </button>
       </div>
 
       {/* DOW row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '0 14px', borderBottom: '1px solid #D8D4CD' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '0 14px', borderBottom: '1px solid var(--color-encore-border-light)' }}>
         {DOW_LABELS.map((d, i) => (
           <div
             key={d}
             style={{
               textAlign: 'center',
               padding: '6px 0 10px',
-              fontFamily: '"Helvetica Neue", Arial, sans-serif',
+              fontFamily: 'var(--font-google-sans), sans-serif',
               fontSize: 10,
               fontWeight: 700,
-              color: i === 0 ? '#C0392B' : i === 6 ? '#3080C8' : '#AEAAA3',
+              color: i === 0 ? 'var(--color-encore-error)' : i === 6 ? '#3080C8' : 'var(--color-encore-text-muted)',
               letterSpacing: '0.04em',
             }}
           >
@@ -114,11 +111,11 @@ export default function Calendar() {
           const isSat = dow === 6
           const hasOrder = sampleOrderDates.has(cell.dateStr)
 
-          let dateColor = '#1B3C2D'
-          if (!cell.thisMonth) dateColor = '#AEAAA3'
-          else if (isSelected) dateColor = '#fff'
-          else if (isToday) dateColor = '#1B3C2D'
-          else if (isSun) dateColor = '#C0392B'
+          let dateColor = 'var(--color-encore-green)'
+          if (!cell.thisMonth) dateColor = 'var(--color-encore-text-muted)'
+          else if (isSelected) dateColor = 'var(--color-encore-white)'
+          else if (isToday) dateColor = 'var(--color-encore-green)'
+          else if (isSun) dateColor = 'var(--color-encore-error)'
           else if (isSat) dateColor = '#3080C8'
 
           return (
@@ -145,10 +142,10 @@ export default function Calendar() {
                   borderRadius: '50%',
                   fontSize: 14,
                   color: dateColor,
-                  fontFamily: '"Helvetica Neue", Arial, sans-serif',
-                  fontWeight: isToday || isSelected ? 700 : 500,
-                  background: isSelected ? '#1B3C2D' : 'transparent',
-                  border: isToday && !isSelected ? '2.5px solid #1B3C2D' : 'none',
+                  fontFamily: 'var(--font-google-sans), sans-serif',
+                  fontWeight: isToday || isSelected ? 700 : 400,
+                  background: isSelected ? 'var(--color-encore-green)' : 'transparent',
+                  border: isToday && !isSelected ? '2.5px solid var(--color-encore-green)' : 'none',
                   opacity: !cell.thisMonth ? 0.35 : 1,
                   transition: 'background 0.18s, color 0.18s, transform 0.12s',
                 }}
@@ -157,7 +154,7 @@ export default function Calendar() {
               </div>
               {hasOrder && cell.thisMonth && (
                 <div className="flex gap-[3px] items-center justify-center" style={{ minHeight: 5 }}>
-                  <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#C08A4A' }} />
+                  <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--color-encore-amber)' }} />
                 </div>
               )}
             </div>
@@ -222,27 +219,27 @@ export function ReservationCalendar() {
   const monthLabel = new Date(viewYear, viewMonth, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }).toUpperCase()
 
   return (
-    <div style={{ background: '#F2F0EB' }}>
+    <div style={{ background: 'var(--color-encore-bg)' }}>
       {/* Nav Header (no border-bottom) */}
-      <div className="flex items-center justify-center relative" style={{ height: 52, background: '#F2F0EB' }}>
-        <button className="absolute flex items-center p-2 bg-transparent border-none cursor-pointer" style={{ left: 14, color: '#1B3C2D', WebkitTapHighlightColor: 'transparent' }}>
+      <div className="flex items-center justify-center relative" style={{ height: 52, background: 'var(--color-encore-bg)' }}>
+        <button className="absolute flex items-center p-2 bg-transparent border-none cursor-pointer" style={{ left: 14, color: 'var(--color-encore-green)', WebkitTapHighlightColor: 'transparent' }}>
           <svg width="10" height="17" viewBox="0 0 10 17" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 1L1.5 8.5L9 16"/></svg>
         </button>
-        <span style={{ fontSize: 15, fontWeight: 600, color: '#1B3C2D', letterSpacing: '0.01em' }}>受け取り日時を選択</span>
+        <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)', letterSpacing: '0.01em' }}>受け取り日時を選択</span>
       </div>
       {/* Month nav */}
       <div className="flex items-center justify-between" style={{ padding: '16px 20px 10px' }}>
-        <button onClick={prevMonth} className="flex items-center justify-center rounded-full hover:bg-[#E8E5DF]" style={{ background: 'none', border: 'none', cursor: 'pointer', width: 36, height: 36, color: '#1B3C2D' }}>
-          <svg width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 1L1 6.5L7 12"/></svg>
+        <button onClick={prevMonth} className="flex items-center justify-center rounded-full hover:bg-encore-bg-section" style={{ background: 'none', border: 'none', cursor: 'pointer', width: 36, height: 36, color: 'var(--color-encore-green)' }}>
+          <CaretLeft size={18} weight="light" />
         </button>
-        <div style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif', fontSize: 15, fontWeight: 800, color: '#1B3C2D', letterSpacing: '0.04em' }}>{monthLabel}</div>
-        <button onClick={nextMonth} className="flex items-center justify-center rounded-full hover:bg-[#E8E5DF]" style={{ background: 'none', border: 'none', cursor: 'pointer', width: 36, height: 36, color: '#1B3C2D' }}>
-          <svg width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 1L7 6.5L1 12"/></svg>
+        <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)', letterSpacing: '0.04em' }}>{monthLabel}</div>
+        <button onClick={nextMonth} className="flex items-center justify-center rounded-full hover:bg-encore-bg-section" style={{ background: 'none', border: 'none', cursor: 'pointer', width: 36, height: 36, color: 'var(--color-encore-green)' }}>
+          <CaretRight size={18} weight="light" />
         </button>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '0 14px', borderBottom: '1px solid #D8D4CD' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '0 14px', borderBottom: '1px solid var(--color-encore-border-light)' }}>
         {DOW_LABELS.map((d, i) => (
-          <div key={d} style={{ textAlign: 'center', padding: '6px 0 10px', fontFamily: '"Helvetica Neue", Arial, sans-serif', fontSize: 10, fontWeight: 700, color: i === 0 ? '#C0392B' : i === 6 ? '#3080C8' : '#AEAAA3', letterSpacing: '0.04em' }}>{d}</div>
+          <div key={d} style={{ textAlign: 'center', padding: '6px 0 10px', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, fontWeight: 700, color: i === 0 ? 'var(--color-encore-error)' : i === 6 ? '#3080C8' : 'var(--color-encore-text-muted)', letterSpacing: '0.04em' }}>{d}</div>
         ))}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '6px 14px 16px', gap: '2px 0' }}>
@@ -254,10 +251,10 @@ export function ReservationCalendar() {
           const isSun = dow === 0
           const isSat = dow === 6
 
-          let dateColor = '#1B3C2D'
-          if (!cell.thisMonth || past) dateColor = '#AEAAA3'
-          else if (isSelected) dateColor = '#fff'
-          else if (isSun) dateColor = '#C0392B'
+          let dateColor = 'var(--color-encore-green)'
+          if (!cell.thisMonth || past) dateColor = 'var(--color-encore-text-muted)'
+          else if (isSelected) dateColor = 'var(--color-encore-white)'
+          else if (isSun) dateColor = 'var(--color-encore-error)'
           else if (isSat) dateColor = '#3080C8'
 
           return (
@@ -272,9 +269,9 @@ export function ReservationCalendar() {
                 style={{
                   width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
                   borderRadius: '50%', fontSize: 14, color: dateColor,
-                  fontFamily: '"Helvetica Neue", Arial, sans-serif', fontWeight: isToday || isSelected ? 700 : 500,
-                  background: isSelected ? '#1B3C2D' : 'transparent',
-                  border: isToday && !isSelected ? '2.5px solid #1B3C2D' : 'none',
+                  fontFamily: 'var(--font-google-sans), sans-serif', fontWeight: isToday || isSelected ? 700 : 400,
+                  background: isSelected ? 'var(--color-encore-green)' : 'transparent',
+                  border: isToday && !isSelected ? '2.5px solid var(--color-encore-green)' : 'none',
                   opacity: !cell.thisMonth || past ? 0.35 : 1,
                   transition: 'background 0.18s, color 0.18s',
                 }}
@@ -286,8 +283,8 @@ export function ReservationCalendar() {
         })}
       </div>
       {/* Timeslot section */}
-      <div style={{ padding: '16px 20px', borderTop: '1px solid #D8D4CD' }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: '#6B6B6B', marginBottom: 12 }}>
+      <div style={{ padding: '16px 20px', borderTop: '1px solid var(--color-encore-border-light)' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-encore-text-sub)', marginBottom: 12 }}>
           {formatJaDate(selected, 'の受け取り時間')}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
@@ -301,10 +298,10 @@ export function ReservationCalendar() {
                 className={isSelTime ? 'encore-cal-pop' : ''}
                 style={{
                   height: 42, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: '"Helvetica Neue", Arial, sans-serif', fontSize: 13, fontWeight: 600,
-                  background: isSelTime ? '#1B3C2D' : '#E8E5DF',
-                  color: isSelTime ? '#fff' : unavailable ? '#AEAAA3' : '#1B3C2D',
-                  border: `1.5px solid ${isSelTime ? '#1B3C2D' : 'transparent'}`,
+                  fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 13, fontWeight: 700,
+                  background: isSelTime ? 'var(--color-encore-green)' : 'var(--color-encore-bg-section)',
+                  color: isSelTime ? 'var(--color-encore-white)' : unavailable ? 'var(--color-encore-text-muted)' : 'var(--color-encore-green)',
+                  border: `1.5px solid ${isSelTime ? 'var(--color-encore-green)' : 'transparent'}`,
                   cursor: unavailable ? 'default' : 'pointer',
                   opacity: unavailable ? 0.4 : 1,
                   textDecoration: unavailable ? 'line-through' : 'none',
@@ -356,17 +353,17 @@ export function WeekStrip() {
   }, [])
 
   const selectedLabel = selected
-    ? formatJaDate(selected, 'の注文')
+    ? formatJaDate(selected, 'のライブ')
     : '日付を選んでください'
 
   return (
-    <div style={{ background: '#F2F0EB' }}>
+    <div style={{ background: 'var(--color-encore-bg)' }}>
       {/* Nav Header */}
-      <div className="flex items-center justify-center relative" style={{ height: 52, background: '#F2F0EB', borderBottom: '1px solid #D8D4CD' }}>
-        <button className="absolute flex items-center p-2 bg-transparent border-none cursor-pointer" style={{ left: 14, color: '#1B3C2D', WebkitTapHighlightColor: 'transparent' }}>
+      <div className="flex items-center justify-center relative" style={{ height: 52, background: 'var(--color-encore-bg)', borderBottom: '1px solid var(--color-encore-border-light)' }}>
+        <button className="absolute flex items-center p-2 bg-transparent border-none cursor-pointer" style={{ left: 14, color: 'var(--color-encore-green)', WebkitTapHighlightColor: 'transparent' }}>
           <svg width="10" height="17" viewBox="0 0 10 17" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 1L1.5 8.5L9 16"/></svg>
         </button>
-        <span style={{ fontSize: 15, fontWeight: 600, color: '#1B3C2D', letterSpacing: '0.01em' }}>注文履歴</span>
+        <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)', letterSpacing: '0.01em' }}>ライブ記録</span>
       </div>
       {/* Week strip */}
       <div
@@ -385,7 +382,7 @@ export function WeekStrip() {
               key={day.dateStr}
               ref={isToday ? todayRef : undefined}
               onClick={() => setSelected(day.dateStr)}
-              className="flex flex-col items-center hover:bg-[#E8E5DF] transition-colors duration-150"
+              className="flex flex-col items-center hover:bg-encore-bg-section transition-colors duration-150"
               style={{
                 gap: 5,
                 minWidth: 44,
@@ -399,10 +396,10 @@ export function WeekStrip() {
             >
               <div
                 style={{
-                  fontFamily: '"Helvetica Neue", Arial, sans-serif',
+                  fontFamily: 'var(--font-google-sans), sans-serif',
                   fontSize: 10,
                   fontWeight: 700,
-                  color: isSun ? '#C0392B' : isSat ? '#3080C8' : '#AEAAA3',
+                  color: isSun ? 'var(--color-encore-error)' : isSat ? '#3080C8' : 'var(--color-encore-text-muted)',
                   textTransform: 'uppercase' as const,
                   letterSpacing: '0.04em',
                 }}
@@ -417,26 +414,26 @@ export function WeekStrip() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontFamily: '"Helvetica Neue", Arial, sans-serif',
+                  fontFamily: 'var(--font-google-sans), sans-serif',
                   fontSize: 15,
-                  fontWeight: 600,
-                  color: isSelected ? '#fff' : '#1B3C2D',
-                  background: isSelected ? '#1B3C2D' : 'transparent',
-                  border: isToday && !isSelected ? '2px solid #1B3C2D' : 'none',
+                  fontWeight: 700,
+                  color: isSelected ? 'var(--color-encore-white)' : 'var(--color-encore-green)',
+                  background: isSelected ? 'var(--color-encore-green)' : 'transparent',
+                  border: isToday && !isSelected ? '2px solid var(--color-encore-green)' : 'none',
                   transition: 'background 0.18s, color 0.18s',
                 }}
               >
                 {day.num}
               </div>
               {sampleOrderDates.has(day.dateStr) && (
-                <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#C08A4A' }} />
+                <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--color-encore-amber)' }} />
               )}
             </div>
           )
         })}
       </div>
       {/* Selected date label */}
-      <div style={{ padding: '16px 20px', fontSize: 13, color: selected ? '#1B3C2D' : '#AEAAA3', textAlign: 'center', borderTop: '1px solid #D8D4CD' }}>
+      <div style={{ padding: '16px 20px', fontSize: 13, color: selected ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)', textAlign: 'center', borderTop: '1px solid var(--color-encore-border-light)' }}>
         {selectedLabel}
       </div>
     </div>

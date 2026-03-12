@@ -28,14 +28,14 @@ export default function InputField({
       className="flex items-end gap-3 mb-6"
       style={{
         paddingTop: 4,
-        borderBottom: '1.5px solid #1B3C2D',
+        borderBottom: '1.5px solid var(--color-encore-green)',
         transition: 'border-color 0.2s',
       }}
     >
       {icon && (
         <div
           className="flex-shrink-0 pb-1.5"
-          style={{ fontSize: 16, color: '#1B3C2D', opacity: 0.6 }}
+          style={{ fontSize: 16, color: 'var(--color-encore-green)', opacity: 0.6 }}
         >
           {icon}
         </div>
@@ -43,7 +43,7 @@ export default function InputField({
       <div className="flex-1">
         <span
           className="block mb-0.5"
-          style={{ fontSize: 11, color: '#AEAAA3' }}
+          style={{ fontSize: 11, color: 'var(--color-encore-text-muted)' }}
         >
           {label}
         </span>
@@ -59,13 +59,13 @@ export default function InputField({
             border: 'none',
             padding: '4px 0 6px',
             fontSize: 15,
-            fontFamily: '"Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif',
-            color: '#1B3C2D',
+            fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+            color: 'var(--color-encore-green)',
             lineHeight: 1.4,
           }}
         />
         {showCounter && maxLength && (
-          <div style={{ textAlign: 'right', fontSize: 11, color: '#AEAAA3', marginTop: 4 }}>
+          <div style={{ textAlign: 'right', fontSize: 11, color: 'var(--color-encore-text-muted)', marginTop: 4 }}>
             {value.length}/{maxLength}
           </div>
         )}

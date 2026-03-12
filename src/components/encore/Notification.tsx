@@ -20,8 +20,8 @@ export default function Notification({ message, icon = '🌿', onDismiss }: Noti
     <div
       className={`encore-notification flex items-start gap-3.5${dismissed ? ' dismissed' : ''}`}
       style={{
-        background: '#1B3C2D',
-        color: '#fff',
+        background: 'var(--color-encore-green)',
+        color: 'var(--color-encore-white)',
         padding: dismissed ? '0 16px' : '14px 16px',
         maxHeight: dismissed ? 0 : 200,
         opacity: dismissed ? 0 : 1,
@@ -38,7 +38,7 @@ export default function Notification({ message, icon = '🌿', onDismiss }: Noti
           cursor: 'pointer',
           background: 'none',
           border: 'none',
-          color: '#fff',
+          color: 'var(--color-encore-white)',
           padding: '2px 4px',
         }}
       >

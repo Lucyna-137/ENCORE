@@ -1,5 +1,6 @@
 import React from 'react'
 import Button from './Button'
+import { CaretRight } from '@phosphor-icons/react'
 
 interface OrderItem {
   emoji: string
@@ -16,33 +17,31 @@ interface OrderSummaryProps {
 }
 
 const ChevronRight = () => (
-  <svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke="#AEAAA3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M1 1l5 5-5 5"/>
-  </svg>
+  <CaretRight size={14} weight="light" color="var(--color-encore-text-muted)" />
 )
 
 const defaultItems: OrderItem[] = [
   {
-    emoji: '🥗',
-    name: 'チキンタコボウル',
-    detail: 'グリルドチキン、アボカド、トマト、自家製クルトン',
+    emoji: '🎸',
+    name: 'RADWIMPS LIVE 2026 東京',
+    detail: 'S席・1枚 | Zepp Tokyo・3月20日(金)',
     qty: 1,
-    price: '¥1,585',
+    price: '¥8,800',
     bgColor: 'linear-gradient(135deg,#C8D4C0,#A8BC9C)',
   },
 ]
 
-export default function OrderSummary({ items = defaultItems, total = '¥1,585' }: OrderSummaryProps) {
+export default function OrderSummary({ items = defaultItems, total = '¥8,800' }: OrderSummaryProps) {
   return (
-    <div style={{ background: '#F2F0EB' }}>
+    <div style={{ background: 'var(--color-encore-bg)' }}>
       {items.map((item, i) => (
         <div key={i}>
           <div
             className="flex items-start gap-3.5"
             style={{
               padding: '16px 20px',
-              background: '#F2F0EB',
-              borderTop: i > 0 ? '1px solid #D8D4CD' : undefined,
+              background: 'var(--color-encore-bg)',
+              borderTop: i > 0 ? '1px solid var(--color-encore-border-light)' : undefined,
             }}
           >
             <div
@@ -51,71 +50,71 @@ export default function OrderSummary({ items = defaultItems, total = '¥1,585' }
                 width: 56,
                 height: 56,
                 borderRadius: 12,
-                background: item.bgColor ?? '#E8E5DF',
+                background: item.bgColor ?? 'var(--color-encore-bg-section)',
                 fontSize: 26,
               }}
             >
               {item.emoji}
             </div>
             <div className="flex-1">
-              <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4, color: '#1B3C2D' }}>{item.name}</div>
-              <div style={{ fontSize: 12, color: '#6B6B6B', lineHeight: 1.5 }}>{item.detail}</div>
+              <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4, color: 'var(--color-encore-green)' }}>{item.name}</div>
+              <div style={{ fontSize: 12, color: 'var(--color-encore-text-sub)', lineHeight: 1.5 }}>{item.detail}</div>
               <div className="flex gap-3 mt-1.5">
-                <button style={{ fontSize: 12, color: '#C08A4A', cursor: 'pointer', background: 'none', border: 'none', padding: 0, fontFamily: '"Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif' }}>
-                  もっと自分の好みにカスタマイズ
+                <button style={{ fontSize: 12, color: 'var(--color-encore-amber)', cursor: 'pointer', background: 'none', border: 'none', padding: 0, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>
+                  座席を変更する
                 </button>
-                <button style={{ fontSize: 12, color: '#C08A4A', cursor: 'pointer', background: 'none', border: 'none', padding: 0, fontFamily: '"Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif' }}>
+                <button style={{ fontSize: 12, color: 'var(--color-encore-amber)', cursor: 'pointer', background: 'none', border: 'none', padding: 0, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>
                   削除
                 </button>
               </div>
             </div>
             <div className="text-right flex-shrink-0">
-              <div style={{ fontSize: 13, color: '#6B6B6B', marginBottom: 2 }}>x{item.qty}</div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#1B3C2D' }}>{item.price}</div>
+              <div style={{ fontSize: 13, color: 'var(--color-encore-text-sub)', marginBottom: 2 }}>x{item.qty}</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)' }}>{item.price}</div>
             </div>
           </div>
           <div
             style={{
-              background: '#E8E5DF',
+              background: 'var(--color-encore-bg-section)',
               padding: '14px 20px',
-              borderTop: '1px solid #D8D4CD',
+              borderTop: '1px solid var(--color-encore-border-light)',
               fontSize: 13,
               lineHeight: 1.75,
-              color: '#6B6B6B',
+              color: 'var(--color-encore-text-sub)',
             }}
           >
-            スプーン、紙ナプキン: つける<br/>
-            ドレッシング: まぜる<br/>
-            キャロットチリビネグレット: ふつう
+            座席: S席・3列14番<br/>
+            入場: 17:30より<br/>
+            特典: ロゴステッカー付き
           </div>
         </div>
       ))}
       <div
         className="flex items-center"
-        style={{ padding: '15px 20px', background: '#F2F0EB', gap: 14, borderTop: '1px solid #D8D4CD' }}
+        style={{ padding: '15px 20px', background: 'var(--color-encore-bg)', gap: 14, borderTop: '1px solid var(--color-encore-border-light)' }}
       >
-        <div className="flex-1" style={{ fontSize: 14, color: '#6B6B6B' }}>店舗へのコメント</div>
+        <div className="flex-1" style={{ fontSize: 14, color: 'var(--color-encore-text-sub)' }}>会場へのメモ</div>
       </div>
       <div
         className="flex items-center cursor-pointer"
-        style={{ padding: '15px 20px', background: '#F2F0EB', gap: 14, borderTop: '1px solid #D8D4CD' }}
+        style={{ padding: '15px 20px', background: 'var(--color-encore-bg)', gap: 14, borderTop: '1px solid var(--color-encore-border-light)' }}
       >
-        <div className="flex-1" style={{ fontSize: 15, color: '#1B3C2D' }}>コメントを入れる</div>
+        <div className="flex-1" style={{ fontSize: 15, color: 'var(--color-encore-green)' }}>メモを追加する</div>
         <ChevronRight />
       </div>
       <div
         className="flex justify-between items-center"
         style={{
-          background: '#E8E5DF',
+          background: 'var(--color-encore-bg-section)',
           padding: '14px 20px',
-          borderTop: '1px solid #D8D4CD',
+          borderTop: '1px solid var(--color-encore-border-light)',
         }}
       >
-        <span style={{ fontSize: 14, color: '#6B6B6B' }}>合計（税込）</span>
-        <span style={{ fontSize: 18, fontWeight: 800, color: '#1B3C2D' }}>{total}</span>
+        <span style={{ fontSize: 14, color: 'var(--color-encore-text-sub)' }}>合計</span>
+        <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-encore-green)' }}>{total}</span>
       </div>
       <div style={{ padding: '12px 20px 24px' }}>
-        <Button variant="primary">注文を確定する</Button>
+        <Button variant="primary">購入を確定する</Button>
       </div>
     </div>
   )

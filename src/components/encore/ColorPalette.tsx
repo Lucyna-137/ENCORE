@@ -1,48 +1,48 @@
 import React from 'react'
 
 const colors = [
-  { name: 'Background', hex: '#F2F0EB' },
-  { name: 'Section BG', hex: '#E8E5DF' },
-  { name: 'Card BG', hex: '#EDEAE4' },
-  { name: 'Green', hex: '#1B3C2D' },
-  { name: 'Green Muted', hex: '#8BA898' },
-  { name: 'Amber', hex: '#C08A4A' },
-  { name: 'Text Sub', hex: '#6B6B6B' },
-  { name: 'Text Muted', hex: '#AEAAA3' },
-  { name: 'Border', hex: '#D8D4CD' },
-  { name: 'White', hex: '#FFFFFF', outlined: true },
+  { name: 'Background',   bg: 'var(--color-encore-bg)',           code: '#F2F0EB' },
+  { name: 'Section BG',   bg: 'var(--color-encore-bg-section)',   code: '#E9E8E4' },
+  { name: 'Green',        bg: 'var(--color-encore-green)',        code: '#1B3C2D' },
+  { name: 'Green Muted',  bg: 'var(--color-encore-green-muted)',  code: '#8BA898' },
+  { name: 'Amber',        bg: 'var(--color-encore-amber)',        code: '#C08A4A' },
+  { name: 'Text Sub',     bg: 'var(--color-encore-text-sub)',     code: 'rgba(27,60,45,0.55)' },
+  { name: 'Text Muted',   bg: 'var(--color-encore-text-muted)',   code: 'rgba(27,60,45,0.35)' },
+  { name: 'Border',       bg: 'var(--color-encore-border)',       code: '#BAC2BB' },
+  { name: 'Border Light', bg: 'var(--color-encore-border-light)', code: '#E4E2DD', outlined: true },
+  { name: 'White',        bg: 'var(--color-encore-white)',        code: '#FFFFFF', outlined: true },
 ]
 
 export default function ColorPalette() {
   return (
     <div className="flex flex-wrap" style={{ gap: 16 }}>
       {colors.map((c) => (
-        <div key={c.hex} className="flex flex-col items-center" style={{ gap: 7, width: 88 }}>
+        <div key={c.code} className="flex flex-col items-center" style={{ gap: 7, width: 88 }}>
           <div
             style={{
               width: 88,
               height: 60,
               borderRadius: 12,
-              background: c.hex,
+              background: c.bg,
               boxShadow: c.outlined
-                ? 'inset 0 0 0 1px #D8D4CD'
+                ? 'inset 0 0 0 1px var(--color-encore-border)'
                 : 'inset 0 0 0 1px rgba(0,0,0,0.08)',
             }}
           />
           <div
             style={{
-              fontFamily: '"Helvetica Neue", Arial, sans-serif',
+              fontFamily: 'var(--font-google-sans), sans-serif',
               fontSize: 10,
-              fontWeight: 600,
-              color: '#6B6B6B',
+              fontWeight: 700,
+              color: 'var(--color-encore-text-sub)',
               textAlign: 'center',
               lineHeight: 1.3,
             }}
           >
             {c.name}
           </div>
-          <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#AEAAA3' }}>
-            {c.hex}
+          <div style={{ fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)' }}>
+            {c.code}
           </div>
         </div>
       ))}

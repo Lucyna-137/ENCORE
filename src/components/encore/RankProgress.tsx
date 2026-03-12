@@ -26,21 +26,21 @@ export default function RankProgress({ nodes }: RankProgressProps) {
                   width: 44,
                   height: 44,
                   borderRadius: '50%',
-                  background: node.active ? '#1B3C2D' : '#E8E5DF',
-                  border: `2px solid ${node.active ? '#1B3C2D' : '#D8D4CD'}`,
+                  background: node.active ? 'var(--color-encore-green)' : 'var(--color-encore-bg-section)',
+                  border: `2px solid ${node.active ? 'var(--color-encore-green)' : 'var(--color-encore-border)'}`,
                   fontSize: node.active ? 16 : 13,
                   transition: 'background 0.3s, border-color 0.3s',
-                  color: node.active ? '#fff' : '#AEAAA3',
+                  color: node.active ? 'var(--color-encore-white)' : 'var(--color-encore-text-muted)',
                 }}
               >
                 {node.active ? (node.emoji ?? node.num) : '?'}
               </div>
               <span
                 style={{
-                  fontFamily: '"Helvetica Neue", Arial, sans-serif',
+                  fontFamily: 'var(--font-google-sans), sans-serif',
                   fontSize: 11,
                   fontWeight: 700,
-                  color: '#AEAAA3',
+                  color: 'var(--color-encore-text-muted)',
                   textAlign: 'center',
                 }}
               >
@@ -48,12 +48,12 @@ export default function RankProgress({ nodes }: RankProgressProps) {
               </span>
               <span
                 style={{
-                  fontFamily: '"Helvetica Neue", Arial, sans-serif',
+                  fontFamily: 'var(--font-google-sans), sans-serif',
                   fontSize: 9,
                   fontWeight: 700,
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase' as const,
-                  color: node.active ? '#1B3C2D' : '#AEAAA3',
+                  color: node.active ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)',
                   textAlign: 'center',
                 }}
               >
@@ -65,7 +65,7 @@ export default function RankProgress({ nodes }: RankProgressProps) {
                 style={{
                   flex: 1,
                   height: 2,
-                  background: node.active ? '#1B3C2D' : '#D8D4CD',
+                  background: node.active ? 'var(--color-encore-green)' : 'var(--color-encore-border)',
                   minWidth: 16,
                   marginBottom: 44,
                   transition: 'background 0.3s',

@@ -30,7 +30,7 @@ export default function BottomSheet({ isOpen, onClose, title, subtitle, children
         onClick={(e) => e.stopPropagation()}
         className="encore-bottom-sheet-panel"
         style={{
-          background: '#F2F0EB',
+          background: 'var(--color-encore-bg)',
           borderRadius: '24px 24px 0 0',
           padding: '0 20px 40px',
           maxWidth: 540,
@@ -41,13 +41,13 @@ export default function BottomSheet({ isOpen, onClose, title, subtitle, children
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0 24px' }}>
-          <div style={{ width: 36, height: 4, background: '#D8D4CD', borderRadius: 999 }} />
+          <div style={{ width: 36, height: 4, background: 'var(--color-encore-border-light)', borderRadius: 999 }} />
         </div>
-        <div style={{ fontSize: 17, fontWeight: 700, textAlign: 'center', marginBottom: 4, color: '#1B3C2D' }}>
+        <div style={{ fontSize: 17, fontWeight: 700, textAlign: 'center', marginBottom: 4, color: 'var(--color-encore-green)' }}>
           {title}
         </div>
         {subtitle && (
-          <div style={{ fontSize: 13, color: '#6B6B6B', textAlign: 'center', marginBottom: 24 }}>
+          <div style={{ fontSize: 13, color: 'var(--color-encore-text-sub)', textAlign: 'center', marginBottom: 24 }}>
             {subtitle}
           </div>
         )}

@@ -30,9 +30,9 @@ export default function ProductCard({
 
   return (
     <div
-      className="overflow-hidden cursor-pointer transition-all duration-200 ease-out shadow-[0_2px_8px_rgba(0,0,0,0.07)] hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] active:scale-[0.98]"
+      className="overflow-hidden cursor-pointer transition-all duration-200 ease-out shadow-[var(--shadow-card)] hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] active:scale-[0.98]"
       style={{
-        background: '#EDEAE4',
+        background: 'var(--color-encore-bg-card)',
         borderRadius: 16,
       }}
     >
@@ -57,10 +57,10 @@ export default function ProductCard({
               background: 'rgba(255,255,255,0.88)',
               borderRadius: 999,
               fontSize: 11,
-              fontWeight: 600,
+              fontWeight: 700,
               padding: '3px 10px',
-              color: '#1B3C2D',
-              fontFamily: '"Helvetica Neue", Arial, sans-serif',
+              color: 'var(--color-encore-green)',
+              fontFamily: 'var(--font-google-sans), sans-serif',
             }}
           >
             {badge}
@@ -75,19 +75,19 @@ export default function ProductCard({
               background: 'linear-gradient(to top, rgba(0,0,0,0.52) 0%, transparent 100%)',
             }}
           >
-            <span style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>{title}</span>
-            <span style={{ color: '#fff', fontSize: 14, fontWeight: 700 }}>{price}</span>
+            <span style={{ color: 'var(--color-encore-white)', fontSize: 14, fontWeight: 700 }}>{title}</span>
+            <span style={{ color: 'var(--color-encore-white)', fontSize: 14, fontWeight: 700 }}>{price}</span>
           </div>
         )}
       </div>
 
       <div style={{ padding: '14px 16px 16px' }}>
         {variant === 'like' && (
-          <div style={{ fontSize: 15, fontWeight: 600, color: '#1B3C2D', marginBottom: 6 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)', marginBottom: 6 }}>
             {title}
           </div>
         )}
-        <div style={{ fontSize: 13, color: '#6B6B6B', lineHeight: 1.55, marginBottom: 8 }}>
+        <div style={{ fontSize: 13, color: 'var(--color-encore-text-sub)', lineHeight: 1.55, marginBottom: 8 }}>
           {description}
         </div>
         {variant === 'overlay' ? (
@@ -96,12 +96,12 @@ export default function ProductCard({
             style={{
               display: 'inline',
               fontSize: 14,
-              color: '#C08A4A',
+              color: 'var(--color-encore-amber)',
               cursor: 'pointer',
               background: 'none',
               border: 'none',
               padding: 0,
-              fontFamily: '"Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif',
+              fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
             }}
           >
             これスキ！
@@ -113,17 +113,17 @@ export default function ProductCard({
               style={{
                 display: 'inline',
                 fontSize: 14,
-                color: '#C08A4A',
+                color: 'var(--color-encore-amber)',
                 cursor: 'pointer',
                 background: 'none',
                 border: 'none',
                 padding: 0,
-                fontFamily: '"Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif',
+                fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
               }}
             >
               このままカートに入れる
             </button>
-            <span style={{ fontSize: 15, fontWeight: 700, color: '#1B3C2D' }}>{price}</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)' }}>{price}</span>
           </div>
         )}
       </div>

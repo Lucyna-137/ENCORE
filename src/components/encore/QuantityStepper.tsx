@@ -32,22 +32,22 @@ export default function QuantityStepper({
     <div
       className="inline-flex items-center overflow-hidden"
       style={{
-        border: '1.5px solid #D8D4CD',
+        border: '1.5px solid var(--color-encore-border-light)',
         borderRadius: 999,
-        background: '#F2F0EB',
+        background: 'var(--color-encore-bg)',
       }}
     >
       <button
         onClick={() => change(-1)}
-        className="flex items-center justify-center transition-colors duration-150 hover:bg-[#E8E5DF] active:bg-[#D8D4CD] cursor-pointer"
+        className="flex items-center justify-center transition-colors duration-150 hover:bg-encore-bg-section active:bg-encore-border cursor-pointer"
         style={{
           width: 40,
           height: 40,
           background: 'transparent',
           border: 'none',
           fontSize: 20,
-          color: '#1B3C2D',
-          fontWeight: 300,
+          color: 'var(--color-encore-green)',
+          fontWeight: 400,
           lineHeight: 1,
           WebkitTapHighlightColor: 'transparent',
         }}
@@ -62,27 +62,27 @@ export default function QuantityStepper({
           minWidth: 40,
           textAlign: 'center',
           fontSize: 15,
-          fontWeight: 600,
+          fontWeight: 700,
           height: 40,
-          borderLeft: '1px solid #D8D4CD',
-          borderRight: '1px solid #D8D4CD',
-          fontFamily: '"Helvetica Neue", Arial, sans-serif',
-          color: '#1B3C2D',
+          borderLeft: '1px solid var(--color-encore-border-light)',
+          borderRight: '1px solid var(--color-encore-border-light)',
+          fontFamily: 'var(--font-google-sans), sans-serif',
+          color: 'var(--color-encore-green)',
         }}
       >
         {value}
       </div>
       <button
         onClick={() => change(1)}
-        className="flex items-center justify-center transition-colors duration-150 hover:bg-[#E8E5DF] active:bg-[#D8D4CD] cursor-pointer"
+        className="flex items-center justify-center transition-colors duration-150 hover:bg-encore-bg-section active:bg-encore-border cursor-pointer"
         style={{
           width: 40,
           height: 40,
           background: 'transparent',
           border: 'none',
           fontSize: 20,
-          color: '#1B3C2D',
-          fontWeight: 300,
+          color: 'var(--color-encore-green)',
+          fontWeight: 400,
           lineHeight: 1,
           WebkitTapHighlightColor: 'transparent',
         }}

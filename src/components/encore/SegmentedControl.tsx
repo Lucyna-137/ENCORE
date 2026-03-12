@@ -29,13 +29,13 @@ export default function SegmentedControl({
           className="flex-1 flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-200"
           style={{
             height: 48,
-            border: selected === i ? '2px solid #1B3C2D' : '1.5px solid #D8D4CD',
+            border: selected === i ? '2px solid var(--color-encore-green)' : '1.5px solid var(--color-encore-border-light)',
             borderRadius: 8,
             background: selected === i ? 'rgba(27,60,45,0.04)' : 'transparent',
             fontSize: 14,
-            fontFamily: '"Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif',
-            color: selected === i ? '#1B3C2D' : '#6B6B6B',
-            fontWeight: selected === i ? 600 : 400,
+            fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+            color: selected === i ? 'var(--color-encore-green)' : 'var(--color-encore-text-sub)',
+            fontWeight: selected === i ? 700 : 400,
             WebkitTapHighlightColor: 'transparent',
           }}
         >

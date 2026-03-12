@@ -3,7 +3,7 @@
 import React, { useRef } from 'react'
 
 interface ButtonProps {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'disabled' | 'sm-primary' | 'sm-ghost' | 'sm-secondary'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'disabled' | 'sm-primary' | 'sm-ghost' | 'sm-secondary' | 'xs-primary' | 'xs-ghost' | 'xs-secondary'
   children: React.ReactNode
   onClick?: () => void
   disabled?: boolean
@@ -11,13 +11,16 @@ interface ButtonProps {
 }
 
 const variantStyles: Record<string, string> = {
-  primary:      'w-full h-[52px] rounded-[8px] bg-[#1B3C2D] text-white text-[15px] font-medium border-0',
-  secondary:    'w-full h-[52px] rounded-[8px] bg-transparent text-[#1B3C2D] text-[15px] font-medium',
-  ghost:        'w-full h-[52px] rounded-[8px] bg-[#E8E5DF] text-[#1B3C2D] text-[15px] font-medium border-0',
-  disabled:     'w-full h-[52px] rounded-[8px] bg-[#8BA898] text-white text-[15px] font-medium opacity-65 cursor-not-allowed border-0',
-  'sm-primary':   'w-auto h-[36px] rounded-[8px] bg-[#1B3C2D] text-white text-[13px] font-medium px-5 border-0',
-  'sm-ghost':     'w-auto h-[36px] rounded-[8px] bg-[#E8E5DF] text-[#1B3C2D] text-[13px] font-medium px-5 border-0',
-  'sm-secondary': 'w-auto h-[36px] rounded-[8px] bg-transparent text-[#1B3C2D] text-[13px] font-medium px-5',
+  primary:      'w-full h-[70px] rounded-[4px] bg-encore-green text-white text-[14px] font-normal border-0',
+  secondary:    'w-full h-[70px] rounded-[4px] bg-transparent text-encore-green text-[14px] font-normal',
+  ghost:        'w-full h-[70px] rounded-[4px] bg-encore-bg-section text-encore-green text-[14px] font-normal border-0',
+  disabled:     'w-full h-[70px] rounded-[4px] bg-encore-green-muted text-white text-[14px] font-normal opacity-65 cursor-not-allowed border-0',
+  'sm-primary':   'w-auto h-[46px] rounded-full bg-encore-green text-white text-[12px] font-normal px-5 border-0',
+  'sm-ghost':     'w-auto h-[46px] rounded-full bg-encore-bg-section text-encore-green text-[12px] font-normal px-5 border-0',
+  'sm-secondary': 'w-auto h-[46px] rounded-full bg-transparent text-encore-green text-[12px] font-normal px-5',
+  'xs-primary':   'w-auto h-[28px] rounded-full bg-encore-green text-white text-[11px] font-normal px-3 border-0',
+  'xs-ghost':     'w-auto h-[28px] rounded-full bg-encore-bg-section text-encore-green text-[11px] font-normal px-3 border-0',
+  'xs-secondary': 'w-auto h-[28px] rounded-full bg-transparent text-encore-green text-[11px] font-normal px-3',
 }
 
 export default function Button({
@@ -52,9 +55,9 @@ export default function Button({
 
   const isDisabled = disabled || variant === 'disabled'
 
-  const isSecondary = variant === 'secondary' || variant === 'sm-secondary'
+  const isSecondary = variant === 'secondary' || variant === 'sm-secondary' || variant === 'xs-secondary'
   const borderStyle = isSecondary
-    ? { border: '1.5px solid #1B3C2D' }
+    ? { border: '1.5px solid var(--color-encore-green)' }
     : { border: 'none' }
 
   return (
@@ -70,7 +73,7 @@ export default function Button({
         className,
       ].join(' ')}
       style={{
-        fontFamily: '"Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif',
+        fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
         letterSpacing: '0.02em',
         WebkitTapHighlightColor: 'transparent',
         ...borderStyle,

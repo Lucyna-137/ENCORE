@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { House, Medal, Heart, Clock, User } from '@phosphor-icons/react'
 
 interface TabItem {
   label: string
@@ -13,49 +14,11 @@ interface TabBarProps {
 }
 
 const defaultItems: TabItem[] = [
-  {
-    label: 'HOME',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/>
-        <path d="M9 21V12h6v9"/>
-      </svg>
-    ),
-  },
-  {
-    label: 'REWARDS',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2C10 2 8 4 8 7c0 2 1 3.5 2.5 4.5L9 20h6l-1.5-8.5C15 10.5 16 9 16 7c0-3-2-5-4-5z"/>
-      </svg>
-    ),
-  },
-  {
-    label: 'LIKE',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-      </svg>
-    ),
-  },
-  {
-    label: 'HISTORY',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="9"/>
-        <polyline points="12 7 12 12 15 15"/>
-      </svg>
-    ),
-  },
-  {
-    label: 'ME',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="8" r="4"/>
-        <path d="M6 20v-1a6 6 0 0112 0v1"/>
-      </svg>
-    ),
-  },
+  { label: 'HOME',    icon: <House    size={24} weight="light" /> },
+  { label: 'REWARDS', icon: <Medal    size={24} weight="light" /> },
+  { label: 'LIKE',    icon: <Heart    size={24} weight="light" /> },
+  { label: 'HISTORY', icon: <Clock    size={24} weight="light" /> },
+  { label: 'ME',      icon: <User     size={24} weight="light" /> },
 ]
 
 export default function TabBar({ items = defaultItems, defaultActive = 2 }: TabBarProps) {
@@ -66,8 +29,8 @@ export default function TabBar({ items = defaultItems, defaultActive = 2 }: TabB
       className="flex items-center justify-around"
       style={{
         height: 68,
-        background: '#F2F0EB',
-        borderTop: '1px solid #D8D4CD',
+        background: 'var(--color-encore-bg)',
+        borderTop: '1px solid var(--color-encore-border-light)',
         padding: '0 4px 10px',
       }}
     >
@@ -75,35 +38,23 @@ export default function TabBar({ items = defaultItems, defaultActive = 2 }: TabB
         <div
           key={i}
           onClick={() => setActive(i)}
-          className="flex flex-col items-center gap-1 cursor-pointer pt-1.5 transition-opacity duration-150 active:opacity-60 select-none"
-          style={{ minWidth: 52, padding: '6px 12px 0', WebkitTapHighlightColor: 'transparent' }}
+          className="flex flex-col items-center gap-1 cursor-pointer transition-opacity duration-150 active:opacity-60 select-none"
+          style={{ minWidth: 52, padding: '7px 12px 0', WebkitTapHighlightColor: 'transparent',
+            color: active === i ? 'var(--color-encore-amber)' : 'var(--color-encore-text-muted)',
+            transition: 'color 0.2s',
+          }}
         >
-          <div
-            className="w-6 h-6"
-            style={{
-              stroke: active === i ? '#C08A4A' : '#AEAAA3',
-              fill: 'none',
-              strokeWidth: 1.5,
-              strokeLinecap: 'round',
-              strokeLinejoin: 'round',
-              transition: 'stroke 0.2s',
-            }}
-          >
-            {React.cloneElement(item.icon as React.ReactElement<React.SVGProps<SVGSVGElement>>, {
-              width: 24,
-              height: 24,
-              stroke: active === i ? '#C08A4A' : '#AEAAA3',
-              strokeWidth: 1.5,
-            })}
-          </div>
+          {React.cloneElement(item.icon as React.ReactElement<{ color?: string }>, {
+            color: active === i ? 'var(--color-encore-amber)' : 'var(--color-encore-text-muted)',
+          })}
           <span
             style={{
-              fontFamily: '"Helvetica Neue", Arial, sans-serif',
+              fontFamily: 'var(--font-google-sans), sans-serif',
               fontSize: 9,
               fontWeight: 700,
               letterSpacing: '0.08em',
               textTransform: 'uppercase' as const,
-              color: active === i ? '#C08A4A' : '#AEAAA3',
+              color: active === i ? 'var(--color-encore-amber)' : 'var(--color-encore-text-muted)',
               transition: 'color 0.2s',
             }}
           >

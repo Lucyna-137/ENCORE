@@ -13,10 +13,10 @@ export default function CreditCard({ cardNumber = '', expDisplay = '月/年' }: 
     <div
       className="relative overflow-hidden flex flex-col justify-between"
       style={{
-        background: '#1B3C2D',
+        background: 'var(--color-encore-green)',
         borderRadius: 18,
         padding: '24px 24px 22px',
-        color: '#fff',
+        color: 'var(--color-encore-white)',
         minHeight: 200,
         boxShadow: '0 8px 32px rgba(27,60,45,0.35)',
       }}
@@ -26,8 +26,8 @@ export default function CreditCard({ cardNumber = '', expDisplay = '月/年' }: 
       {/* Top row */}
       <div className="relative flex justify-between items-start">
         <div>
-          <div style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif', fontSize: 10, opacity: 0.6, marginBottom: 5 }}>Card Number</div>
-          <div style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif', fontSize: 20, fontWeight: 700, letterSpacing: '0.08em' }}>{formatted}</div>
+          <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, opacity: 0.6, marginBottom: 5 }}>Card Number</div>
+          <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 20, fontWeight: 700, letterSpacing: '0.08em' }}>{formatted}</div>
         </div>
         <div className="flex">
           <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#EB001B', opacity: 0.92 }} />
@@ -37,8 +37,8 @@ export default function CreditCard({ cardNumber = '', expDisplay = '月/年' }: 
       {/* Bottom */}
       <div className="relative flex justify-end items-end">
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif', fontSize: 10, opacity: 0.6, marginBottom: 2 }}>EXP Date</div>
-          <div style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif', fontSize: 15, fontWeight: 600 }}>{expDisplay}</div>
+          <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, opacity: 0.6, marginBottom: 2 }}>EXP Date</div>
+          <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 15, fontWeight: 700 }}>{expDisplay}</div>
         </div>
       </div>
     </div>

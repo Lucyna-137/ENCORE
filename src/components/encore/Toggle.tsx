@@ -20,21 +20,21 @@ export default function Toggle({ label, defaultChecked = true, onChange }: Toggl
   return (
     <div
       onClick={handleClick}
-      className="flex items-center justify-between cursor-pointer transition-colors duration-100 active:bg-[#E8E5DF] select-none"
+      className="flex items-center justify-between cursor-pointer transition-colors duration-100 active:bg-encore-bg-section select-none"
       style={{
         padding: '15px 20px',
-        background: '#F2F0EB',
+        background: 'var(--color-encore-bg)',
         WebkitTapHighlightColor: 'transparent',
       }}
     >
-      <span style={{ fontSize: 15, color: '#1B3C2D', pointerEvents: 'none' }}>{label}</span>
+      <span style={{ fontSize: 15, color: 'var(--color-encore-green)', pointerEvents: 'none' }}>{label}</span>
       <div
         className="relative flex-shrink-0 transition-colors duration-[250ms]"
         style={{
           width: 48,
           height: 28,
           borderRadius: 14,
-          background: checked ? '#1B3C2D' : '#D8D4CD',
+          background: checked ? 'var(--color-encore-green)' : 'var(--color-encore-border)',
           pointerEvents: 'none',
         }}
       >
@@ -43,7 +43,7 @@ export default function Toggle({ label, defaultChecked = true, onChange }: Toggl
           style={{
             width: 24,
             height: 24,
-            background: '#fff',
+            background: 'var(--color-encore-white)',
             borderRadius: '50%',
             top: 2,
             left: checked ? 22 : 2,

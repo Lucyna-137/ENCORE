@@ -29,8 +29,8 @@ export default function TooltipBubble({
       <span
         className={tailClass}
         style={{
-          background: '#1B3C2D',
-          color: '#fff',
+          background: 'var(--color-encore-green)',
+          color: 'var(--color-encore-white)',
           padding: '12px 20px',
           fontSize: 14,
           lineHeight: 1.4,

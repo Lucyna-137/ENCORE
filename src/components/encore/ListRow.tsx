@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { CaretRight } from '@phosphor-icons/react'
 
 interface ListRowProps {
   icon?: React.ReactNode
@@ -11,19 +12,17 @@ interface ListRowProps {
 }
 
 const ChevronRight = () => (
-  <svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke="#AEAAA3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M1 1l5 5-5 5"/>
-  </svg>
+  <CaretRight size={14} weight="light" color="var(--color-encore-text-muted)" />
 )
 
 export default function ListRow({ icon, label, value, showChevron = true, onClick }: ListRowProps) {
   return (
     <div
       onClick={onClick}
-      className="flex items-center cursor-pointer transition-colors duration-100 active:bg-[#E8E5DF]"
+      className="flex items-center cursor-pointer transition-colors duration-100 active:bg-encore-bg-section"
       style={{
         padding: '15px 20px',
-        background: '#F2F0EB',
+        background: 'var(--color-encore-bg)',
         gap: 14,
         WebkitTapHighlightColor: 'transparent',
       }}
@@ -31,16 +30,16 @@ export default function ListRow({ icon, label, value, showChevron = true, onClic
       {icon && (
         <div
           className="flex-shrink-0 flex items-center justify-center"
-          style={{ fontSize: 17, width: 24, textAlign: 'center', color: '#1B3C2D' }}
+          style={{ fontSize: 17, width: 24, textAlign: 'center', color: 'var(--color-encore-green)' }}
         >
           {icon}
         </div>
       )}
-      <div className="flex-1" style={{ fontSize: 15, color: '#1B3C2D' }}>
+      <div className="flex-1" style={{ fontSize: 15, color: 'var(--color-encore-green)' }}>
         {label}
       </div>
       {value && (
-        <div style={{ fontSize: 14, color: '#AEAAA3' }}>{value}</div>
+        <div style={{ fontSize: 14, color: 'var(--color-encore-text-muted)' }}>{value}</div>
       )}
       {showChevron && (
         <div className="flex-shrink-0 flex items-center">

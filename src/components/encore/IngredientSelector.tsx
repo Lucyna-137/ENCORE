@@ -37,9 +37,9 @@ export default function IngredientSelector({
   return (
     <div>
       <div style={{ padding: '20px 20px 8px' }}>
-        <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4, color: '#1B3C2D' }}>{title}</div>
+        <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4, color: 'var(--color-encore-green)' }}>{title}</div>
         {description && (
-          <div style={{ fontSize: 13, color: '#6B6B6B' }}>{description}</div>
+          <div style={{ fontSize: 13, color: 'var(--color-encore-text-sub)' }}>{description}</div>
         )}
       </div>
       <div
@@ -61,8 +61,8 @@ export default function IngredientSelector({
                   width: 80,
                   height: 80,
                   borderRadius: 20,
-                  background: isSelected ? '#F2F0EB' : '#E8E5DF',
-                  border: `2.5px solid ${isSelected ? '#1B3C2D' : 'transparent'}`,
+                  background: isSelected ? 'var(--color-encore-bg)' : 'var(--color-encore-bg-section)',
+                  border: `2.5px solid ${isSelected ? 'var(--color-encore-green)' : 'transparent'}`,
                   fontSize: 30,
                   transition: 'border-color 0.2s, background 0.2s',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
@@ -77,23 +77,23 @@ export default function IngredientSelector({
                       right: -6,
                       width: 22,
                       height: 22,
-                      background: '#1B3C2D',
+                      background: 'var(--color-encore-green)',
                       borderRadius: '50%',
-                      color: '#fff',
+                      color: 'var(--color-encore-white)',
                       fontSize: 11,
                       fontWeight: 700,
-                      fontFamily: '"Helvetica Neue", Arial, sans-serif',
+                      fontFamily: 'var(--font-google-sans), sans-serif',
                     }}
                   >
                     ✓
                   </div>
                 )}
               </div>
-              <div style={{ fontSize: 12, textAlign: 'center', color: '#1B3C2D', lineHeight: 1.3 }}>
+              <div style={{ fontSize: 12, textAlign: 'center', color: 'var(--color-encore-green)', lineHeight: 1.3 }}>
                 {item.name}
               </div>
               {item.price && (
-                <div style={{ fontSize: 11, color: '#6B6B6B' }}>{item.price}</div>
+                <div style={{ fontSize: 11, color: 'var(--color-encore-text-sub)' }}>{item.price}</div>
               )}
             </div>
           )

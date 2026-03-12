@@ -6,8 +6,8 @@ interface EmptyStateProps {
 }
 
 export default function EmptyState({
-  message = 'まだ注文がありません',
-  subMessage = 'お近くのENCOREで\nサラダを注文してみましょう',
+  message = 'まだ参加予定のライブはありません',
+  subMessage = 'お気に入りのアーティストを\nフォローしてみましょう',
 }: EmptyStateProps) {
   return (
     <div
@@ -18,11 +18,11 @@ export default function EmptyState({
         style={{
           width: 56,
           height: 20,
-          background: 'rgba(0,0,0,0.07)',
+          background: 'var(--shadow-card)',
           borderRadius: 999,
         }}
       />
-      <div style={{ fontSize: 15, color: '#6B6B6B', textAlign: 'center', lineHeight: 1.7 }}>
+      <div style={{ fontSize: 15, color: 'var(--color-encore-text-sub)', textAlign: 'center', lineHeight: 1.7 }}>
         {message}
         {subMessage && (
           <>
