@@ -140,7 +140,7 @@ export default function Calendar() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   borderRadius: '50%',
-                  fontSize: 14,
+                  fontSize: 13,
                   color: dateColor,
                   fontFamily: 'var(--font-google-sans), sans-serif',
                   fontWeight: isToday || isSelected ? 700 : 400,
@@ -268,7 +268,7 @@ export function ReservationCalendar() {
                 className={isSelected ? 'encore-cal-pop' : ''}
                 style={{
                   width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  borderRadius: '50%', fontSize: 14, color: dateColor,
+                  borderRadius: '50%', fontSize: 13, color: dateColor,
                   fontFamily: 'var(--font-google-sans), sans-serif', fontWeight: isToday || isSelected ? 700 : 400,
                   background: isSelected ? 'var(--color-encore-green)' : 'transparent',
                   border: isToday && !isSelected ? '2.5px solid var(--color-encore-green)' : 'none',
@@ -433,7 +433,7 @@ export function WeekStrip() {
         })}
       </div>
       {/* Selected date label */}
-      <div style={{ padding: '16px 20px', fontSize: 13, color: selected ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)', textAlign: 'center', borderTop: '1px solid var(--color-encore-border-light)' }}>
+      <div style={{ padding: '16px 20px', fontSize: 12, color: selected ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)', textAlign: 'center', borderTop: '1px solid var(--color-encore-border-light)' }}>
         {selectedLabel}
       </div>
     </div>

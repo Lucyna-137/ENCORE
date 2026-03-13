@@ -6,8 +6,11 @@ interface InputFieldProps {
   label: string
   placeholder?: string
   type?: string
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode']
   icon?: React.ReactNode
   defaultValue?: string
+  value?: string
+  onChange?: (value: string) => void
   maxLength?: number
   showCounter?: boolean
   style?: React.CSSProperties
@@ -18,14 +21,24 @@ export default function InputField({
   label,
   placeholder,
   type = 'text',
+  inputMode,
   icon,
   defaultValue = '',
+  value: controlledValue,
+  onChange,
   maxLength,
   showCounter = false,
   style,
   inputStyle,
 }: InputFieldProps) {
-  const [value, setValue] = useState(defaultValue)
+  const [internalValue, setInternalValue] = useState(defaultValue)
+  const isControlled = controlledValue !== undefined
+  const value = isControlled ? controlledValue : internalValue
+
+  const setValue = (v: string) => {
+    if (!isControlled) setInternalValue(v)
+    onChange?.(v)
+  }
   const [isFocused, setIsFocused] = useState(false)
 
   return (
@@ -45,7 +58,7 @@ export default function InputField({
             style={{
               fontSize: 16,
               color: 'var(--color-encore-green)',
-              opacity: isFocused ? 1 : 0.4,
+              opacity: 1,
               transition: 'opacity 0.2s',
             }}
           >
@@ -67,6 +80,7 @@ export default function InputField({
           )}
           <input
             type={type}
+            inputMode={inputMode}
             placeholder={placeholder}
             value={value}
             maxLength={maxLength}

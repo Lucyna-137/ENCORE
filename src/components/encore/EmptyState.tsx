@@ -22,7 +22,7 @@ export default function EmptyState({
           borderRadius: 999,
         }}
       />
-      <div style={{ fontSize: 15, color: 'var(--color-encore-text-sub)', textAlign: 'center', lineHeight: 1.7 }}>
+      <div style={{ fontSize: 13, color: 'var(--color-encore-text-sub)', textAlign: 'center', lineHeight: 1.7 }}>
         {message}
         {subMessage && (
           <>

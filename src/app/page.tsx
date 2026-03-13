@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import { CreditCard as CreditCardIcon, User, Tag, Clock, Question, Envelope, Cake } from '@phosphor-icons/react'
+import { CreditCard as CreditCardIcon, User, Tag, Clock, Question, Envelope, Cake, Buildings, DotsThreeOutline, Info } from '@phosphor-icons/react'
 import Button from '@/components/encore/Button'
 import NavHeader, { StatusBar } from '@/components/encore/NavHeader'
 import TabBar from '@/components/encore/TabBar'
@@ -30,7 +30,7 @@ import Calendar, { ReservationCalendar, WeekStrip } from '@/components/encore/Ca
 import LiveCard from '@/components/encore/LiveCard'
 import ArtistCard, { ArtistAvatar } from '@/components/encore/ArtistCard'
 import FAB from '@/components/encore/FAB'
-import { LiveStatusBadge, LiveTypeBadge, LotteryStatusBadge } from '@/components/encore/StatusBadge'
+import { LiveStatusBadge, LiveTypeBadge } from '@/components/encore/StatusBadge'
 import Select from '@/components/encore/Select'
 import BarChart from '@/components/encore/BarChart'
 import ColorPicker from '@/components/encore/ColorPicker'
@@ -70,9 +70,9 @@ const categories = [
     label: 'Content',
     items: [
       { id: 's25', num: '15', label: 'Live Card' },
-      { id: 's26', num: '16', label: 'Artist Card' },
-      { id: 's07', num: '17', label: 'List Rows' },
-      { id: 's09', num: '18', label: 'Product Cards' },
+      { id: 's09', num: '16', label: 'Product Cards' },
+      { id: 's26', num: '17', label: 'Artist Card' },
+      { id: 's07', num: '18', label: 'List Rows' },
       { id: 's10', num: '19', label: 'Ingredient Selector' },
       { id: 's13', num: '20', label: 'Store Card' },
       { id: 's14', num: '21', label: 'Order Summary' },
@@ -187,7 +187,6 @@ const sampleIngredients2 = [
   { id: 'encore', name: 'アンコール', emoji: '🔥', price: '＋1曲' },
   { id: 'mc', name: 'MCあり', emoji: '🎤', price: '＋MC' },
   { id: 'new', name: '新曲初披露', emoji: '✨', price: '初演' },
-  { id: 'classic', name: '定番曲', emoji: '⭐', price: '人気' },
 ]
 
 const rankNodes = [
@@ -330,16 +329,16 @@ export default function Page() {
         <SectionBlock id="s04" num="03" title="Navigation Header">
           <div className="flex flex-col gap-3" style={{ maxWidth: 375 }}>
             <Chip>Back Arrow</Chip>
-            <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+            <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden' }}>
               <StatusBar />
               <NavHeader title="RADWIMPS LIVE 2026" variant="back" />
             </div>
             <Chip>Close (Modal)</Chip>
-            <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+            <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden' }}>
               <NavHeader title="クレジット・デビットカードを登録" variant="close" />
             </div>
             <Chip>Title Only (EN uppercase)</Chip>
-            <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+            <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden' }}>
               <NavHeader title="HISTORY" variant="title-only" titleEn />
             </div>
           </div>
@@ -347,7 +346,7 @@ export default function Page() {
 
         {/* S05 Tab Bar */}
         <SectionBlock id="s05" num="04" title="Bottom Tab Bar">
-          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
+          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden', maxWidth: 375 }}>
             <TabBar />
           </div>
         </SectionBlock>
@@ -356,13 +355,13 @@ export default function Page() {
         <SectionBlock id="s06" num="05" title="Horizontal Tabs">
           <div className="flex flex-col gap-3" style={{ maxWidth: 375 }}>
             <Chip>2 tabs</Chip>
-            <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+            <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden' }}>
               <HorizontalTabs tabs={['参加済み', '参加予定']} defaultActive={1}>
                 <div style={{ padding: 24, fontSize: 12, color: 'var(--color-encore-text-muted)', textAlign: 'center' }}>コンテンツエリア</div>
               </HorizontalTabs>
             </div>
             <Chip>4 tabs (scrollable)</Chip>
-            <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+            <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden' }}>
               <HorizontalTabs tabs={['セトリ', 'グッズ', 'フォト', 'メモ']}>
                 <div style={{ padding: 24, fontSize: 12, color: 'var(--color-encore-text-muted)', textAlign: 'center' }}>コンテンツエリア</div>
               </HorizontalTabs>
@@ -375,37 +374,37 @@ export default function Page() {
           <div className="flex flex-wrap gap-5 items-start">
             <div className="flex flex-col gap-3" style={{ flex: 1, minWidth: 240 }}>
               <Chip>Primary</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: 20, boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: 20 }}>
                 <Button variant="primary">この内容で次へ</Button>
               </div>
               <Chip>Secondary / Outline</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: 20, boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: 20 }}>
                 <Button variant="secondary">変更する</Button>
               </div>
               <Chip>Ghost</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: 20, boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: 20 }}>
                 <Button variant="ghost">START AN ORDER</Button>
               </div>
             </div>
             <div className="flex flex-col gap-3" style={{ flex: 1, minWidth: 240 }}>
               <Chip>Disabled</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: 20, boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: 20 }}>
                 <Button variant="disabled" disabled>OK</Button>
               </div>
               <Chip>Medium Buttons</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '32px 20px', boxShadow: 'var(--shadow-card)', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '32px 20px', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <Button variant="sm-primary">詳細を見る</Button>
                 <Button variant="sm-ghost">チケット購入</Button>
                 <Button variant="sm-secondary">抽選に申込む</Button>
               </div>
               <Chip>Small Buttons</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '41px 20px', boxShadow: 'var(--shadow-card)', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '41px 20px', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <Button variant="xs-primary">詳細</Button>
                 <Button variant="xs-ghost">購入</Button>
                 <Button variant="xs-secondary">抽選</Button>
               </div>
               <Chip>Button Stack</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: 20, boxShadow: 'var(--shadow-card)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <Button variant="primary">チケットを購入</Button>
                 <Button variant="secondary">変更する</Button>
               </div>
@@ -418,13 +417,13 @@ export default function Page() {
           <div className="flex flex-wrap gap-5 items-start">
             <div>
               <Chip>Round</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '28px 32px', marginTop: 6, boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '28px 32px', marginTop: 6 }}>
                 <FAB variant="default" />
               </div>
             </div>
             <div>
               <Chip>Extended</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '28px 32px', marginTop: 6, boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '28px 32px', marginTop: 6 }}>
                 <FAB variant="extended" label="ライブを追加" />
               </div>
             </div>
@@ -436,7 +435,7 @@ export default function Page() {
           <div className="flex flex-wrap gap-5 items-start">
             <div style={{ flex: 1, minWidth: 280, maxWidth: 375 }}>
               <Chip>Profile Edit — with icons</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '24px 20px', boxShadow: 'var(--shadow-card)', marginTop: 6 }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '24px 20px', marginTop: 6 }}>
                 <div style={{ fontSize: 13, color: '#1A3A2D', marginBottom: 20 }}>あなたのことを教えてください</div>
                 <InputField label="ニックネーム" placeholder="ui pocket" defaultValue="ui pocket" icon={nicknameIcon} />
                 <InputField label="メールアドレス" placeholder="メールアドレス" type="email" icon={emailIcon} />
@@ -448,7 +447,7 @@ export default function Page() {
             </div>
             <div style={{ flex: 1, minWidth: 280, maxWidth: 375 }}>
               <Chip>Text with counter</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '24px 20px', boxShadow: 'var(--shadow-card)', marginTop: 6 }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '24px 20px', marginTop: 6 }}>
                 <div style={{ fontSize: 13, fontWeight: 400, marginBottom: 16, color: 'var(--color-encore-green)' }}>何という名前で呼びますか？</div>
                 <InputField label="ニックネーム" placeholder="ui pocket" defaultValue="ui pocket" icon={nicknameIcon} maxLength={20} showCounter />
               </div>
@@ -461,18 +460,21 @@ export default function Page() {
           <div className="flex flex-wrap gap-5 items-start">
             <div style={{ flex: 1, minWidth: 280, maxWidth: 375 }}>
               <Chip>ライブタイプ選択</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '20px', marginTop: 6, boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '20px', marginTop: 6 }}>
                 <Select label="ライブタイプ" options={[
                   { value: 'wanman', label: 'ワンマン' },
                   { value: 'taiban', label: '対バン' },
                   { value: 'fes', label: 'フェス' },
                   { value: 'haishin', label: '配信' },
+                  { value: 'stage', label: '舞台・公演' },
+                  { value: 'media', label: 'メディア出演' },
+                  { value: 'release', label: 'リリースイベント' },
                 ]} />
               </div>
             </div>
             <div style={{ flex: 1, minWidth: 280, maxWidth: 375 }}>
               <Chip>会場選択</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '20px', marginTop: 6, boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '20px', marginTop: 6 }}>
                 <Select label="会場" placeholder="会場を選択" options={[
                   { value: 'zepp_tokyo', label: 'Zepp Tokyo' },
                   { value: 'www', label: '渋谷WWW X' },
@@ -487,22 +489,34 @@ export default function Page() {
 
         {/* S11 Segmented Control */}
         <SectionBlock id="s11" num="10" title="Segmented Control">
-          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
-            <div style={{ padding: '16px 20px 4px', fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)' }}>このカードは何用ですか？</div>
-            <SegmentedControl options={['👤 個人用', '🏢 ビジネス用', '🚪 その他']} />
+          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden', maxWidth: 375 }}>
+            <div style={{ padding: '16px 20px 4px', fontSize: 13, fontWeight: 400, color: 'var(--color-encore-green)' }}>このカードは何用ですか？</div>
+            <SegmentedControl options={[
+              { label: '個人用', icon: <User size={14} weight="light" /> },
+              { label: 'ビジネス用', icon: <Buildings size={14} weight="light" /> },
+              { label: 'その他', icon: <DotsThreeOutline size={14} weight="light" /> },
+            ]} />
           </div>
         </SectionBlock>
 
         {/* S12 Search Bar */}
         <SectionBlock id="s12" num="11" title="Search Bar">
-          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, padding: '8px 0', boxShadow: 'var(--shadow-card)' }}>
-            <SearchBar />
+          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, maxWidth: 375, padding: '8px 0' }}>
+            <SearchBar suggestions={[
+              'RADWIMPS LIVE TOUR 2026',
+              'Vaundy ONE MAN TOUR',
+              '優里 LIVE 2026',
+              'King Gnu ARENA TOUR',
+              'あいみょん ACOUSTIC LIVE',
+              'back number TOUR',
+              'Creepy Nuts LIVE',
+            ]} />
           </div>
         </SectionBlock>
 
         {/* S20 Toggle */}
         <SectionBlock id="s20" num="12" title="Toggle Switch">
-          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
+          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden', maxWidth: 375 }}>
             <div style={{ background: 'var(--color-encore-bg-section)', padding: '10px 20px', fontSize: 13, fontWeight: 400, color: 'var(--color-encore-text-sub)' }}>通知設定</div>
             <Toggle label="プッシュ通知" defaultChecked={true} />
             <div style={{ height: 1, background: 'var(--color-encore-border-light)', margin: '0 20px' }} />
@@ -514,7 +528,7 @@ export default function Page() {
 
         {/* S22 Qty Stepper */}
         <SectionBlock id="s22" num="13" title="Qty Stepper">
-          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '24px 20px', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
+          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '24px 20px', maxWidth: 375 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               {([
                 { name: 'アリーナ席', price: '¥12,000', defaultValue: 0 },
@@ -524,7 +538,7 @@ export default function Page() {
                 <React.Fragment key={item.name}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div>
-                      <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)' }}>{item.name}</div>
+                      <div style={{ fontSize: 13, fontWeight: 400, color: 'var(--color-encore-green)' }}>{item.name}</div>
                       <div style={{ fontSize: 13, color: 'var(--color-encore-text-sub)' }}>{item.price}</div>
                     </div>
                     <QuantityStepper defaultValue={item.defaultValue} min={0} />
@@ -538,7 +552,7 @@ export default function Page() {
 
         {/* S31 Color Picker */}
         <SectionBlock id="s31" num="14" title="Color Picker">
-          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '24px 20px', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
+          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '24px 20px', maxWidth: 375 }}>
             <ColorPicker label="識別カラー" />
           </div>
         </SectionBlock>
@@ -547,60 +561,18 @@ export default function Page() {
         <SectionBlock id="s25" num="15" title="Live Card">
           <div className="flex flex-col gap-3" style={{ maxWidth: 375 }}>
             <Chip>ワンマン / 予定</Chip>
-            <LiveCard date="2026-05-15" liveType="ワンマン" liveStatus="予定" name="somei TOUR 2026 -BLISS-" artist="somei" venue="Zepp Tokyo" time="Open 18:00 / Start 19:00" />
+            <LiveCard date="2026-05-15" liveType="ワンマン" liveStatus="予定" name="somei TOUR 2026 -BLISS-" artist="somei" venue="Zepp Tokyo" time="Open 18:00 / Start 19:00" flyerImage="/liveimg/01.jpeg" flyerImagePosition="top" artistImage="/Artistimg/01.jpg" />
             <Chip>対バン / 抽選中</Chip>
-            <LiveCard date="2026-04-03" liveType="対バン" liveStatus="抽選中" name="春の対バンナイト vol.7" artist="シユイ / 優利香 / yama" venue="渋谷WWW X" />
+            <LiveCard date="2026-04-03" liveType="対バン" liveStatus="抽選中" name="春の対バンナイト vol.7" artist="シユイ / 優利香 / yama" venue="渋谷WWW X" flyerImage="/liveimg/02.jpg" artistImage="/Artistimg/02.jpg" />
             <Chip>フェス / 当選</Chip>
-            <LiveCard date="2026-08-11" liveType="フェス" liveStatus="当選" name="SUMMER SONIC 2026" artist="Ado / スーパー登山部 ほか" venue="幕張メッセ" time="Start 10:00" />
+            <LiveCard date="2026-08-11" liveType="フェス" liveStatus="当選" name="SUMMER SONIC 2026" artist="Ado / スーパー登山部 ほか" venue="幕張メッセ" time="Start 10:00" flyerImage="/liveimg/03.jpeg.webp" flyerImagePosition="top" artistImages={['/Artistimg/01.jpg', '/Artistimg/02.jpg', '/Artistimg/03.jpg', '/Artistimg/04.jpg']} />
             <Chip>配信 / 終了</Chip>
-            <LiveCard date="2026-03-01" liveType="配信" liveStatus="終了" name="yama online live 2026" artist="yama" />
-          </div>
-        </SectionBlock>
-
-        {/* S26 Artist Card */}
-        <SectionBlock id="s26" num="16" title="Artist Card">
-          <div className="flex flex-wrap gap-5 items-start">
-            <div style={{ flex: 1, minWidth: 280, maxWidth: 375 }}>
-              <Chip>Artist Card</Chip>
-              <div className="flex flex-col gap-2" style={{ marginTop: 6 }}>
-                <ArtistCard name="somei" color="var(--color-encore-green)" liveCount={8} nextLiveDate="5/15" />
-                <ArtistCard name="シユイ" color="var(--color-encore-amber)" liveCount={5} nextLiveDate="4/3" />
-                <ArtistCard name="Ado" color="#7C3AED" liveCount={2} />
-                <ArtistCard name="yama" color="#0EA5E9" liveCount={3} nextLiveDate="6/20" />
-              </div>
-            </div>
-            <div style={{ flex: 1, minWidth: 280 }}>
-              <Chip>Artist Avatar — サイズバリアント</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '24px 20px', marginTop: 6, display: 'flex', alignItems: 'center', gap: 20, boxShadow: 'var(--shadow-card)' }}>
-                <ArtistAvatar name="somei" color="var(--color-encore-green)" size="sm" />
-                <ArtistAvatar name="somei" color="var(--color-encore-green)" size="md" />
-                <ArtistAvatar name="somei" color="var(--color-encore-green)" size="lg" />
-              </div>
-            </div>
-          </div>
-        </SectionBlock>
-
-        {/* S07 List Rows */}
-        <SectionBlock id="s07" num="17" title="List Rows">
-          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
-            <div style={{ background: 'var(--color-encore-bg-section)', padding: '10px 20px', fontSize: 13, fontWeight: 400, color: 'var(--color-encore-text-sub)' }}>アカウント</div>
-            <ListRow icon={paymentIcon} label="お支払い" showChevron />
-            <div style={{ borderTop: '1px solid var(--color-encore-border-light)' }}>
-              <ListRow icon={profileIcon} label="プロフィール" showChevron />
-            </div>
-            <div style={{ borderTop: '1px solid var(--color-encore-border-light)' }}>
-              <ListRow icon={promoIcon} label="プロモーション" showChevron />
-            </div>
-            <div style={{ background: 'var(--color-encore-bg-section)', padding: '10px 20px', fontSize: 13, fontWeight: 400, color: 'var(--color-encore-text-sub)', borderTop: '1px solid var(--color-encore-border)' }}>サポート</div>
-            <ListRow icon={historyIcon} label="設定" showChevron />
-            <div style={{ borderTop: '1px solid var(--color-encore-border-light)' }}>
-              <ListRow icon={helpIcon} label="ヘルプ" showChevron />
-            </div>
+            <LiveCard date="2026-03-01" liveType="配信" liveStatus="終了" name="yama online live 2026" artist="yama" flyerImage="/liveimg/04.jpeg" flyerImagePosition="top" artistImage="/Artistimg/04.jpg" />
           </div>
         </SectionBlock>
 
         {/* S09 Product Cards */}
-        <SectionBlock id="s09" num="18" title="Product Cards">
+        <SectionBlock id="s09" num="16" title="Product Cards">
           <div className="flex flex-wrap gap-5 items-start">
             <div style={{ flex: 1, minWidth: 240, maxWidth: 320 }}>
               <Chip>Overlay Style</Chip>
@@ -630,15 +602,53 @@ export default function Page() {
           </div>
         </SectionBlock>
 
+        {/* S26 Artist Card */}
+        <SectionBlock id="s26" num="17" title="Artist Card">
+          <div className="flex flex-wrap gap-5 items-start">
+            <div style={{ flex: 1, minWidth: 280, maxWidth: 375 }}>
+              <Chip>Artist Card</Chip>
+              <div className="flex flex-col gap-2" style={{ marginTop: 6 }}>
+                <ArtistCard name="somei" color="var(--color-encore-green)" image="/Artistimg/01.jpg" liveCount={8} nextLiveDate="5/15" />
+                <ArtistCard name="シユイ" color="var(--color-encore-amber)" image="/Artistimg/02.jpg" liveCount={5} nextLiveDate="4/3" />
+                <ArtistCard name="Ado" color="#7C3AED" image="/Artistimg/03.jpg" liveCount={2} />
+                <ArtistCard name="yama" color="#0EA5E9" image="/Artistimg/04.jpg" liveCount={3} nextLiveDate="6/20" />
+              </div>
+            </div>
+            <div style={{ flex: 1, minWidth: 280 }}>
+              <Chip>Artist Avatar — サイズバリアント</Chip>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '24px 20px', marginTop: 6, display: 'flex', alignItems: 'center', gap: 20 }}>
+                <ArtistAvatar name="somei" color="var(--color-encore-green)" size="sm" />
+                <ArtistAvatar name="somei" color="var(--color-encore-green)" size="md" />
+                <ArtistAvatar name="somei" color="var(--color-encore-green)" size="lg" />
+              </div>
+            </div>
+          </div>
+        </SectionBlock>
+
+        {/* S07 List Rows */}
+        <SectionBlock id="s07" num="18" title="List Rows">
+          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden', maxWidth: 375 }}>
+            <div style={{ background: 'var(--color-encore-bg-section)', padding: '10px 20px', fontSize: 13, fontWeight: 400, color: 'var(--color-encore-text-sub)' }}>アカウント</div>
+            <ListRow icon={paymentIcon} label="お支払い" showChevron />
+            <div style={{ borderTop: '1px solid var(--color-encore-border-light)' }}>
+              <ListRow icon={profileIcon} label="プロフィール" showChevron />
+            </div>
+            <div style={{ borderTop: '1px solid var(--color-encore-border-light)' }}>
+              <ListRow icon={promoIcon} label="プロモーション" showChevron />
+            </div>
+            <div style={{ background: 'var(--color-encore-bg-section)', padding: '10px 20px', fontSize: 13, fontWeight: 400, color: 'var(--color-encore-text-sub)' }}>サポート</div>
+            <ListRow icon={historyIcon} label="設定" showChevron />
+            <div style={{ borderTop: '1px solid var(--color-encore-border-light)' }}>
+              <ListRow icon={helpIcon} label="ヘルプ" showChevron />
+            </div>
+          </div>
+        </SectionBlock>
+
         {/* S10 Ingredient Selector */}
         <SectionBlock id="s10" num="19" title="Ingredient Selector">
-          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
+          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden', maxWidth: 375 }}>
             <IngredientSelector title="ジャンル" description="ライブのジャンルを選択" ingredients={sampleIngredients1} />
             <IngredientSelector title="セトリメモ" description="印象に残った曲を記録しよう" ingredients={sampleIngredients2} />
-            <div style={{ padding: '12px 20px 16px', background: 'var(--color-encore-bg-section)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--color-encore-border)' }}>
-              <div style={{ fontSize: 14 }}>RADWIMPS LIVE 2026</div>
-              <div style={{ fontSize: 15, fontWeight: 700 }}>¥8,800</div>
-            </div>
             <div style={{ padding: '12px 20px 20px' }}>
               <Button variant="primary">この内容で次へ</Button>
             </div>
@@ -655,7 +665,7 @@ export default function Page() {
         {/* S14 Order Summary */}
         <SectionBlock id="s14" num="21" title="Order Summary">
           <div style={{ maxWidth: 375 }}>
-            <div style={{ borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+            <div style={{ borderRadius: 8, overflow: 'hidden' }}>
               <StatusBar />
               <NavHeader title="ライブ詳細" variant="back" />
               <OrderSummary />
@@ -665,7 +675,7 @@ export default function Page() {
 
         {/* S15 Empty State */}
         <SectionBlock id="s15" num="22" title="Empty State">
-          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
+          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden', maxWidth: 375 }}>
             <NavHeader title="HISTORY" titleEn variant="title-only" />
             <HorizontalTabs tabs={['参加済み', '参加予定']} defaultActive={1} />
             <EmptyState message="参加予定のライブはありません。" subMessage="気になるライブをチェックしてみよう！" />
@@ -675,13 +685,11 @@ export default function Page() {
 
         {/* S16 Badges */}
         <SectionBlock id="s16" num="23" title="Badges & Tags">
-          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: 28, display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', boxShadow: 'var(--shadow-card)' }}>
+          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: 28, display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
             <Badge variant="green">FRIEND</Badge>
-            <Badge variant="green">BEST FRIEND</Badge>
             <Badge variant="amber">NEW</Badge>
             <Badge variant="muted">受付終了</Badge>
             <Badge variant="outline">S席</Badge>
-            <Badge variant="muted">¥145</Badge>
             <Badge variant="light-green">ARCHITECT</Badge>
           </div>
         </SectionBlock>
@@ -691,20 +699,14 @@ export default function Page() {
           <div className="flex flex-col gap-5">
             <div>
               <Chip>Live Type</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '20px 24px', marginTop: 6, display: 'flex', flexWrap: 'wrap', gap: 10, boxShadow: 'var(--shadow-card)' }}>
-                {(['ワンマン', '対バン', 'フェス', '配信'] as const).map(t => <LiveTypeBadge key={t} type={t} />)}
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '20px 24px', marginTop: 6, display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                {(['ワンマン', '対バン', 'フェス', '配信', '舞台・公演', 'メディア出演', 'リリースイベント'] as const).map(t => <LiveTypeBadge key={t} type={t} />)}
               </div>
             </div>
             <div>
               <Chip>Live Status</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '20px 24px', marginTop: 6, display: 'flex', flexWrap: 'wrap', gap: 10, boxShadow: 'var(--shadow-card)' }}>
-                {(['予定', '抽選中', '当選', '落選', '終了'] as const).map(s => <LiveStatusBadge key={s} status={s} />)}
-              </div>
-            </div>
-            <div>
-              <Chip>Lottery Status</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '20px 24px', marginTop: 6, display: 'flex', flexWrap: 'wrap', gap: 10, boxShadow: 'var(--shadow-card)' }}>
-                {(['エントリー前', '受付中', '申込済み', '締切', '結果待ち'] as const).map(s => <LotteryStatusBadge key={s} status={s} />)}
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '20px 24px', marginTop: 6, display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                {(['抽選中', '当選', '落選'] as const).map(s => <LiveStatusBadge key={s} status={s} />)}
               </div>
             </div>
           </div>
@@ -714,14 +716,14 @@ export default function Page() {
         <SectionBlock id="s18" num="25" title="Bottom Sheet">
           <div style={{ maxWidth: 375 }}>
             <Button variant="sm-secondary" onClick={() => setSheetOpen(true)}>▲ ボトムシートを開く</Button>
-            <div style={{ marginTop: 16, background: 'rgba(0,0,0,0.35)', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ marginTop: 16, background: 'rgba(0,0,0,0.35)', borderRadius: 8, overflow: 'hidden' }}>
               <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>背景コンテンツ</div>
               <div style={{ background: 'var(--color-encore-bg)', borderRadius: '24px 24px 0 0', padding: '0 20px 28px' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0 24px' }}>
                   <div style={{ width: 36, height: 4, background: 'var(--color-encore-border)', borderRadius: 999 }} />
                 </div>
-                <div style={{ fontSize: 17, fontWeight: 700, textAlign: 'center', marginBottom: 4, color: 'var(--color-encore-green)' }}>前回のライブ</div>
-                <div style={{ fontSize: 13, color: 'var(--color-encore-text-sub)', textAlign: 'center', marginBottom: 24 }}>2026.3.1 | Zepp Tokyo</div>
+                <div style={{ fontSize: 15, fontWeight: 700, textAlign: 'center', marginBottom: 4, color: 'var(--color-encore-green)', fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>前回のライブ</div>
+                <div style={{ fontSize: 12, color: 'var(--color-encore-text-sub)', textAlign: 'center', marginBottom: 24, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>2026.3.1 | Zepp Tokyo</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <Button variant="primary">チケットを購入</Button>
                   <Button variant="secondary">変更する</Button>
@@ -745,9 +747,9 @@ export default function Page() {
         {/* S19 Notification */}
         <SectionBlock id="s19" num="26" title="Notification Banner">
           <div style={{ maxWidth: 375, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <span style={{ display: 'inline-block', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-encore-text-muted)', background: 'var(--color-encore-bg-section)', borderRadius: 999, padding: '3px 10px' }}>Dismissible</span>
-            <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
-              <Notification key={notifKey} message="ログインが完了しました。さぁ、ライブ記録をはじめましょう！" icon="ℹ️" />
+            <span style={{ display: 'inline-block', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-encore-text-muted)', padding: '3px 0' }}>Dismissible</span>
+            <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden' }}>
+              <Notification key={notifKey} message="ログインが完了しました。さぁ、ライブ記録をはじめましょう！" icon={<Info size={18} weight="light" color="var(--color-encore-white)" />} />
               <div style={{ padding: '16px 20px', fontSize: 13, color: 'var(--color-encore-text-muted)' }}>ページコンテンツ</div>
             </div>
             <div style={{ alignSelf: 'flex-start' }}>
@@ -758,7 +760,7 @@ export default function Page() {
 
         {/* S23 Tooltip Bubble */}
         <SectionBlock id="s23" num="27" title="Tooltip / Callout Bubble">
-          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '32px 20px', maxWidth: 375, display: 'flex', flexDirection: 'column', gap: 20, boxShadow: 'var(--shadow-card)' }}>
+          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '32px 20px', maxWidth: 375, display: 'flex', flexDirection: 'column', gap: 20 }}>
             <TooltipBubble variant="tail-top">あと2曲セトリを追加できます</TooltipBubble>
             <TooltipBubble variant="chat-left">次のライブはいつですか？</TooltipBubble>
             <TooltipBubble variant="chat-right">いつもありがとうございます！</TooltipBubble>
@@ -767,10 +769,10 @@ export default function Page() {
 
         {/* S17 Rank Progress */}
         <SectionBlock id="s17" num="28" title="Rank Progress">
-          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
+          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden', maxWidth: 375 }}>
             <div style={{ textAlign: 'center', padding: '24px 20px 8px' }}>
               <div style={{ fontSize: 12, color: 'var(--color-encore-text-sub)' }}>あなたのランクは</div>
-              <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 30, fontWeight: 700, color: 'var(--color-encore-green)', letterSpacing: '0.04em', margin: '6px 0' }}>FRIEND</div>
+              <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 32, fontWeight: 700, color: 'var(--color-encore-green)', margin: '6px 0' }}>FRIEND</div>
               <div style={{ fontSize: 12, color: 'var(--color-encore-text-sub)' }}>次のランクまであと2回！</div>
             </div>
             <RankProgress nodes={rankNodes} />
@@ -779,7 +781,7 @@ export default function Page() {
 
         {/* S21 Credit Card */}
         <SectionBlock id="s21" num="29" title="Credit Card UI">
-          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', maxWidth: 375, boxShadow: 'var(--shadow-card)' }}>
+          <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden', maxWidth: 375 }}>
             <NavHeader title="カードを登録" variant="close" />
             <div style={{ padding: 20 }}>
               <CreditCard
@@ -787,60 +789,46 @@ export default function Page() {
                 expDisplay={ccMonth && ccYear ? `${ccMonth}/${ccYear}` : '月/年'}
               />
             </div>
-            <div style={{ background: 'var(--color-encore-bg-section)', padding: '14px 20px', fontSize: 14, color: 'var(--color-encore-text-sub)' }}>
+            <div style={{ background: 'var(--color-encore-bg-section)', padding: '14px 20px', fontSize: 13, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', color: 'var(--color-encore-text-sub)' }}>
               クレジット・デビットカードの情報を入力してください
             </div>
             <div style={{ padding: 20 }}>
-              <div style={{ fontSize: 12, color: 'var(--color-encore-text-muted)', marginBottom: 10 }}>利用可能なカードブランド</div>
+              <div style={{ fontSize: 12, color: 'var(--color-encore-text-muted)', marginBottom: 10, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>利用可能なカードブランド</div>
               <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
                 {([{ label: 'AMEX', color: 'var(--color-encore-text-sub)' }, { label: 'DINERS', color: 'var(--color-encore-text-sub)' }, { label: 'DISCOVER', color: 'var(--color-encore-text-sub)' }, { label: 'JCB', color: '#0e4c96' }, { label: 'MC', color: '#eb001b' }, { label: 'VISA', color: '#1a1f71' }] as {label: string, color: string}[]).map(({ label, color }) => (
                   <div key={label} style={{ border: '1px solid var(--color-encore-border-light)', borderRadius: 6, padding: '4px 8px', fontSize: 10, fontWeight: 700, fontFamily: 'var(--font-google-sans), sans-serif', color }}>{label}</div>
                 ))}
               </div>
               {/* Card number input */}
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, paddingTop: 4, marginBottom: 24, borderBottom: '1.5px solid var(--color-encore-border-light)' }}>
+              <InputField
+                label="クレジットカード番号"
+                placeholder="0000 0000 0000 0000"
+                inputMode="numeric"
+                value={ccNumber}
+                maxLength={19}
+                onChange={(v) => setCcNumber(v.replace(/\D/g, ''))}
+              />
+              {/* MM / YY inputs */}
+              <div style={{ display: 'flex', gap: 16 }}>
                 <div style={{ flex: 1 }}>
-                  <span style={{ fontSize: 11, color: 'var(--color-encore-text-muted)', marginBottom: 2, display: 'block' }}>クレジットカード番号</span>
-                  <input
-                    type="text"
+                  <InputField
+                    label="月"
+                    placeholder="MM"
                     inputMode="numeric"
-                    placeholder="0000 0000 0000 0000"
-                    value={ccNumber}
-                    maxLength={19}
-                    onChange={(e) => setCcNumber(e.target.value.replace(/\D/g, ''))}
-                    style={{ width: '100%', background: 'transparent', border: 'none', padding: '4px 0 6px', fontSize: 15, fontFamily: 'var(--font-google-sans), sans-serif', color: 'var(--color-encore-green)', outline: 'none', lineHeight: 1.4 }}
+                    value={ccMonth}
+                    maxLength={2}
+                    onChange={(v) => setCcMonth(v.replace(/\D/g, ''))}
                   />
                 </div>
-              </div>
-              {/* MM / YY inputs */}
-              <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', gap: 12, paddingTop: 4, borderBottom: '1.5px solid var(--color-encore-border-light)' }}>
-                  <div style={{ flex: 1 }}>
-                    <span style={{ fontSize: 11, color: 'var(--color-encore-text-muted)', marginBottom: 2, display: 'block' }}>月</span>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="MM"
-                      value={ccMonth}
-                      maxLength={2}
-                      onChange={(e) => setCcMonth(e.target.value.replace(/\D/g, ''))}
-                      style={{ width: '100%', background: 'transparent', border: 'none', padding: '4px 0 6px', fontSize: 15, fontFamily: 'var(--font-google-sans), sans-serif', color: 'var(--color-encore-green)', outline: 'none', lineHeight: 1.4 }}
-                    />
-                  </div>
-                </div>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', gap: 12, paddingTop: 4, borderBottom: '1.5px solid var(--color-encore-border-light)' }}>
-                  <div style={{ flex: 1 }}>
-                    <span style={{ fontSize: 11, color: 'var(--color-encore-text-muted)', marginBottom: 2, display: 'block' }}>年</span>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="YY"
-                      value={ccYear}
-                      maxLength={2}
-                      onChange={(e) => setCcYear(e.target.value.replace(/\D/g, ''))}
-                      style={{ width: '100%', background: 'transparent', border: 'none', padding: '4px 0 6px', fontSize: 15, fontFamily: 'var(--font-google-sans), sans-serif', color: 'var(--color-encore-green)', outline: 'none', lineHeight: 1.4 }}
-                    />
-                  </div>
+                <div style={{ flex: 1 }}>
+                  <InputField
+                    label="年"
+                    placeholder="YY"
+                    inputMode="numeric"
+                    value={ccYear}
+                    maxLength={2}
+                    onChange={(v) => setCcYear(v.replace(/\D/g, ''))}
+                  />
                 </div>
               </div>
               <Button variant="primary">登録する</Button>
@@ -853,19 +841,19 @@ export default function Page() {
           <div className="flex flex-wrap gap-5 items-start">
             <div style={{ flex: 1, minWidth: 320, maxWidth: 375 }}>
               <Chip>Month Calendar — ライブ記録つき</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', marginTop: 6, boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden', marginTop: 6 }}>
                 <Calendar />
               </div>
             </div>
             <div style={{ flex: 1, minWidth: 320, maxWidth: 375 }}>
               <Chip>Reservation Picker — 時間スロットつき</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', marginTop: 6, boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden', marginTop: 6 }}>
                 <ReservationCalendar />
               </div>
             </div>
             <div style={{ flex: 1, minWidth: 320, maxWidth: 375 }}>
               <Chip>Week Strip — コンパクト横スクロール</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, overflow: 'hidden', marginTop: 6, boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden', marginTop: 6 }}>
                 <WeekStrip />
               </div>
             </div>
@@ -877,7 +865,7 @@ export default function Page() {
           <div className="flex flex-wrap gap-5 items-start">
             <div style={{ flex: 1, minWidth: 280 }}>
               <Chip>Horizontal — アーティスト別</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '24px 20px', marginTop: 6, boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '24px 20px', marginTop: 6 }}>
                 <BarChart orientation="horizontal" unit="回" data={[
                   { label: 'somei', value: 8, color: 'var(--color-encore-green)' },
                   { label: 'シユイ', value: 5, color: 'var(--color-encore-amber)' },
@@ -888,7 +876,7 @@ export default function Page() {
             </div>
             <div style={{ flex: 1, minWidth: 280 }}>
               <Chip>Vertical — 月別推移</Chip>
-              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 16, padding: '24px 20px', marginTop: 6, boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '24px 20px', marginTop: 6 }}>
                 <BarChart orientation="vertical" data={[
                   { label: '1月', value: 0 },
                   { label: '2月', value: 2 },

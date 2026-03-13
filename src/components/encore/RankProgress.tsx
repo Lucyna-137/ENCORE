@@ -16,12 +16,12 @@ interface RankProgressProps {
 export default function RankProgress({ nodes }: RankProgressProps) {
   return (
     <div>
-      <div className="flex items-center" style={{ padding: 20 }}>
+      <div className="flex items-start" style={{ padding: 20 }}>
         {nodes.map((node, i) => (
           <React.Fragment key={i}>
-            <div className="flex flex-col items-center" style={{ gap: 6, minWidth: 60 }}>
+            <div className="flex flex-col items-center" style={{ gap: 6, width: 64, flexShrink: 0 }}>
               <div
-                className="flex items-center justify-center relative"
+                className="flex items-center justify-center"
                 style={{
                   width: 44,
                   height: 44,
@@ -31,6 +31,7 @@ export default function RankProgress({ nodes }: RankProgressProps) {
                   fontSize: node.active ? 16 : 13,
                   transition: 'background 0.3s, border-color 0.3s',
                   color: node.active ? 'var(--color-encore-white)' : 'var(--color-encore-text-muted)',
+                  flexShrink: 0,
                 }}
               >
                 {node.active ? (node.emoji ?? node.num) : '?'}
@@ -49,12 +50,12 @@ export default function RankProgress({ nodes }: RankProgressProps) {
               <span
                 style={{
                   fontFamily: 'var(--font-google-sans), sans-serif',
-                  fontSize: 9,
-                  fontWeight: 700,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase' as const,
+                  fontSize: 11,
+                  fontWeight: 400,
                   color: node.active ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)',
                   textAlign: 'center',
+                  lineHeight: 1.1,
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {node.name}
@@ -66,8 +67,7 @@ export default function RankProgress({ nodes }: RankProgressProps) {
                   flex: 1,
                   height: 2,
                   background: node.active ? 'var(--color-encore-green)' : 'var(--color-encore-border)',
-                  minWidth: 16,
-                  marginBottom: 44,
+                  marginTop: 21,
                   transition: 'background 0.3s',
                 }}
               />

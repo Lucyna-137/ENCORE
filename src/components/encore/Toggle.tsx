@@ -27,27 +27,27 @@ export default function Toggle({ label, defaultChecked = true, onChange }: Toggl
         WebkitTapHighlightColor: 'transparent',
       }}
     >
-      <span style={{ fontSize: 15, color: 'var(--color-encore-green)', pointerEvents: 'none' }}>{label}</span>
+      <span style={{ fontSize: 13, color: 'var(--color-encore-green)', pointerEvents: 'none' }}>{label}</span>
       <div
         className="relative flex-shrink-0 transition-colors duration-[250ms]"
         style={{
-          width: 48,
+          width: 60,
           height: 28,
-          borderRadius: 14,
-          background: checked ? 'var(--color-encore-green)' : 'var(--color-encore-border)',
+          borderRadius: 999,
+          background: checked ? 'var(--color-encore-green)' : '#D1D1D6',
           pointerEvents: 'none',
         }}
       >
         <div
           className="absolute encore-toggle-knob"
           style={{
-            width: 24,
+            width: 33,
             height: 24,
             background: 'var(--color-encore-white)',
-            borderRadius: '50%',
+            borderRadius: 999,
             top: 2,
-            left: checked ? 22 : 2,
-            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+            left: checked ? 25 : 2,
+            boxShadow: '0 2px 6px rgba(0,0,0,0.18), 0 0.5px 2px rgba(0,0,0,0.08)',
           }}
         />
       </div>

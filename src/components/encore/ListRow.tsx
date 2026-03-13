@@ -12,7 +12,7 @@ interface ListRowProps {
 }
 
 const ChevronRight = () => (
-  <CaretRight size={14} weight="light" color="var(--color-encore-text-muted)" />
+  <CaretRight size={14} weight="light" color="var(--color-encore-green)" />
 )
 
 export default function ListRow({ icon, label, value, showChevron = true, onClick }: ListRowProps) {
@@ -35,11 +35,11 @@ export default function ListRow({ icon, label, value, showChevron = true, onClic
           {icon}
         </div>
       )}
-      <div className="flex-1" style={{ fontSize: 15, color: 'var(--color-encore-green)' }}>
+      <div className="flex-1" style={{ fontSize: 13, color: 'var(--color-encore-green)' }}>
         {label}
       </div>
       {value && (
-        <div style={{ fontSize: 14, color: 'var(--color-encore-text-muted)' }}>{value}</div>
+        <div style={{ fontSize: 13, color: 'var(--color-encore-text-muted)' }}>{value}</div>
       )}
       {showChevron && (
         <div className="flex-shrink-0 flex items-center">

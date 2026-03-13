@@ -1,14 +1,15 @@
 'use client'
 
 import React, { useState } from 'react'
+import { Info, X } from '@phosphor-icons/react'
 
 interface NotificationProps {
   message: string
-  icon?: string
+  icon?: React.ReactNode
   onDismiss?: () => void
 }
 
-export default function Notification({ message, icon = '🌿', onDismiss }: NotificationProps) {
+export default function Notification({ message, icon = <Info size={18} weight="light" color="var(--color-encore-white)" />, onDismiss }: NotificationProps) {
   const [dismissed, setDismissed] = useState(false)
 
   const handleDismiss = () => {
@@ -27,22 +28,23 @@ export default function Notification({ message, icon = '🌿', onDismiss }: Noti
         opacity: dismissed ? 0 : 1,
       }}
     >
-      <div style={{ fontSize: 18, flexShrink: 0, marginTop: 1 }}>{icon}</div>
-      <div className="flex-1" style={{ lineHeight: 1.5, fontSize: 14 }}>{message}</div>
+      <div style={{ flexShrink: 0, marginTop: 1 }}>{icon}</div>
+      <div className="flex-1" style={{ lineHeight: 1.5, fontSize: 13, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>{message}</div>
       <button
         onClick={handleDismiss}
         className="flex-shrink-0 transition-opacity duration-150 hover:opacity-100"
         style={{
-          fontSize: 15,
-          opacity: 0.65,
+          opacity: 1,
           cursor: 'pointer',
           background: 'none',
           border: 'none',
           color: 'var(--color-encore-white)',
           padding: '2px 4px',
+          display: 'flex',
+          alignItems: 'center',
         }}
       >
-        ×
+        <X size={14} weight="light" color="var(--color-encore-white)" />
       </button>
     </div>
   )

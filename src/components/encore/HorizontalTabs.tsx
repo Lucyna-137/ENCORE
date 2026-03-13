@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 
 interface HorizontalTabsProps {
-  tabs: string[]
+  tabs: (string | React.ReactNode)[]
   defaultActive?: number
   onChange?: (index: number) => void
   children?: React.ReactNode

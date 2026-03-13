@@ -8,9 +8,8 @@ export default function Typography() {
     <div
       style={{
         background: 'var(--color-encore-bg)',
-        borderRadius: 16,
+        borderRadius: 8,
         padding: 28,
-        boxShadow: 'var(--shadow-card)',
       }}
     >
       <div className="flex flex-col" style={{ gap: 20 }}>
@@ -40,25 +39,41 @@ export default function Typography() {
         </div>
         <div className="flex items-start" style={{ gap: 20 }}>
           <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>
-            Section<br/>13px 700 EN caps
+            Section<br/>15px 700 JA
           </div>
-          <div style={{ fontFamily: EN, fontSize: 13, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--color-encore-green)' }}>
-            HISTORY
+          <div style={{ fontFamily: JA, fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)' }}>
+            ライブ履歴
           </div>
         </div>
         <div className="flex items-start" style={{ gap: 20 }}>
           <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>
-            Body<br/>15px Regular
+            Section SM<br/>14px 700 JA
           </div>
-          <div style={{ fontFamily: JA, fontSize: 15, color: 'var(--color-encore-green)', lineHeight: 1.6 }}>
+          <div style={{ fontFamily: JA, fontSize: 14, fontWeight: 700, color: 'var(--color-encore-green)' }}>
+            ライブ履歴
+          </div>
+        </div>
+        <div className="flex items-start" style={{ gap: 20 }}>
+          <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>
+            Body<br/>13px Regular
+          </div>
+          <div style={{ fontFamily: JA, fontSize: 13, color: 'var(--color-encore-green)', lineHeight: 1.6 }}>
             Vaundy LIVE TOUR 2026
           </div>
         </div>
         <div className="flex items-start" style={{ gap: 20 }}>
           <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>
-            Sub<br/>13px Regular
+            Body SM<br/>12px Regular
           </div>
-          <div style={{ fontFamily: JA, fontSize: 13, color: 'rgba(27,60,45,0.55)', lineHeight: 1.55 }}>
+          <div style={{ fontFamily: JA, fontSize: 12, color: 'var(--color-encore-green)', lineHeight: 1.6 }}>
+            Vaundy LIVE TOUR 2026
+          </div>
+        </div>
+        <div className="flex items-start" style={{ gap: 20 }}>
+          <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>
+            Sub<br/>12px Regular
+          </div>
+          <div style={{ fontFamily: JA, fontSize: 12, color: 'rgba(27,60,45,0.55)', lineHeight: 1.55 }}>
             Zepp Haneda・2026年4月12日(土)
           </div>
         </div>
@@ -72,11 +87,19 @@ export default function Typography() {
         </div>
         <div className="flex items-start" style={{ gap: 20 }}>
           <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>
-            Link<br/>14px Amber
+            Link<br/>13px Amber
           </div>
-          <button style={{ color: 'var(--color-encore-amber)', fontSize: 14, cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 2, background: 'none', border: 'none', fontFamily: JA }}>
+          <button style={{ color: 'var(--color-encore-amber)', fontSize: 13, cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 2, background: 'none', border: 'none', fontFamily: JA }}>
             これスキ！
           </button>
+        </div>
+        <div className="flex items-start" style={{ gap: 20 }}>
+          <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>
+            Caption<br/>11px
+          </div>
+          <div style={{ fontFamily: EN, fontSize: 11, color: 'var(--color-encore-green)' }}>
+            Zepp Haneda・Open 18:00
+          </div>
         </div>
         <div className="flex items-start" style={{ gap: 20 }}>
           <div style={{ width: 130, fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-text-muted)', flexShrink: 0, lineHeight: 1.5 }}>

@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { section } from './typographyStyles'
 import { ArrowLeft, X } from '@phosphor-icons/react'
 
 interface NavHeaderProps {
@@ -87,12 +88,7 @@ export default function NavHeader({
           style={
             titleEn
               ? {
-                  fontFamily: 'var(--font-google-sans), sans-serif',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  letterSpacing: '0.14em',
-                  textTransform: 'uppercase' as const,
-                  color: 'var(--color-encore-green)',
+                  ...section,
                   paddingLeft: variant !== 'title-only' ? 52 : 0,
                   paddingRight: variant !== 'title-only' ? 52 : 0,
                 }

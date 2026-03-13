@@ -40,7 +40,7 @@ export default function Select({ label, options, value, placeholder = '選択し
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       {label && (
-        <div style={{ fontSize: 11, color: 'var(--color-encore-text-muted)', marginBottom: 6, fontFamily: 'var(--font-google-sans), sans-serif', fontWeight: 700, letterSpacing: '0.04em' }}>
+        <div style={{ fontSize: 12, color: 'var(--color-encore-green)', marginBottom: 6, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontWeight: 400 }}>
           {label}
         </div>
       )}
@@ -54,12 +54,12 @@ export default function Select({ label, options, value, placeholder = '選択し
           justifyContent: 'space-between',
           padding: '0 14px',
           background: 'var(--color-encore-bg-section)',
-          borderRadius: 12,
-          border: open ? '1.5px solid var(--color-encore-green)' : '1.5px solid transparent',
+          borderRadius: 3,
+          border: 'none',
           cursor: 'pointer',
           fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-          fontSize: 14,
-          color: selected ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)',
+          fontSize: selected ? 13 : 12,
+          color: selected ? 'var(--color-encore-green)' : 'var(--color-encore-text-sub)',
           transition: 'border-color 0.15s',
           WebkitTapHighlightColor: 'transparent',
         }}
@@ -67,7 +67,7 @@ export default function Select({ label, options, value, placeholder = '選択し
         <span style={{ flex: 1, textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {selected ? selected.label : placeholder}
         </span>
-        <span style={{ color: 'var(--color-encore-text-muted)', marginLeft: 8, flexShrink: 0, transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)', display: 'flex' }}>
+        <span style={{ color: 'var(--color-encore-green)', marginLeft: 8, flexShrink: 0, transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)', display: 'flex' }}>
           <CaretDown size={16} weight="light" />
         </span>
       </button>
@@ -79,8 +79,8 @@ export default function Select({ label, options, value, placeholder = '選択し
           left: 0,
           right: 0,
           background: 'var(--color-encore-bg)',
-          borderRadius: 12,
-          boxShadow: '0 8px 32px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,0,0,0.06)',
+          borderRadius: 3,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.14)',
           overflow: 'hidden',
           zIndex: 50,
         }}>
@@ -96,10 +96,9 @@ export default function Select({ label, options, value, placeholder = '選択し
                 padding: '12px 14px',
                 background: current === opt.value ? 'var(--color-encore-bg-section)' : 'transparent',
                 border: 'none',
-                borderTop: i > 0 ? '1px solid var(--color-encore-border-light)' : 'none',
                 cursor: 'pointer',
                 fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                fontSize: 14,
+                fontSize: 12,
                 color: current === opt.value ? 'var(--color-encore-green)' : 'var(--color-encore-text-sub)',
                 fontWeight: current === opt.value ? 700 : 400,
                 textAlign: 'left',

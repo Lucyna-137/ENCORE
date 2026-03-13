@@ -305,7 +305,7 @@ export default function ColorPalette() {
                 onKeyDown={e => e.key === 'Enter' && openPopover(def.key, e.currentTarget as HTMLElement)}
                 style={{
                   width: 88, height: 60,
-                  borderRadius: 12,
+                  borderRadius: 8,
                   background: getSwatchBg(def, tv),
                   boxShadow: isActive
                     ? 'inset 0 0 0 2.5px var(--color-encore-green)'
@@ -545,7 +545,7 @@ export default function ColorPalette() {
             zIndex: 9999,
             width: 244,
             background: '#2C2C2C',
-            borderRadius: 12,
+            borderRadius: 8,
             boxShadow: '0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08)',
             overflow: 'hidden',
           }}

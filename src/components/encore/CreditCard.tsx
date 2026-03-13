@@ -26,7 +26,7 @@ export default function CreditCard({ cardNumber = '', expDisplay = '月/年' }: 
       {/* Top row */}
       <div className="relative flex justify-between items-start">
         <div>
-          <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, opacity: 0.6, marginBottom: 5 }}>Card Number</div>
+          <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 11, opacity: 0.6, marginBottom: 5 }}>Card Number</div>
           <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 20, fontWeight: 700, letterSpacing: '0.08em' }}>{formatted}</div>
         </div>
         <div className="flex">
@@ -37,7 +37,7 @@ export default function CreditCard({ cardNumber = '', expDisplay = '月/年' }: 
       {/* Bottom */}
       <div className="relative flex justify-end items-end">
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, opacity: 0.6, marginBottom: 2 }}>EXP Date</div>
+          <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 11, opacity: 0.6, marginBottom: 2 }}>EXP Date</div>
           <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 15, fontWeight: 700 }}>{expDisplay}</div>
         </div>
       </div>

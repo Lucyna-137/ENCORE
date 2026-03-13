@@ -2,6 +2,14 @@
 
 import React, { useState } from 'react'
 
+const squirclePath = (s: number) => {
+  const r = s / 2
+  const k = r * 0.72
+  return `M ${s} ${r} C ${s} ${r + k} ${r + k} ${s} ${r} ${s} C ${r - k} ${s} 0 ${r + k} 0 ${r} C 0 ${r - k} ${r - k} 0 ${r} 0 C ${r + k} 0 ${s} ${r - k} ${s} ${r} Z`
+}
+
+const JA = 'var(--font-google-sans), var(--font-noto-jp), sans-serif'
+
 interface Ingredient {
   id: string
   name: string
@@ -37,14 +45,14 @@ export default function IngredientSelector({
   return (
     <div>
       <div style={{ padding: '20px 20px 8px' }}>
-        <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4, color: 'var(--color-encore-green)' }}>{title}</div>
+        <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4, color: 'var(--color-encore-green)', fontFamily: JA }}>{title}</div>
         {description && (
-          <div style={{ fontSize: 13, color: 'var(--color-encore-text-sub)' }}>{description}</div>
+          <div style={{ fontSize: 13, color: 'var(--color-encore-text-sub)', fontFamily: JA }}>{description}</div>
         )}
       </div>
       <div
-        className="flex flex-wrap"
-        style={{ gap: 14, padding: '16px 20px 16px' }}
+        className="flex flex-wrap justify-center"
+        style={{ gap: 30, padding: '16px 20px 16px' }}
       >
         {ingredients.map((item) => {
           const isSelected = selected.has(item.id)
@@ -55,32 +63,40 @@ export default function IngredientSelector({
               className="flex flex-col items-center cursor-pointer select-none transition-transform duration-150 active:scale-[0.92]"
               style={{ gap: 8, width: 80, WebkitTapHighlightColor: 'transparent' }}
             >
-              <div
-                className="relative flex items-center justify-center"
-                style={{
-                  width: 80,
-                  height: 80,
-                  borderRadius: 20,
-                  background: isSelected ? 'var(--color-encore-bg)' : 'var(--color-encore-bg-section)',
-                  border: `2.5px solid ${isSelected ? 'var(--color-encore-green)' : 'transparent'}`,
-                  fontSize: 30,
-                  transition: 'border-color 0.2s, background 0.2s',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                }}
-              >
-                {item.emoji}
+              {/* squircle タイル：選択時は緑ラッパー + 白インナー */}
+              <div className="relative" style={{ width: 84, height: 84, flexShrink: 0 }}>
+                {/* 選択時の緑枠ラッパー */}
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  clipPath: `path("${squirclePath(84)}")`,
+                  background: isSelected ? 'var(--color-encore-green)' : 'transparent',
+                  transition: 'background 0.2s',
+                }} />
+                {/* インナータイル（2px border = inset 2px） */}
+                <div
+                  className="absolute flex items-center justify-center"
+                  style={{
+                    inset: isSelected ? 2 : 0,
+                    clipPath: `path("${squirclePath(isSelected ? 80 : 84)}")`,
+                    background: 'var(--color-encore-bg-section)',
+                    fontSize: 30,
+                    transition: 'inset 0.2s, background 0.2s',
+                  }}
+                >
+                  {item.emoji}
+                </div>
                 {isSelected && (
                   <div
                     className="encore-badge-pop absolute flex items-center justify-center"
                     style={{
-                      top: -6,
-                      right: -6,
-                      width: 22,
-                      height: 22,
+                      top: -2,
+                      right: -2,
+                      width: 20,
+                      height: 20,
                       background: 'var(--color-encore-green)',
                       borderRadius: '50%',
                       color: 'var(--color-encore-white)',
-                      fontSize: 11,
+                      fontSize: 10,
                       fontWeight: 700,
                       fontFamily: 'var(--font-google-sans), sans-serif',
                     }}
@@ -89,11 +105,11 @@ export default function IngredientSelector({
                   </div>
                 )}
               </div>
-              <div style={{ fontSize: 12, textAlign: 'center', color: 'var(--color-encore-green)', lineHeight: 1.3 }}>
+              <div style={{ fontSize: 12, textAlign: 'center', color: 'var(--color-encore-green)', lineHeight: 1.3, fontFamily: JA }}>
                 {item.name}
               </div>
               {item.price && (
-                <div style={{ fontSize: 11, color: 'var(--color-encore-text-sub)' }}>{item.price}</div>
+                <div style={{ fontSize: 11, color: 'var(--color-encore-text-sub)', fontFamily: JA }}>{item.price}</div>
               )}
             </div>
           )

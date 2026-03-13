@@ -2,7 +2,7 @@
 
 ## プロジェクト概要
 - Next.js + TypeScript + Tailwind CSS v4 のコンポーネントショーケース（32コンポーネント）
-- **プロジェクト場所**: `/Users/alfa/Desktop/ENCORE`
+- **プロジェクト場所**: `/Users/alfa/Desktop/encore-ui`
 - ライブ管理アプリ向けのデザインシステム
 - ブランド名「ENCORE」は仮名（確定後に全置換）
 - 最終目的: SwiftUI/Xcode での再実装リファレンス
@@ -12,6 +12,7 @@
 - 他デバイスから見る: `npm run dev -- --hostname 0.0.0.0`
 - ビルド確認: `npm run build`
 - 型チェック: `npx tsc --noEmit`
+- リント: `npm run lint`
 - 開発サーバー起動前は必ず `npm install` を実行
 
 ## 技術スタック
@@ -90,6 +91,57 @@ src/
 | `.encore-tooltip-tail-*` | ツールチップの矢印 |
 | `.encore-week-strip` | 週スクロール |
 | `.encore-sidebar` | サイドバー |
+
+## 画面確認
+- スクリーンショットは「確認して」と指示されたときのみ `webdev-mcp > takeScreenshot` を使う
+
+## Typographyルール（全コンポーネント共通）
+| スタイル名 | サイズ | ウェイト | フォント | 用途 |
+|-----------|--------|---------|---------|------|
+| Display | 32px | 700 | EN | ランク名など大見出し |
+| Title | 24px | 700 | EN | セクション大見出し |
+| Heading | 18px | 700 | JA | モーダルタイトルなど |
+| Section | 15px | 700 | JA | カード・セクション見出し |
+| Section SM | 14px | 700 | JA | サブ見出し |
+| Body | 13px | 400 | JA | 本文 |
+| Body SM / Sub | 12px | 400 | JA | 補足テキスト |
+| Price | 15px | 700 | EN | 金額表示 |
+| Link | 13px | 400 | JA | amber色リンク |
+| Caption | 11px | 400 | EN | 注釈・ラベル |
+| Caption Muted | 11px | 400 | EN | 薄い注釈 |
+
+- EN = `var(--font-google-sans), sans-serif`
+- JA = `var(--font-google-sans), var(--font-noto-jp), sans-serif`
+- fontWeightは700と400のみ
+- `--color-encore-text-sub` は rgba(26,58,45,0.55) で薄め。普通のテキストは `--color-encore-green` を使う
+
+## デザインシステム確定事項
+- **角丸**: 全コンポーネント背景は `borderRadius: 8`（カード・モーダル等）
+- **ドロップシャドウ**: コンポーネント背景への `boxShadow: var(--shadow-card)` は使用しない
+- **シェブロン色**: `CaretRight` / `CaretDown` は全て `var(--color-encore-green)`（Primary）
+- **スクワークル形状**: k=0.72（ArtistCard/OrderSummary等）、k=0.65（ColorPicker/LiveCard）
+- **アイコン**: Phosphor Icons（`@phosphor-icons/react`）、`weight="light"` 統一
+
+## Live Card仕様
+- `liveType`: ワンマン / 対バン / フェス / 配信 / 舞台・公演 / メディア出演 / リリースイベント
+- `liveStatus`: 予定 / 抽選中 / 当選 / 落選 / 終了
+  - 表示ラベル: 抽選中→チケット抽選中、当選→チケット当選、落選→チケット落選
+  - 終了のバッジはカード内で非表示
+- バッジ順: Live Status → Live Type（左から）
+- 複数アーティスト: `artistImages: string[]` で重なりアバター表示（28px, -8px overlap）
+
+## 静的アセット
+- ライブフライヤー: `/public/liveimg/` (01.jpeg, 02.jpg, 03.jpeg.webp, 04.jpeg)
+- アーティスト画像: `/public/Artistimg/` (01〜04.jpg)
+- 会場画像: `/public/Houseimg/unnamed.webp`
+
+## InputField — controlledモード対応
+- `value` + `onChange` propsでcontrolled inputとして使用可能（2026-03-13追加）
+- フォーカスアニメーション（グリーンアンダーライン）はcontrolledでも動作する
+
+## HorizontalTabs — ReactNode対応
+- `tabs` プロップは `(string | React.ReactNode)[]` に拡張済み
+- Phosphorアイコン入りタブラベルを使用可能
 
 ## デモコンテンツ方針
 - 全てライブ管理アプリのコンテキスト（食べ物・サラダ系テキストは廃止済み）
