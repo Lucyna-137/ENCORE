@@ -116,12 +116,58 @@
 - props: `style` → mb-6 wrapper、`inputStyle` → input 要素
 
 ### StatusBadge
-- `LiveStatusBadge`: 予定 / 抽選中 / 当選 / 落選 / 終了
-- `LiveTypeBadge`: ワンマン / 対バン / フェス / 配信（角丸 `999px`）
-- `LotteryStatusBadge`: エントリー前 / 受付中 / 申込済み / 締切 / 結果待ち
+- `LiveStatusBadge`: 予定 / 抽選中（→チケット抽選中） / 当選（→チケット当選） / 落選（→チケット落選） / 終了
+- `LiveTypeBadge`: ワンマン / 対バン / フェス / 配信 / 舞台・公演 / メディア出演 / リリースイベント
+- LotteryStatus: 廃止済み
 
-### Typography
-- Body: `#1A3A2D` 100%、Sub: `rgba(26,58,45,0.55)`、Caption: `rgba(26,58,45,0.35)`
+### LiveCard
+- LiveType 7種、LiveStatus 5種（カード内は終了バッジ非表示）
+- バッジ順: Status → Type（左から）
+- `artistImages: string[]` で複数アバター重ねて表示（28px、-8px overlap）
+- スクワークル: k=0.65（36px）
+
+### ArtistCard / ArtistAvatar
+- スクワークル形状: k=0.72
+- サイズ: sm=36px / md=48px / lg=64px
+- `image?: string` prop で画像表示対応
+
+### InputField
+- controlled対応: `value` + `onChange` props（2026-03-13追加）
+- uncontrolled: `defaultValue` で内部state管理
+- フォーカスアニメーション: 左→右スライドの green アンダーライン
+
+### HorizontalTabs
+- `tabs: (string | React.ReactNode)[]`（ReactNode対応済み）
+- Phosphorアイコン入りタブラベル使用可能
+
+### Typography スケール（確定）
+| スタイル | サイズ | ウェイト | フォント |
+|---------|--------|---------|---------|
+| Display | 32px | 700 | EN |
+| Title | 24px | 700 | EN |
+| Heading | 18px | 700 | JA |
+| Section | 15px | 700 | JA |
+| Section SM | 14px | 700 | JA |
+| Body | 13px | 400 | JA |
+| Body SM / Sub | 12px | 400 | JA |
+| Price | 15px | 700 | EN |
+| Link | 13px | 400 | JA amber |
+| Caption | 11px | 400 | EN |
+| Caption Muted | 11px | 400 | EN muted |
+
+- `text-sub` (rgba 0.55) は薄い → 通常テキストは `--color-encore-green` を使う
+- `typographyStyles.ts` に `section`・`sectionSM` の共通定数あり
+
+### デザインルール（確定）
+- **角丸**: `borderRadius: 8`（全コンポーネント背景）
+- **シャドウ**: `boxShadow: var(--shadow-card)` はコンポーネントに使用しない
+- **シェブロン**: CaretRight / CaretDown は全て `var(--color-encore-green)`
+- **アイコン**: Phosphor Icons、`weight="light"` 統一
+
+### 静的アセット（public/）
+- ライブフライヤー: `liveimg/` (01.jpeg, 02.jpg, 03.jpeg.webp, 04.jpeg)
+- アーティスト画像: `Artistimg/` (01〜04.jpg)
+- 会場画像: `Houseimg/unnamed.webp`（Zepp Haneda）
 
 ---
 
