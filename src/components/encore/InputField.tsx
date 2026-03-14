@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import * as ty from './typographyStyles'
 
 interface InputFieldProps {
   label: string
@@ -70,7 +71,7 @@ export default function InputField({
             <span
               className="block mb-0.5"
               style={{
-                fontSize: 11,
+                ...ty.caption,
                 color: isFocused ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)',
                 transition: 'color 0.2s',
               }}
@@ -89,12 +90,10 @@ export default function InputField({
             onBlur={() => setIsFocused(false)}
             className="w-full outline-none"
             style={{
+              ...ty.body,
               background: 'transparent',
               border: 'none',
               padding: '4px 0 6px',
-              fontSize: 13,
-              fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-              color: 'var(--color-encore-green)',
               lineHeight: 1.4,
               ...inputStyle,
             }}
@@ -117,7 +116,7 @@ export default function InputField({
         />
       </div>
       {showCounter && maxLength && (
-        <div style={{ textAlign: 'right', fontSize: 11, color: 'var(--color-encore-text-muted)', marginTop: 4 }}>
+        <div style={{ ...ty.captionMuted, textAlign: 'right', marginTop: 4 }}>
           {value.length}/{maxLength}
         </div>
       )}

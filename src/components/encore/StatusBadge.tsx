@@ -1,4 +1,5 @@
 import React from 'react'
+import * as ty from './typographyStyles'
 
 type LiveStatus    = '予定' | '抽選中' | '当選' | '落選' | '終了'
 type LiveType      = 'ワンマン' | '対バン' | 'フェス' | '配信' | '舞台・公演' | 'メディア出演' | 'リリースイベント'
@@ -32,7 +33,8 @@ const LIVE_TYPE: Record<LiveType, { bg: string; text: string }> = {
 const base: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
-  fontFamily: 'var(--font-google-sans), sans-serif',
+  ...ty.caption,
+  fontSize: 10,
   fontWeight: 700,
   whiteSpace: 'nowrap',
 }

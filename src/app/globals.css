@@ -200,3 +200,12 @@ body {
   border-radius: 0;
   width: 100%;
 }
+
+/* Pie chart avatar float animation */
+@keyframes encore-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+.encore-float {
+  animation: encore-float 3s ease-in-out infinite;
+}

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useRef } from 'react'
+import * as ty from './typographyStyles'
 
 interface QuantityStepperProps {
   defaultValue?: number
@@ -41,13 +42,12 @@ export default function QuantityStepper({
         onClick={() => change(-1)}
         className="flex items-center justify-center transition-colors duration-150 hover:bg-encore-bg-section active:bg-encore-border cursor-pointer"
         style={{
+          ...ty.body,
           width: 40,
           height: 40,
           background: 'transparent',
           border: 'none',
           fontSize: 20,
-          color: 'var(--color-encore-green)',
-          fontWeight: 400,
           lineHeight: 1,
           WebkitTapHighlightColor: 'transparent',
         }}
@@ -59,15 +59,12 @@ export default function QuantityStepper({
         ref={valRef}
         className="encore-stepper-val flex items-center justify-center"
         style={{
+          ...ty.price,
           minWidth: 40,
           textAlign: 'center',
-          fontSize: 15,
-          fontWeight: 700,
           height: 40,
           borderLeft: '1px solid var(--color-encore-border-light)',
           borderRight: '1px solid var(--color-encore-border-light)',
-          fontFamily: 'var(--font-google-sans), sans-serif',
-          color: 'var(--color-encore-green)',
         }}
       >
         {value}

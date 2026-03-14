@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import * as ty from './typographyStyles'
 
 interface ToggleProps {
   label: string
@@ -27,7 +28,7 @@ export default function Toggle({ label, defaultChecked = true, onChange }: Toggl
         WebkitTapHighlightColor: 'transparent',
       }}
     >
-      <span style={{ fontSize: 13, color: 'var(--color-encore-green)', pointerEvents: 'none' }}>{label}</span>
+      <span style={{ ...ty.body, pointerEvents: 'none' }}>{label}</span>
       <div
         className="relative flex-shrink-0 transition-colors duration-[250ms]"
         style={{

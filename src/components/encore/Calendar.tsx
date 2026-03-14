@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import Button from './Button'
 import { CaretLeft, CaretRight } from '@phosphor-icons/react'
+import * as ty from './typographyStyles'
 
 // ===== Full Calendar =====
 
@@ -38,12 +39,12 @@ export default function Calendar() {
   }
 
   const cells: Array<{ day: number; thisMonth: boolean; dateStr: string }> = []
-  const prevDays = getDaysInMonth(viewYear, viewMonth - 1 < 0 ? 11 : viewMonth - 1)
+  const prevMonthYear = viewMonth === 0 ? viewYear - 1 : viewYear
+  const prevMonthIndex = viewMonth === 0 ? 11 : viewMonth - 1
+  const prevDays = getDaysInMonth(prevMonthYear, prevMonthIndex)
   for (let i = firstDow - 1; i >= 0; i--) {
     const d = prevDays - i
-    const m = viewMonth - 1 < 0 ? 11 : viewMonth - 1
-    const y = viewMonth - 1 < 0 ? viewYear - 1 : viewYear
-    cells.push({ day: d, thisMonth: false, dateStr: `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}` })
+    cells.push({ day: d, thisMonth: false, dateStr: `${prevMonthYear}-${String(prevMonthIndex+1).padStart(2,'0')}-${String(d).padStart(2,'0')}` })
   }
   for (let d = 1; d <= daysInMonth; d++) {
     cells.push({ day: d, thisMonth: true, dateStr: `${viewYear}-${String(viewMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}` })
@@ -69,7 +70,7 @@ export default function Calendar() {
         >
           <CaretLeft size={18} weight="light" />
         </button>
-        <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)', letterSpacing: '0.04em', textAlign: 'center' }}>
+        <div style={{ ...ty.section, letterSpacing: '0.04em', textAlign: 'center' }}>
           {monthLabel}
         </div>
         <button
@@ -87,9 +88,9 @@ export default function Calendar() {
           <div
             key={d}
             style={{
+              ...ty.caption,
               textAlign: 'center',
               padding: '6px 0 10px',
-              fontFamily: 'var(--font-google-sans), sans-serif',
               fontSize: 10,
               fontWeight: 700,
               color: i === 0 ? 'var(--color-encore-error)' : i === 6 ? '#3080C8' : 'var(--color-encore-text-muted)',
@@ -139,12 +140,11 @@ export default function Calendar() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  borderRadius: '50%',
-                  fontSize: 13,
+                  borderRadius: 8,
+                  ...ty.body,
                   color: dateColor,
-                  fontFamily: 'var(--font-google-sans), sans-serif',
                   fontWeight: isToday || isSelected ? 700 : 400,
-                  background: isSelected ? 'var(--color-encore-green)' : 'transparent',
+                  background: isSelected ? 'var(--color-encore-green)' : hasOrder && cell.thisMonth ? 'var(--color-encore-bg-section)' : 'transparent',
                   border: isToday && !isSelected ? '2.5px solid var(--color-encore-green)' : 'none',
                   opacity: !cell.thisMonth ? 0.35 : 1,
                   transition: 'background 0.18s, color 0.18s, transform 0.12s',
@@ -152,11 +152,6 @@ export default function Calendar() {
               >
                 {cell.day}
               </div>
-              {hasOrder && cell.thisMonth && (
-                <div className="flex gap-[3px] items-center justify-center" style={{ minHeight: 5 }}>
-                  <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--color-encore-amber)' }} />
-                </div>
-              )}
             </div>
           )
         })}
@@ -199,12 +194,12 @@ export function ReservationCalendar() {
   }
 
   const cells: Array<{ day: number; thisMonth: boolean; dateStr: string }> = []
-  const prevDays = getDaysInMonth(viewYear, viewMonth - 1 < 0 ? 11 : viewMonth - 1)
+  const prevMonthYear = viewMonth === 0 ? viewYear - 1 : viewYear
+  const prevMonthIndex = viewMonth === 0 ? 11 : viewMonth - 1
+  const prevDays = getDaysInMonth(prevMonthYear, prevMonthIndex)
   for (let i = firstDow - 1; i >= 0; i--) {
     const d = prevDays - i
-    const m = viewMonth - 1 < 0 ? 11 : viewMonth - 1
-    const y = viewMonth - 1 < 0 ? viewYear - 1 : viewYear
-    cells.push({ day: d, thisMonth: false, dateStr: `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}` })
+    cells.push({ day: d, thisMonth: false, dateStr: `${prevMonthYear}-${String(prevMonthIndex+1).padStart(2,'0')}-${String(d).padStart(2,'0')}` })
   }
   for (let d = 1; d <= daysInMonth; d++) {
     cells.push({ day: d, thisMonth: true, dateStr: `${viewYear}-${String(viewMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}` })
@@ -225,21 +220,21 @@ export function ReservationCalendar() {
         <button className="absolute flex items-center p-2 bg-transparent border-none cursor-pointer" style={{ left: 14, color: 'var(--color-encore-green)', WebkitTapHighlightColor: 'transparent' }}>
           <svg width="10" height="17" viewBox="0 0 10 17" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 1L1.5 8.5L9 16"/></svg>
         </button>
-        <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)', letterSpacing: '0.01em' }}>受け取り日時を選択</span>
+        <span style={{ ...ty.section, letterSpacing: '0.01em' }}>受け取り日時を選択</span>
       </div>
       {/* Month nav */}
       <div className="flex items-center justify-between" style={{ padding: '16px 20px 10px' }}>
         <button onClick={prevMonth} className="flex items-center justify-center rounded-full hover:bg-encore-bg-section" style={{ background: 'none', border: 'none', cursor: 'pointer', width: 36, height: 36, color: 'var(--color-encore-green)' }}>
           <CaretLeft size={18} weight="light" />
         </button>
-        <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)', letterSpacing: '0.04em' }}>{monthLabel}</div>
+        <div style={{ ...ty.section, letterSpacing: '0.04em' }}>{monthLabel}</div>
         <button onClick={nextMonth} className="flex items-center justify-center rounded-full hover:bg-encore-bg-section" style={{ background: 'none', border: 'none', cursor: 'pointer', width: 36, height: 36, color: 'var(--color-encore-green)' }}>
           <CaretRight size={18} weight="light" />
         </button>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '0 14px', borderBottom: '1px solid var(--color-encore-border-light)' }}>
         {DOW_LABELS.map((d, i) => (
-          <div key={d} style={{ textAlign: 'center', padding: '6px 0 10px', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, fontWeight: 700, color: i === 0 ? 'var(--color-encore-error)' : i === 6 ? '#3080C8' : 'var(--color-encore-text-muted)', letterSpacing: '0.04em' }}>{d}</div>
+          <div key={d} style={{ ...ty.caption, textAlign: 'center', padding: '6px 0 10px', fontSize: 10, fontWeight: 700, color: i === 0 ? 'var(--color-encore-error)' : i === 6 ? '#3080C8' : 'var(--color-encore-text-muted)', letterSpacing: '0.04em' }}>{d}</div>
         ))}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '6px 14px 16px', gap: '2px 0' }}>
@@ -268,8 +263,8 @@ export function ReservationCalendar() {
                 className={isSelected ? 'encore-cal-pop' : ''}
                 style={{
                   width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  borderRadius: '50%', fontSize: 13, color: dateColor,
-                  fontFamily: 'var(--font-google-sans), sans-serif', fontWeight: isToday || isSelected ? 700 : 400,
+                  borderRadius: 8, ...ty.body, color: dateColor,
+                  fontWeight: isToday || isSelected ? 700 : 400,
                   background: isSelected ? 'var(--color-encore-green)' : 'transparent',
                   border: isToday && !isSelected ? '2.5px solid var(--color-encore-green)' : 'none',
                   opacity: !cell.thisMonth || past ? 0.35 : 1,
@@ -284,7 +279,7 @@ export function ReservationCalendar() {
       </div>
       {/* Timeslot section */}
       <div style={{ padding: '16px 20px', borderTop: '1px solid var(--color-encore-border-light)' }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-encore-text-sub)', marginBottom: 12 }}>
+        <div style={{ ...ty.body, marginBottom: 12 }}>
           {formatJaDate(selected, 'の受け取り時間')}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
@@ -297,8 +292,8 @@ export function ReservationCalendar() {
                 onClick={() => !unavailable && setSelectedTime(slot)}
                 className={isSelTime ? 'encore-cal-pop' : ''}
                 style={{
-                  height: 42, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 13, fontWeight: 700,
+                  height: 42, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  ...ty.body, fontWeight: 700,
                   background: isSelTime ? 'var(--color-encore-green)' : 'var(--color-encore-bg-section)',
                   color: isSelTime ? 'var(--color-encore-white)' : unavailable ? 'var(--color-encore-text-muted)' : 'var(--color-encore-green)',
                   border: `1.5px solid ${isSelTime ? 'var(--color-encore-green)' : 'transparent'}`,
@@ -363,7 +358,7 @@ export function WeekStrip() {
         <button className="absolute flex items-center p-2 bg-transparent border-none cursor-pointer" style={{ left: 14, color: 'var(--color-encore-green)', WebkitTapHighlightColor: 'transparent' }}>
           <svg width="10" height="17" viewBox="0 0 10 17" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 1L1.5 8.5L9 16"/></svg>
         </button>
-        <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)', letterSpacing: '0.01em' }}>ライブ記録</span>
+        <span style={{ ...ty.section, letterSpacing: '0.01em' }}>ライブ記録</span>
       </div>
       {/* Week strip */}
       <div
@@ -396,7 +391,7 @@ export function WeekStrip() {
             >
               <div
                 style={{
-                  fontFamily: 'var(--font-google-sans), sans-serif',
+                  ...ty.caption,
                   fontSize: 10,
                   fontWeight: 700,
                   color: isSun ? 'var(--color-encore-error)' : isSat ? '#3080C8' : 'var(--color-encore-text-muted)',
@@ -410,30 +405,26 @@ export function WeekStrip() {
                 style={{
                   width: 32,
                   height: 32,
-                  borderRadius: '50%',
+                  borderRadius: 8,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontFamily: 'var(--font-google-sans), sans-serif',
-                  fontSize: 15,
-                  fontWeight: 700,
+                  ...ty.section,
+                  fontWeight: isSelected ? 700 : 400,
                   color: isSelected ? 'var(--color-encore-white)' : 'var(--color-encore-green)',
-                  background: isSelected ? 'var(--color-encore-green)' : 'transparent',
+                  background: isSelected ? 'var(--color-encore-green)' : sampleOrderDates.has(day.dateStr) ? 'var(--color-encore-bg-section)' : 'transparent',
                   border: isToday && !isSelected ? '2px solid var(--color-encore-green)' : 'none',
                   transition: 'background 0.18s, color 0.18s',
                 }}
               >
                 {day.num}
               </div>
-              {sampleOrderDates.has(day.dateStr) && (
-                <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--color-encore-amber)' }} />
-              )}
             </div>
           )
         })}
       </div>
       {/* Selected date label */}
-      <div style={{ padding: '16px 20px', fontSize: 12, color: selected ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)', textAlign: 'center', borderTop: '1px solid var(--color-encore-border-light)' }}>
+      <div style={{ ...ty.bodySM, padding: '16px 20px', color: selected ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)', textAlign: 'center', borderTop: '1px solid var(--color-encore-border-light)' }}>
         {selectedLabel}
       </div>
     </div>

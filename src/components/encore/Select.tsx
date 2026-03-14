@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { CaretDown, Check } from '@phosphor-icons/react'
+import * as ty from './typographyStyles'
 
 interface SelectOption {
   value: string
@@ -40,7 +41,7 @@ export default function Select({ label, options, value, placeholder = '選択し
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       {label && (
-        <div style={{ fontSize: 12, color: 'var(--color-encore-green)', marginBottom: 6, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontWeight: 400 }}>
+        <div style={{ ...ty.bodySM, marginBottom: 6 }}>
           {label}
         </div>
       )}
@@ -57,8 +58,7 @@ export default function Select({ label, options, value, placeholder = '選択し
           borderRadius: 3,
           border: 'none',
           cursor: 'pointer',
-          fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-          fontSize: selected ? 13 : 12,
+          ...(selected ? ty.body : ty.bodySM),
           color: selected ? 'var(--color-encore-green)' : 'var(--color-encore-text-sub)',
           transition: 'border-color 0.15s',
           WebkitTapHighlightColor: 'transparent',
@@ -97,8 +97,7 @@ export default function Select({ label, options, value, placeholder = '選択し
                 background: current === opt.value ? 'var(--color-encore-bg-section)' : 'transparent',
                 border: 'none',
                 cursor: 'pointer',
-                fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                fontSize: 12,
+                ...ty.bodySM,
                 color: current === opt.value ? 'var(--color-encore-green)' : 'var(--color-encore-text-sub)',
                 fontWeight: current === opt.value ? 700 : 400,
                 textAlign: 'left',

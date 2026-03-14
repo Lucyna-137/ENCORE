@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import * as ty from './typographyStyles'
 
 interface SegmentedOption {
   label: string
@@ -39,10 +40,8 @@ export default function SegmentedControl({
               : '1.5px solid var(--color-encore-border-light)',
             borderRadius: 999,
             background: selected === i ? 'rgba(26,58,45,0.04)' : 'transparent',
-            fontSize: 12,
-            fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+            ...ty.bodySM,
             color: selected === i ? 'var(--color-encore-green)' : 'var(--color-encore-text-sub)',
-            fontWeight: 400,
             WebkitTapHighlightColor: 'transparent',
           }}
         >

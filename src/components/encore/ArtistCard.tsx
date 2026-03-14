@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { CaretRight } from '@phosphor-icons/react'
-import { sectionSM } from './typographyStyles'
+import * as ty from './typographyStyles'
 
 const squirclePath = (s: number) => {
   const r = s / 2
@@ -68,15 +68,15 @@ export default function ArtistCard({ name, color, image, liveCount = 0, nextLive
     }}>
       <ArtistAvatar name={name} color={color} size="md" image={image} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ ...sectionSM, marginBottom: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <div style={{ ...ty.sectionSM, marginBottom: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {name}
         </div>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <span style={{ fontSize: 12, color: 'var(--color-encore-text-sub)', fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>
+          <span style={ty.sub}>
             <span style={{ color: 'var(--color-encore-green)', fontWeight: 700 }}>{liveCount}</span> 件登録
           </span>
           {nextLiveDate && (
-            <span style={{ fontSize: 12, color: 'var(--color-encore-text-sub)', fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>
+            <span style={ty.sub}>
               次回 <span style={{ color: 'var(--color-encore-green)', fontWeight: 700 }}>{nextLiveDate}</span>
             </span>
           )}

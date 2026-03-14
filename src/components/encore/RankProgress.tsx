@@ -1,4 +1,5 @@
 import React from 'react'
+import * as ty from './typographyStyles'
 
 interface RankNode {
   num: number
@@ -8,8 +9,6 @@ interface RankNode {
 }
 
 interface RankProgressProps {
-  currentRank?: string
-  nextTarget?: string
   nodes: RankNode[]
 }
 
@@ -38,10 +37,8 @@ export default function RankProgress({ nodes }: RankProgressProps) {
               </div>
               <span
                 style={{
-                  fontFamily: 'var(--font-google-sans), sans-serif',
-                  fontSize: 11,
+                  ...ty.captionMuted,
                   fontWeight: 700,
-                  color: 'var(--color-encore-text-muted)',
                   textAlign: 'center',
                 }}
               >
@@ -49,9 +46,7 @@ export default function RankProgress({ nodes }: RankProgressProps) {
               </span>
               <span
                 style={{
-                  fontFamily: 'var(--font-google-sans), sans-serif',
-                  fontSize: 11,
-                  fontWeight: 400,
+                  ...ty.captionMuted,
                   color: node.active ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)',
                   textAlign: 'center',
                   lineHeight: 1.1,

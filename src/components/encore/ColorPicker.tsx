@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { Check } from '@phosphor-icons/react'
+import * as ty from './typographyStyles'
 
 interface ColorPickerProps {
   label?: string
@@ -55,7 +56,7 @@ export default function ColorPicker({ label, colors = DEFAULT_COLORS, defaultVal
   return (
     <div>
       {label && (
-        <div style={{ fontSize: 12, color: 'var(--color-encore-green)', marginBottom: 10, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontWeight: 400 }}>
+        <div style={{ ...ty.bodySM, marginBottom: 10 }}>
           {label}
         </div>
       )}

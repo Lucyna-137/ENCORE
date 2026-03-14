@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useRef } from 'react'
+import * as ty from './typographyStyles'
 
 interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'ghost' | 'disabled' | 'sm-primary' | 'sm-ghost' | 'sm-secondary' | 'xs-primary' | 'xs-ghost' | 'xs-secondary'
@@ -11,16 +12,26 @@ interface ButtonProps {
 }
 
 const variantStyles: Record<string, string> = {
-  primary:      'w-full h-[70px] rounded-[4px] bg-encore-green text-white text-[14px] font-normal border-0',
-  secondary:    'w-full h-[70px] rounded-[4px] bg-transparent text-encore-green text-[14px] font-normal',
-  ghost:        'w-full h-[70px] rounded-[4px] bg-encore-bg-section text-encore-green text-[14px] font-normal border-0',
-  disabled:     'w-full h-[70px] rounded-[4px] bg-encore-green-muted text-white text-[14px] font-normal opacity-65 cursor-not-allowed border-0',
-  'sm-primary':   'w-auto h-[46px] rounded-full bg-encore-green text-white text-[12px] font-normal px-5 border-0',
-  'sm-ghost':     'w-auto h-[46px] rounded-full bg-encore-bg-section text-encore-green text-[12px] font-normal px-5 border-0',
-  'sm-secondary': 'w-auto h-[46px] rounded-full bg-transparent text-encore-green text-[12px] font-normal px-5',
-  'xs-primary':   'w-auto h-[28px] rounded-full bg-encore-green text-white text-[11px] font-normal px-3 border-0',
-  'xs-ghost':     'w-auto h-[28px] rounded-full bg-encore-bg-section text-encore-green text-[11px] font-normal px-3 border-0',
-  'xs-secondary': 'w-auto h-[28px] rounded-full bg-transparent text-encore-green text-[11px] font-normal px-3',
+  primary:        'w-full h-[70px] rounded-[4px] bg-encore-green text-white border-0',
+  secondary:      'w-full h-[70px] rounded-[4px] bg-transparent text-encore-green',
+  ghost:          'w-full h-[70px] rounded-[4px] bg-encore-bg-section text-encore-green border-0',
+  disabled:       'w-full h-[70px] rounded-[4px] bg-encore-green-muted text-white opacity-65 cursor-not-allowed border-0',
+  'sm-primary':   'w-auto h-[46px] rounded-full bg-encore-green text-white px-5 border-0',
+  'sm-ghost':     'w-auto h-[46px] rounded-full bg-encore-bg-section text-encore-green px-5 border-0',
+  'sm-secondary': 'w-auto h-[46px] rounded-full bg-transparent text-encore-green px-5',
+  'xs-primary':   'w-auto h-[28px] rounded-full bg-encore-green text-white px-3 border-0',
+  'xs-ghost':     'w-auto h-[28px] rounded-full bg-encore-bg-section text-encore-green px-3 border-0',
+  'xs-secondary': 'w-auto h-[28px] rounded-full bg-transparent text-encore-green px-3',
+}
+
+const isWhiteText = (variant: string) =>
+  variant === 'primary' || variant === 'disabled' || variant === 'sm-primary' || variant === 'xs-primary'
+
+const textStyle = (variant: string) => {
+  const color = isWhiteText(variant) ? 'var(--color-encore-white)' : 'var(--color-encore-green)'
+  if (variant.startsWith('xs')) return { ...ty.bodySM, fontSize: 11, color }
+  if (variant.startsWith('sm')) return { ...ty.bodySM, color }
+  return { ...ty.sectionSM, fontWeight: 400, color }
 }
 
 export default function Button({
@@ -73,7 +84,7 @@ export default function Button({
         className,
       ].join(' ')}
       style={{
-        fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+        ...textStyle(variant),
         letterSpacing: '0.02em',
         WebkitTapHighlightColor: 'transparent',
         ...borderStyle,

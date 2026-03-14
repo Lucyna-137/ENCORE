@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { Info, X } from '@phosphor-icons/react'
+import * as ty from './typographyStyles'
 
 interface NotificationProps {
   message: string
@@ -29,7 +30,7 @@ export default function Notification({ message, icon = <Info size={18} weight="l
       }}
     >
       <div style={{ flexShrink: 0, marginTop: 1 }}>{icon}</div>
-      <div className="flex-1" style={{ lineHeight: 1.5, fontSize: 13, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>{message}</div>
+      <div className="flex-1" style={{ ...ty.body, color: 'var(--color-encore-white)', lineHeight: 1.5 }}>{message}</div>
       <button
         onClick={handleDismiss}
         className="flex-shrink-0 transition-opacity duration-150 hover:opacity-100"

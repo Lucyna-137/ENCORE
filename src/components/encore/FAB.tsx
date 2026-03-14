@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { Plus } from '@phosphor-icons/react'
+import * as ty from './typographyStyles'
 
 interface FABProps {
   label?: string
@@ -25,13 +26,11 @@ export default function FAB({ label, onClick, variant = 'default' }: FABProps) {
         padding: isExtended ? '0 20px' : 0,
         borderRadius: 999,
         background: 'var(--color-encore-green)',
-        color: 'var(--color-encore-white)',
         border: 'none',
         cursor: 'pointer',
         boxShadow: 'none',
-        fontFamily: 'var(--font-google-sans), sans-serif',
-        fontSize: 12,
-        fontWeight: 400,
+        ...ty.bodySM,
+        color: 'var(--color-encore-white)',
         letterSpacing: '0.02em',
         transition: 'opacity 0.15s, transform 0.15s',
         WebkitTapHighlightColor: 'transparent',

@@ -1,4 +1,5 @@
 import React from 'react'
+import * as ty from './typographyStyles'
 
 interface BadgeProps {
   variant?: 'green' | 'amber' | 'muted' | 'outline' | 'light-green'
@@ -21,8 +22,7 @@ export default function Badge({ variant = 'green', children }: BadgeProps) {
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 999,
-        fontFamily: 'var(--font-google-sans), sans-serif',
-        fontSize: 11,
+        ...ty.caption,
         fontWeight: 700,
         padding: '4px 12px',
         letterSpacing: '0.04em',

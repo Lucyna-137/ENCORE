@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import * as ty from './typographyStyles'
 
 interface ProductCardProps {
   variant?: 'overlay' | 'like'
@@ -58,33 +59,31 @@ export default function ProductCard({
               background: 'linear-gradient(to top, rgba(0,0,0,0.52) 0%, transparent 100%)',
             }}
           >
-            <span style={{ color: 'var(--color-encore-white)', fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>{title}</span>
-            <span style={{ color: 'var(--color-encore-white)', fontSize: 15, fontWeight: 700, fontFamily: 'var(--font-google-sans), sans-serif' }}>{price}</span>
+            <span style={{ ...ty.sectionSM, color: 'var(--color-encore-white)' }}>{title}</span>
+            <span style={{ ...ty.price, color: 'var(--color-encore-white)' }}>{price}</span>
           </div>
         )}
       </div>
 
       <div style={{ padding: '14px 16px 16px' }}>
         {variant === 'like' && (
-          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)', marginBottom: 6, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>
+          <div style={{ ...ty.section, marginBottom: 6 }}>
             {title}
           </div>
         )}
-        <div style={{ fontSize: 12, color: 'var(--color-encore-text-sub)', lineHeight: 1.55, marginBottom: 8, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>
+        <div style={{ ...ty.sub, lineHeight: 1.55, marginBottom: 8 }}>
           {description}
         </div>
         {variant === 'overlay' ? (
           <button
             onClick={handleLike}
             style={{
+              ...ty.link,
               display: 'inline',
-              fontSize: 13,
-              color: 'var(--color-encore-amber)',
               cursor: 'pointer',
               background: 'none',
               border: 'none',
               padding: 0,
-              fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
             }}
           >
             これスキ！
@@ -94,19 +93,17 @@ export default function ProductCard({
             <button
               onClick={handleLike}
               style={{
+                ...ty.link,
                 display: 'inline',
-                fontSize: 13,
-                color: 'var(--color-encore-amber)',
                 cursor: 'pointer',
                 background: 'none',
                 border: 'none',
                 padding: 0,
-                fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
               }}
             >
               このままカートに入れる
             </button>
-            <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)', fontFamily: 'var(--font-google-sans), sans-serif' }}>{price}</span>
+            <span style={ty.price}>{price}</span>
           </div>
         )}
       </div>

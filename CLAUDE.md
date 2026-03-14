@@ -1,8 +1,8 @@
 # ENCORE UI Kit — Claude 作業指示書
 
 ## プロジェクト概要
-- Next.js + TypeScript + Tailwind CSS v4 のコンポーネントショーケース（32コンポーネント）
-- **プロジェクト場所**: `/Users/alfa/Desktop/encore-ui`
+- Next.js + TypeScript + Tailwind CSS v4 のコンポーネントショーケース（34コンポーネント、00〜33番）
+- **プロジェクト場所**: `/Users/alfa/Desktop/ENCORE`
 - ライブ管理アプリ向けのデザインシステム
 - ブランド名「ENCORE」は仮名（確定後に全置換）
 - 最終目的: SwiftUI/Xcode での再実装リファレンス
@@ -27,7 +27,7 @@ src/
 │   ├── page.tsx          # メインショーケース（'use client'、全コンポーネント展示）
 │   └── globals.css       # Tailwind @theme + .encore-* カスタムクラス
 └── components/
-    └── encore/           # 32個のコンポーネント (.tsx)
+    └── encore/           # 34個のコンポーネント (.tsx)
 ```
 
 ## デザイントークン（クイックリファレンス）
@@ -91,6 +91,7 @@ src/
 | `.encore-tooltip-tail-*` | ツールチップの矢印 |
 | `.encore-week-strip` | 週スクロール |
 | `.encore-sidebar` | サイドバー |
+| `.encore-float` | PieChart アバター浮遊アニメ（3s ease-in-out infinite） |
 
 ## 画面確認
 - スクリーンショットは「確認して」と指示されたときのみ `webdev-mcp > takeScreenshot` を使う

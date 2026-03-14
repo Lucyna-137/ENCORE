@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
+import * as ty from './typographyStyles'
 
 interface HorizontalTabsProps {
   tabs: (string | React.ReactNode)[]
@@ -57,12 +58,11 @@ export default function HorizontalTabs({
             onClick={() => handleClick(i)}
             className="cursor-pointer select-none"
             style={{
+              ...ty.bodySM,
               flex: 1,
               textAlign: 'center',
               padding: '13px 8px 12px',
-              fontSize: 12,
               color: active === i ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)',
-              fontWeight: 400,
               transition: 'color 0.2s',
               whiteSpace: 'nowrap',
               minWidth: 64,

@@ -52,7 +52,7 @@
 
 ---
 
-## コンポーネント一覧（32個）
+## コンポーネント一覧（34個）
 
 | # | コンポーネント | ファイル | カテゴリ |
 |---|-------------|---------|---------|
@@ -62,32 +62,34 @@
 | 03 | Navigation Header | `NavHeader.tsx` | Navigation |
 | 04 | Bottom Tab Bar | `TabBar.tsx` | Navigation |
 | 05 | Horizontal Tabs | `HorizontalTabs.tsx` | Navigation |
-| 06 | Buttons | `Button.tsx` | Controls |
-| 07 | FAB | `FAB.tsx` | Controls |
-| 08 | Input Fields | `InputField.tsx` | Controls |
-| 09 | Select | `Select.tsx` | Controls |
-| 10 | Segmented Control | `SegmentedControl.tsx` | Controls |
-| 11 | Search Bar | `SearchBar.tsx` | Controls |
-| 12 | Toggle Switch | `Toggle.tsx` | Controls |
-| 13 | Qty Stepper | `QuantityStepper.tsx` | Controls |
-| 14 | Color Picker | `ColorPicker.tsx` | Controls |
-| 15 | Live Card | `LiveCard.tsx` | Content |
-| 16 | Artist Card | `ArtistCard.tsx` | Content |
-| 17 | List Rows | `ListRow.tsx` | Content |
-| 18 | Product Cards | `ProductCard.tsx` | Content |
-| 19 | Ingredient Selector | `IngredientSelector.tsx` | Content |
-| 20 | Store Card | `StoreCard.tsx` | Content |
-| 21 | Order Summary | `OrderSummary.tsx` | Content |
-| 22 | Empty State | `EmptyState.tsx` | Feedback |
-| 23 | Badges & Tags | `Badge.tsx` | Feedback |
-| 24 | Status Badge | `StatusBadge.tsx` | Feedback |
-| 25 | Bottom Sheet | `BottomSheet.tsx` | Feedback |
-| 26 | Notification Banner | `Notification.tsx` | Feedback |
-| 27 | Tooltip / Callout Bubble | `TooltipBubble.tsx` | Feedback |
-| 28 | Rank Progress | `RankProgress.tsx` | Data Display |
-| 29 | Credit Card UI | `CreditCard.tsx` | Data Display |
-| 30 | Calendar | `Calendar.tsx` | Data Display |
-| 31 | Bar Chart | `BarChart.tsx` | Data Display |
+| 06 | View Toggle | `ViewToggle.tsx` | Navigation |
+| 07 | Buttons | `Button.tsx` | Controls |
+| 08 | FAB | `FAB.tsx` | Controls |
+| 09 | Input Fields | `InputField.tsx` | Controls |
+| 10 | Select | `Select.tsx` | Controls |
+| 11 | Segmented Control | `SegmentedControl.tsx` | Controls |
+| 12 | Search Bar | `SearchBar.tsx` | Controls |
+| 13 | Toggle Switch | `Toggle.tsx` | Controls |
+| 14 | Qty Stepper | `QuantityStepper.tsx` | Controls |
+| 15 | Color Picker | `ColorPicker.tsx` | Controls |
+| 16 | Live Card | `LiveCard.tsx` | Content |
+| 17 | Product Cards | `ProductCard.tsx` | Content |
+| 18 | Artist Card | `ArtistCard.tsx` | Content |
+| 19 | List Rows | `ListRow.tsx` | Content |
+| 20 | Ingredient Selector | `IngredientSelector.tsx` | Content |
+| 21 | Store Card | `StoreCard.tsx` | Content |
+| 22 | Order Summary | `OrderSummary.tsx` | Content |
+| 23 | Empty State | `EmptyState.tsx` | Feedback |
+| 24 | Badges & Tags | `Badge.tsx` | Feedback |
+| 25 | Status Badge | `StatusBadge.tsx` | Feedback |
+| 26 | Bottom Sheet | `BottomSheet.tsx` | Feedback |
+| 27 | Notification Banner | `Notification.tsx` | Feedback |
+| 28 | Tooltip / Callout Bubble | `TooltipBubble.tsx` | Feedback |
+| 29 | Rank Progress | `RankProgress.tsx` | Data Display |
+| 30 | Credit Card UI | `CreditCard.tsx` | Data Display |
+| 31 | Calendar | `Calendar.tsx` | Data Display |
+| 32 | Bar Chart | `BarChart.tsx` | Data Display |
+| 33 | Pie Chart | `PieChart.tsx` | Data Display |
 
 ---
 
@@ -120,11 +122,32 @@
 - `LiveTypeBadge`: ワンマン / 対バン / フェス / 配信 / 舞台・公演 / メディア出演 / リリースイベント
 - LotteryStatus: 廃止済み
 
+### ViewToggle
+- ヘッダー内設置用のセグメントスイッチ（2択以上対応）
+- スライダー: `useRef` でボタン幅を測定し `left` + `width` を CSS transition でアニメーション
+- 高さ: `28px`、フォント: `ty.caption`（11px）、fontWeight: 700固定（テキスト幅変動防止）
+- アクティブ: 白テキスト / 非アクティブ: `text-sub` テキスト
+
+### BarChart
+- `orientation: 'horizontal' | 'vertical'`
+- Horizontal: アバター + アーティスト名 + バー + 回数 + パーセンテージ（合計比）
+- Vertical: 高さアニメーション付き棒グラフ（月別推移など）
+- パーセンテージはセグメントカラーで表示（`Math.round(value/total*100)%`）
+
+### PieChart
+- SVG `stroke-dasharray` / `strokeDashoffset` でドーナツチャートを描画
+- STROKE: 13px（細め）、RADIUS: 78px、SIZE: 260px
+- アバターはリング外周に極座標計算で配置（`AVATAR_ORBIT = RADIUS + STROKE/2 + 26`）
+- アバターに `.encore-float` クラス + `animationDelay: i * 0.6s` でゆらゆら浮遊アニメ
+- 中央テキスト: TOTAL LIVES（9px muted）/ 合計数（40px green）/ N ARTISTS（9px bold green）
+- TOP ARTISTSレジェンドは廃止（BarChart に役割移管）
+
 ### LiveCard
 - LiveType 7種、LiveStatus 5種（カード内は終了バッジ非表示）
 - バッジ順: Status → Type（左から）
 - `artistImages: string[]` で複数アバター重ねて表示（28px、-8px overlap）
 - スクワークル: k=0.65（36px）
+- 日付エリア右側の縦ボーダーなし
 
 ### ArtistCard / ArtistAvatar
 - スクワークル形状: k=0.72

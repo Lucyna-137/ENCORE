@@ -1,4 +1,5 @@
 import React from 'react'
+import * as ty from './typographyStyles'
 
 interface CreditCardProps {
   cardNumber?: string
@@ -26,8 +27,8 @@ export default function CreditCard({ cardNumber = '', expDisplay = '月/年' }: 
       {/* Top row */}
       <div className="relative flex justify-between items-start">
         <div>
-          <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 11, opacity: 0.6, marginBottom: 5 }}>Card Number</div>
-          <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 20, fontWeight: 700, letterSpacing: '0.08em' }}>{formatted}</div>
+          <div style={{ ...ty.caption, color: 'var(--color-encore-white)', opacity: 0.6, marginBottom: 5 }}>Card Number</div>
+          <div style={{ ...ty.caption, color: 'var(--color-encore-white)', fontSize: 20, fontWeight: 700, letterSpacing: '0.08em' }}>{formatted}</div>
         </div>
         <div className="flex">
           <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#EB001B', opacity: 0.92 }} />
@@ -37,8 +38,8 @@ export default function CreditCard({ cardNumber = '', expDisplay = '月/年' }: 
       {/* Bottom */}
       <div className="relative flex justify-end items-end">
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 11, opacity: 0.6, marginBottom: 2 }}>EXP Date</div>
-          <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 15, fontWeight: 700 }}>{expDisplay}</div>
+          <div style={{ ...ty.caption, color: 'var(--color-encore-white)', opacity: 0.6, marginBottom: 2 }}>EXP Date</div>
+          <div style={{ ...ty.section, color: 'var(--color-encore-white)' }}>{expDisplay}</div>
         </div>
       </div>
     </div>

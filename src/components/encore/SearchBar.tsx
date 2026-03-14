@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react'
 import { MagnifyingGlass, Clock } from '@phosphor-icons/react'
+import * as ty from './typographyStyles'
 
 interface SearchBarProps {
   placeholder?: string
@@ -50,11 +51,9 @@ export default function SearchBar({
           onBlur={() => setTimeout(() => setIsFocused(false), 150)}
           className="flex-1 outline-none"
           style={{
+            ...ty.body,
             background: 'transparent',
             border: 'none',
-            fontSize: 13,
-            color: 'var(--color-encore-green)',
-            fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
           }}
         />
       </div>
@@ -89,8 +88,7 @@ export default function SearchBar({
                 border: 'none',
                 borderTop: i > 0 ? '1px solid var(--color-encore-border-light)' : 'none',
                 cursor: 'pointer',
-                fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                fontSize: 12,
+                ...ty.bodySM,
                 color: 'var(--color-encore-text-sub)',
                 textAlign: 'left',
                 WebkitTapHighlightColor: 'transparent',

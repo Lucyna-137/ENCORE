@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { CaretRight } from '@phosphor-icons/react'
+import * as ty from './typographyStyles'
 
 interface ListRowProps {
   icon?: React.ReactNode
@@ -35,11 +36,11 @@ export default function ListRow({ icon, label, value, showChevron = true, onClic
           {icon}
         </div>
       )}
-      <div className="flex-1" style={{ fontSize: 13, color: 'var(--color-encore-green)' }}>
+      <div className="flex-1" style={ty.body}>
         {label}
       </div>
       {value && (
-        <div style={{ fontSize: 13, color: 'var(--color-encore-text-muted)' }}>{value}</div>
+        <div style={{ ...ty.body, color: 'var(--color-encore-text-muted)' }}>{value}</div>
       )}
       {showChevron && (
         <div className="flex-shrink-0 flex items-center">

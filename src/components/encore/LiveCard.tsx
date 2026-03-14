@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { MapPin, Clock } from '@phosphor-icons/react'
-import { sectionSM } from './typographyStyles'
+import * as ty from './typographyStyles'
 
 // カラーピッカーと同じスクワークル形状
 const squirclePath = (s: number) => {
@@ -99,7 +99,6 @@ export default function LiveCard({ date, liveType, liveStatus, name, artist, ven
         paddingTop: 16,
         paddingBottom: 14,
         background: 'var(--color-encore-bg-section)',
-        borderRight: '1px solid var(--color-encore-border-light)',
       }}>
         <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, fontWeight: 700, color: 'var(--color-encore-text-muted)', lineHeight: 1 }}>
           {month}月
@@ -116,11 +115,11 @@ export default function LiveCard({ date, liveType, liveStatus, name, artist, ven
       <div style={{ flex: 1, minWidth: 0, padding: '14px 12px 14px 16px', display: 'flex', gap: 10 }}>
         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
           {/* ライブ名 */}
-          <div style={{ ...sectionSM, lineHeight: 1.4, marginBottom: 4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>
+          <div style={{ ...ty.sectionSM, lineHeight: 1.4, marginBottom: 4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>
             {name}
           </div>
           {/* アーティスト */}
-          <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--color-encore-text-sub)', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>
+          <div style={{ ...ty.sub, marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {artist}
           </div>
           {/* メタ */}
@@ -128,13 +127,13 @@ export default function LiveCard({ date, liveType, liveStatus, name, artist, ven
             {venue && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <MapPin size={11} weight="light" color="var(--color-encore-green)" />
-                <span style={{ fontSize: 11, color: 'var(--color-encore-green)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{venue}</span>
+                <span style={{ ...ty.caption, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{venue}</span>
               </div>
             )}
             {time && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <Clock size={11} weight="light" color="var(--color-encore-green)" />
-                <span style={{ fontSize: 11, color: 'var(--color-encore-green)' }}>{time}</span>
+                <span style={ty.caption}>{time}</span>
               </div>
             )}
           </div>

@@ -2,10 +2,9 @@
 
 import React from 'react'
 import { Ticket, MapPin, Clock, Buildings } from '@phosphor-icons/react'
+import * as ty from './typographyStyles'
 import HorizontalTabs from './HorizontalTabs'
 import Button from './Button'
-
-const JA = 'var(--font-google-sans), var(--font-noto-jp), sans-serif'
 
 export default function StoreCard() {
   return (
@@ -34,16 +33,16 @@ export default function StoreCard() {
           <img src="/Houseimg/unnamed.webp" alt="Zepp Haneda" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         </div>
 
-        <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 6, color: 'var(--color-encore-green)', fontFamily: JA }}>
+        <div style={{ ...ty.section, marginBottom: 6 }}>
           Zepp Haneda
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 16 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--color-encore-text-sub)', fontFamily: JA }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, ...ty.sub }}>
             <Clock size={12} weight="light" color="var(--color-encore-green)" />
             OPEN 17:00 / START 18:00
           </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--color-encore-text-sub)', fontFamily: JA }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, ...ty.sub }}>
             <Buildings size={12} weight="light" color="var(--color-encore-green)" />
             収容人数: 2,500名
           </span>

@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import * as ty from './typographyStyles'
 
 interface BottomSheetProps {
   isOpen: boolean
@@ -43,11 +44,11 @@ export default function BottomSheet({ isOpen, onClose, title, subtitle, children
         <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0 24px' }}>
           <div style={{ width: 36, height: 4, background: 'var(--color-encore-border-light)', borderRadius: 999 }} />
         </div>
-        <div style={{ fontSize: 15, fontWeight: 700, textAlign: 'center', marginBottom: 4, color: 'var(--color-encore-green)', fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>
+        <div style={{ ...ty.section, textAlign: 'center', marginBottom: 4 }}>
           {title}
         </div>
         {subtitle && (
-          <div style={{ fontSize: 12, color: 'var(--color-encore-text-sub)', textAlign: 'center', marginBottom: 24, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>
+          <div style={{ ...ty.sub, textAlign: 'center', marginBottom: 24 }}>
             {subtitle}
           </div>
         )}

@@ -1,14 +1,13 @@
 'use client'
 
 import React, { useState } from 'react'
+import * as ty from './typographyStyles'
 
 const squirclePath = (s: number) => {
   const r = s / 2
   const k = r * 0.72
   return `M ${s} ${r} C ${s} ${r + k} ${r + k} ${s} ${r} ${s} C ${r - k} ${s} 0 ${r + k} 0 ${r} C 0 ${r - k} ${r - k} 0 ${r} 0 C ${r + k} 0 ${s} ${r - k} ${s} ${r} Z`
 }
-
-const JA = 'var(--font-google-sans), var(--font-noto-jp), sans-serif'
 
 interface Ingredient {
   id: string
@@ -45,9 +44,9 @@ export default function IngredientSelector({
   return (
     <div>
       <div style={{ padding: '20px 20px 8px' }}>
-        <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4, color: 'var(--color-encore-green)', fontFamily: JA }}>{title}</div>
+        <div style={{ ...ty.section, marginBottom: 4 }}>{title}</div>
         {description && (
-          <div style={{ fontSize: 13, color: 'var(--color-encore-text-sub)', fontFamily: JA }}>{description}</div>
+          <div style={{ ...ty.body, color: 'var(--color-encore-text-sub)' }}>{description}</div>
         )}
       </div>
       <div
@@ -105,11 +104,11 @@ export default function IngredientSelector({
                   </div>
                 )}
               </div>
-              <div style={{ fontSize: 12, textAlign: 'center', color: 'var(--color-encore-green)', lineHeight: 1.3, fontFamily: JA }}>
+              <div style={{ ...ty.bodySM, textAlign: 'center', lineHeight: 1.3 }}>
                 {item.name}
               </div>
               {item.price && (
-                <div style={{ fontSize: 11, color: 'var(--color-encore-text-sub)', fontFamily: JA }}>{item.price}</div>
+                <div style={ty.captionMuted}>{item.price}</div>
               )}
             </div>
           )

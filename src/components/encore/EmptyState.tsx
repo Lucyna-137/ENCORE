@@ -1,4 +1,5 @@
 import React from 'react'
+import * as ty from './typographyStyles'
 
 interface EmptyStateProps {
   message?: string
@@ -18,11 +19,11 @@ export default function EmptyState({
         style={{
           width: 56,
           height: 20,
-          background: 'var(--shadow-card)',
+          background: 'var(--color-encore-border-light)',
           borderRadius: 999,
         }}
       />
-      <div style={{ fontSize: 13, color: 'var(--color-encore-text-sub)', textAlign: 'center', lineHeight: 1.7 }}>
+      <div style={{ ...ty.sub, textAlign: 'center', lineHeight: 1.7 }}>
         {message}
         {subMessage && (
           <>

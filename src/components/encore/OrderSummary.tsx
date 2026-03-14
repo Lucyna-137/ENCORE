@@ -1,9 +1,9 @@
+'use client'
+
 import React from 'react'
 import Button from './Button'
 import { CaretRight } from '@phosphor-icons/react'
-
-const JA = 'var(--font-google-sans), var(--font-noto-jp), sans-serif'
-const EN = 'var(--font-google-sans), sans-serif'
+import * as ty from './typographyStyles'
 
 const squirclePath = (s: number) => {
   const r = s / 2
@@ -55,13 +55,13 @@ export default function OrderSummary({ items = defaultItems, total = '¥8,800' }
               {item.image && <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
             </div>
             <div className="flex-1">
-              <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4, color: 'var(--color-encore-green)', fontFamily: JA }}>{item.name}</div>
-              <div style={{ fontSize: 12, color: 'var(--color-encore-text-sub)', lineHeight: 1.5, fontFamily: JA }}>{item.detail}</div>
+              <div style={{ ...ty.section, marginBottom: 4 }}>{item.name}</div>
+              <div style={{ ...ty.sub, lineHeight: 1.5 }}>{item.detail}</div>
               <div className="flex gap-3 mt-1.5">
-                <button style={{ fontSize: 13, color: 'var(--color-encore-amber)', cursor: 'pointer', background: 'none', border: 'none', padding: 0, fontFamily: JA }}>
+                <button style={{ ...ty.link, cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}>
                   座席を変更する
                 </button>
-                <button style={{ fontSize: 13, color: 'var(--color-encore-amber)', cursor: 'pointer', background: 'none', border: 'none', padding: 0, fontFamily: JA }}>
+                <button style={{ ...ty.link, cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}>
                   削除
                 </button>
               </div>
@@ -69,13 +69,10 @@ export default function OrderSummary({ items = defaultItems, total = '¥8,800' }
           </div>
           <div
             style={{
+              ...ty.bodySM,
               background: 'var(--color-encore-bg-section)',
               padding: '14px 20px',
-              fontSize: 12,
-              fontWeight: 400,
               lineHeight: 1.75,
-              color: 'var(--color-encore-green)',
-              fontFamily: JA,
             }}
           >
             座席: S席・3列14番<br/>
@@ -88,7 +85,7 @@ export default function OrderSummary({ items = defaultItems, total = '¥8,800' }
         className="flex items-center cursor-pointer"
         style={{ padding: '15px 20px', background: 'var(--color-encore-bg)', gap: 14 }}
       >
-        <div className="flex-1" style={{ fontSize: 13, color: 'var(--color-encore-green)', fontFamily: JA }}>メモを追加する</div>
+        <div className="flex-1" style={{ ...ty.body }}>メモを追加する</div>
         <ChevronRight />
       </div>
       <div
@@ -98,8 +95,8 @@ export default function OrderSummary({ items = defaultItems, total = '¥8,800' }
           padding: '14px 20px',
         }}
       >
-        <span style={{ fontSize: 12, color: 'var(--color-encore-text-sub)', fontFamily: JA }}>合計</span>
-        <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)', fontFamily: EN }}>{total}</span>
+        <span style={{ ...ty.sub }}>合計</span>
+        <span style={{ ...ty.price }}>{total}</span>
       </div>
       <div style={{ padding: '12px 20px 24px' }}>
         <Button variant="primary">購入を確定する</Button>

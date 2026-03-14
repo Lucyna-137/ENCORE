@@ -1,4 +1,5 @@
 import React from 'react'
+import * as ty from './typographyStyles'
 
 interface TooltipBubbleProps {
   children: React.ReactNode
@@ -29,11 +30,10 @@ export default function TooltipBubble({
       <span
         className={tailClass}
         style={{
+          ...ty.body,
           background: 'var(--color-encore-green)',
           color: 'var(--color-encore-white)',
           padding: '12px 20px',
-          fontSize: 13,
-          fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
           lineHeight: 1.4,
           position: 'relative',
           ...variantStyle,
