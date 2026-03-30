@@ -2,7 +2,7 @@
 
 ## プロジェクト概要
 - Next.js + TypeScript + Tailwind CSS v4 のコンポーネントショーケース（34コンポーネント、00〜33番）
-- **プロジェクト場所**: `/Users/alfa/Desktop/ENCORE`
+- **プロジェクト場所**: `/Users/uchiki/Desktop/ENCORE`
 - ライブ管理アプリ向けのデザインシステム
 - ブランド名「ENCORE」は仮名（確定後に全置換）
 - 最終目的: SwiftUI/Xcode での再実装リファレンス
@@ -24,10 +24,19 @@
 ```
 src/
 ├── app/
-│   ├── page.tsx          # メインショーケース（'use client'、全コンポーネント展示）
-│   └── globals.css       # Tailwind @theme + .encore-* カスタムクラス
-└── components/
-    └── encore/           # 34個のコンポーネント (.tsx)
+│   ├── page.tsx              # メインショーケース（'use client'、全コンポーネント展示）※変更禁止
+│   ├── globals.css           # Tailwind @theme + .encore-* カスタムクラス
+│   └── grape/
+│       ├── layout.tsx        # Grape パススルーレイアウト
+│       ├── calendar/page.tsx # カレンダー（月/週/日/リスト）
+│       └── tickets/page.tsx  # チケット管理
+├── components/
+│   ├── encore/               # 34個のコンポーネント (.tsx)
+│   └── grape/                # Grape 専用コンポーネント群
+└── lib/
+    └── grape/
+        ├── types.ts          # GrapeLive / GrapeArtist 型定義
+        └── dummyData.ts      # ARTISTS / LIVES データ（20件）
 ```
 
 ## デザイントークン（クイックリファレンス）
@@ -135,6 +144,8 @@ src/
 - ライブフライヤー: `/public/liveimg/` (01.jpeg, 02.jpg, 03.jpeg.webp, 04.jpeg)
 - アーティスト画像: `/public/Artistimg/` (01〜04.jpg)
 - 会場画像: `/public/Houseimg/unnamed.webp`
+- **Grape アーティスト画像**: `/public/grape/artist/` (somei.JPG / シユイ.JPG / 優利香.JPG / Ado.JPG / スーパー登山部.JPG / yama.JPG)
+- **Grape カバー画像**: `/public/grape/cover/` (各イベントフライヤー、詳細は MEMORY.md 参照)
 
 ## InputField — controlledモード対応
 - `value` + `onChange` propsでcontrolled inputとして使用可能（2026-03-13追加）

@@ -68,12 +68,12 @@ export default function ArtistCard({ name, color, image, liveCount = 0, nextLive
     }}>
       <ArtistAvatar name={name} color={color} size="md" image={image} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ ...ty.sectionSM, marginBottom: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <div style={{ ...ty.sectionSM, fontSize: 16, marginBottom: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {name}
         </div>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <span style={ty.sub}>
-            <span style={{ color: 'var(--color-encore-green)', fontWeight: 700 }}>{liveCount}</span> 件登録
+            <span style={{ color: 'var(--color-encore-green)', fontWeight: 700 }}>{liveCount}</span> 本のイベント
           </span>
           {nextLiveDate && (
             <span style={ty.sub}>

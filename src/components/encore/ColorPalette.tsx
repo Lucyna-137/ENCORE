@@ -39,6 +39,79 @@ interface ColorScheme {
   colors: PaletteState
 }
 
+// ─── Preset Schemes (built-in, cannot be deleted) ─────────────────────────
+
+const PRESET_SCHEMES: ColorScheme[] = [
+  {
+    // Scheme 1: Grape — Grapeアプリ連想の紫ベース
+    id: 'preset-grape',
+    name: 'Grape',
+    colors: {
+      'bg':           { hex: '#F5F3FB', alpha: 1 },
+      'bg-section':   { hex: '#EDE9F5', alpha: 1 },
+      'green':        { hex: '#3D1A78', alpha: 1 },
+      'green-muted':  { hex: '#9878CC', alpha: 1 },
+      'amber':        { hex: '#C04890', alpha: 1 },
+      'text-sub':     { hex: '#3D1A78', alpha: 0.55 },
+      'text-muted':   { hex: '#3D1A78', alpha: 0.35 },
+      'border':       { hex: '#C0B2D8', alpha: 1 },
+      'border-light': { hex: '#E0DAF0', alpha: 1 },
+      'white':        { hex: '#FFFFFF', alpha: 1 },
+    },
+  },
+  {
+    // Scheme 2: Ocean — 深海ティールベース
+    id: 'preset-ocean',
+    name: 'Ocean',
+    colors: {
+      'bg':           { hex: '#F0F8F8', alpha: 1 },
+      'bg-section':   { hex: '#E0EEEE', alpha: 1 },
+      'green':        { hex: '#0E3D40', alpha: 1 },
+      'green-muted':  { hex: '#5A9898', alpha: 1 },
+      'amber':        { hex: '#D07840', alpha: 1 },
+      'text-sub':     { hex: '#0E3D40', alpha: 0.55 },
+      'text-muted':   { hex: '#0E3D40', alpha: 0.35 },
+      'border':       { hex: '#A0C4C4', alpha: 1 },
+      'border-light': { hex: '#D4E8E8', alpha: 1 },
+      'white':        { hex: '#FFFFFF', alpha: 1 },
+    },
+  },
+  {
+    // Scheme 3: Moss — アースグリーンベース（デフォルト配色）
+    id: 'preset-moss',
+    name: 'Moss',
+    colors: {
+      'bg':           { hex: '#FAF8F4', alpha: 1 },
+      'bg-section':   { hex: '#E9E8E4', alpha: 1 },
+      'green':        { hex: '#1A3A2D', alpha: 1 },
+      'green-muted':  { hex: '#8BA898', alpha: 1 },
+      'amber':        { hex: '#C08A4A', alpha: 1 },
+      'text-sub':     { hex: '#1A3A2D', alpha: 0.55 },
+      'text-muted':   { hex: '#1A3A2D', alpha: 0.35 },
+      'border':       { hex: '#BAC2BB', alpha: 1 },
+      'border-light': { hex: '#E4E2DD', alpha: 1 },
+      'white':        { hex: '#FFFFFF', alpha: 1 },
+    },
+  },
+  {
+    // Scheme 4: Slate — クールネイビー×ゴールド
+    id: 'preset-slate',
+    name: 'Slate',
+    colors: {
+      'bg':           { hex: '#F3F4F7', alpha: 1 },
+      'bg-section':   { hex: '#E8EAEE', alpha: 1 },
+      'green':        { hex: '#1A2840', alpha: 1 },
+      'green-muted':  { hex: '#7888A8', alpha: 1 },
+      'amber':        { hex: '#C8901A', alpha: 1 },
+      'text-sub':     { hex: '#1A2840', alpha: 0.55 },
+      'text-muted':   { hex: '#1A2840', alpha: 0.35 },
+      'border':       { hex: '#B8C0D0', alpha: 1 },
+      'border-light': { hex: '#DCDEE8', alpha: 1 },
+      'white':        { hex: '#FFFFFF', alpha: 1 },
+    },
+  },
+]
+
 // ─── Utilities ───────────────────────────────────────────────────────────────
 
 function getDefaults(): PaletteState {
@@ -95,6 +168,45 @@ function getSchemeDisplayColors(scheme: ColorScheme) {
         : amber.hex)
     : '#C08A4A'
   return { bg, greenColor, amberColor }
+}
+
+// ─── Exported scheme helpers ─────────────────────────────────────────────────
+
+export { PRESET_SCHEMES }
+
+/** スキーム ID ('default' | 'preset-grape' | 'preset-ocean' | 'preset-slate') を適用 */
+export function loadPaletteScheme(schemeId: string | 'default') {
+  if (schemeId === 'default') {
+    // デフォルト: localStorage を削除 → インラインスタイルも削除 → CSS に委ねる
+    try { localStorage.removeItem(LS_KEY) } catch {}
+    PALETTE_DEFS.forEach(def => {
+      document.documentElement.style.removeProperty(def.cssVar)
+    })
+    window.dispatchEvent(new Event('encore-palette-update'))
+    return
+  }
+  const scheme = PRESET_SCHEMES.find(s => s.id === schemeId)
+  if (!scheme) return
+  const next = { ...scheme.colors }
+  PALETTE_DEFS.forEach(def => {
+    const val = next[def.key] ?? { hex: def.defaultHex, alpha: def.defaultAlpha }
+    applyToDom(def, val)
+  })
+  try { localStorage.setItem(LS_KEY, JSON.stringify(next)) } catch {}
+  window.dispatchEvent(new Event('encore-palette-update'))
+}
+
+/** 現在適用中のスキーム ID を返す（一致なし = 'custom'） */
+export function getCurrentPaletteSchemeId(): string {
+  try {
+    const raw = localStorage.getItem(LS_KEY)
+    if (!raw) return 'preset-grape'
+    const saved = JSON.parse(raw) as PaletteState
+    for (const s of PRESET_SCHEMES) {
+      if (colorsMatch(saved, s.colors)) return s.id
+    }
+    return 'custom'
+  } catch { return 'preset-grape' }
 }
 
 // ─── PaletteResetButton (exported) ──────────────────────────────────────────
@@ -266,6 +378,9 @@ export default function ColorPalette() {
     saveSchemes([...schemes, newScheme])
     setSavingName('')
     setShowSaveInput(false)
+    // 現在のカラーを確定し、全ページへ反映
+    try { localStorage.setItem(LS_KEY, JSON.stringify(colors)) } catch {}
+    window.dispatchEvent(new Event('encore-palette-update'))
   }
 
   const deleteScheme = (id: string, e: React.MouseEvent) => {
@@ -479,7 +594,45 @@ export default function ColorPalette() {
             </span>
           </div>
 
-          {/* User scheme pills */}
+          {/* Preset scheme pills (built-in, no delete) */}
+          {PRESET_SCHEMES.map(scheme => {
+            const loaded = colorsMatch(colors, scheme.colors)
+            const { bg, greenColor, amberColor } = getSchemeDisplayColors(scheme)
+            return (
+              <div
+                key={scheme.id}
+                onClick={() => loadScheme(scheme)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '6px 10px',
+                  borderRadius: 999,
+                  border: '1px solid var(--color-encore-border)',
+                  background: loaded ? 'var(--color-encore-green)' : 'var(--color-encore-bg-section)',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                }}
+              >
+                {[bg, greenColor, amberColor].map((c, i) => (
+                  <div key={i} style={{
+                    width: 8, height: 8, borderRadius: '50%',
+                    background: c,
+                    border: loaded ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(0,0,0,0.1)',
+                    flexShrink: 0,
+                  }} />
+                ))}
+                <span style={{
+                  fontFamily: 'var(--font-google-sans), sans-serif',
+                  fontSize: 12, fontWeight: 700,
+                  color: loaded ? '#fff' : 'var(--color-encore-text-sub)',
+                }}>
+                  {scheme.name}
+                </span>
+              </div>
+            )
+          })}
+
+          {/* User-saved scheme pills */}
           {schemes.map(scheme => {
             const loaded = colorsMatch(colors, scheme.colors)
             const { bg, greenColor, amberColor } = getSchemeDisplayColors(scheme)

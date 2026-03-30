@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { MapPin, Clock } from '@phosphor-icons/react'
 import * as ty from './typographyStyles'
 
@@ -11,7 +11,7 @@ const squirclePath = (s: number) => {
   return `M ${s} ${r} C ${s} ${r + k} ${r + k} ${s} ${r} ${s} C ${r - k} ${s} 0 ${r + k} 0 ${r} C 0 ${r - k} ${r - k} 0 ${r} 0 C ${r + k} 0 ${s} ${r - k} ${s} ${r} Z`
 }
 
-type LiveType   = 'ワンマン' | '対バン' | 'フェス' | '配信' | '舞台・公演' | 'メディア出演' | 'リリースイベント'
+type LiveType   = 'ワンマン' | '対バン' | 'フェス' | '配信' | '舞台・公演' | 'メディア出演' | 'リリースイベント' | 'その他'
 type LiveStatus = '予定' | '抽選中' | '当選' | '落選' | '終了'
 
 interface LiveCardProps {
@@ -37,6 +37,7 @@ const TYPE_STYLE: Record<LiveType, { label: string; bg: string; text: string; gr
   '舞台・公演': { label: '舞台・公演', bg: 'rgba(27,60,45,0.08)', text: 'var(--color-encore-green)', gradient: 'linear-gradient(135deg, rgba(27,60,45,0.18), rgba(27,60,45,0.05))' },
   'メディア出演':   { label: 'メディア出演',   bg: 'rgba(27,60,45,0.08)', text: 'var(--color-encore-green)', gradient: 'linear-gradient(135deg, rgba(139,168,152,0.20), rgba(139,168,152,0.06))' },
   'リリースイベント': { label: 'リリースイベント', bg: 'rgba(27,60,45,0.08)', text: 'var(--color-encore-green)', gradient: 'linear-gradient(135deg, rgba(192,138,74,0.22), rgba(192,138,74,0.05))' },
+  'その他':         { label: 'その他',         bg: 'rgba(27,60,45,0.08)', text: 'var(--color-encore-green)', gradient: 'linear-gradient(135deg, rgba(139,168,152,0.16), rgba(139,168,152,0.04))' },
 }
 
 const STATUS_STYLE: Record<LiveStatus, { label: string; bg: string; text: string; border?: string }> = {
@@ -50,6 +51,37 @@ const STATUS_STYLE: Record<LiveStatus, { label: string; bg: string; text: string
 const DOW_COLOR: Record<string, string> = {
   '土': '#0284C7',
   '日': 'var(--color-encore-error)',
+}
+
+// ─── フェード切り替えアーティスト画像 ──────────────────────────────────────────
+function CyclingArtistImage({ images, alt, gradient, size }: { images: string[]; alt: string; gradient: string; size: number }) {
+  const [activeIndex, setActiveIndex] = useState(0)
+
+  useEffect(() => {
+    if (images.length <= 1) return
+    const id = setInterval(() => setActiveIndex(i => (i + 1) % images.length), 2400)
+    return () => clearInterval(id)
+  }, [images.length])
+
+  return (
+    <div style={{ position: 'relative', width: size, height: size, clipPath: `path("${squirclePath(size)}")`, background: gradient, flexShrink: 0 }}>
+      {images.map((img, i) => (
+        <img
+          key={img}
+          src={img}
+          alt={alt}
+          style={{
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            objectFit: 'cover', objectPosition: 'center',
+            display: 'block',
+            opacity: i === activeIndex ? 1 : 0,
+            transition: 'opacity 0.9s ease',
+          }}
+        />
+      ))}
+    </div>
+  )
 }
 
 export default function LiveCard({ date, liveType, liveStatus, name, artist, venue, time, flyerImage, flyerImagePosition = 'center', artistImage, artistImagePosition = 'center', artistImages }: LiveCardProps) {
@@ -68,22 +100,62 @@ export default function LiveCard({ date, liveType, liveStatus, name, artist, ven
       overflow: 'hidden',
       display: 'flex',
       flexDirection: 'column',
+      position: 'relative',
     }}>
       {/* フライヤー画像エリア */}
-      <div style={{
-        width: '100%',
-        height: 160,
-        flexShrink: 0,
-        background: typeStyle.gradient,
-        overflow: 'hidden',
-      }}>
-        {flyerImage && (
-          <img
-            src={flyerImage}
-            alt={name}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: flyerImagePosition, display: 'block' }}
-          />
-        )}
+      <div style={{ position: 'relative', flexShrink: 0 }}>
+        <div style={{
+          width: '100%',
+          height: 160,
+          background: typeStyle.gradient,
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+        }}>
+          {flyerImage ? (
+            <img src={flyerImage} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: flyerImagePosition, display: 'block', position: 'absolute', inset: 0 }} />
+          ) : artistImages && artistImages.length > 1 ? (
+            <CyclingArtistImage images={artistImages} alt={artist} gradient={typeStyle.gradient} size={112} />
+          ) : artistImage ? (
+            <div style={{ width: 112, height: 112, clipPath: `path("${squirclePath(112)}")`, overflow: 'hidden', background: typeStyle.gradient, flexShrink: 0 }}>
+              <img src={artistImage} alt={artist} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: artistImagePosition, display: 'block' }} />
+            </div>
+          ) : null}
+        </div>
+        {/* バッジ（画像エリア左下オーバーレイ） */}
+        {(() => {
+          // 実際に表示される背景を判定（flyerImageが最優先表示）:
+          //   flyerImage あり → 写真背景 → 白バッジ
+          //   flyerImage なし（アーティスト画像のみ） → 明色グラデーション → 暗バッジ
+          const darkBg = !!flyerImage
+          const chipStyle: React.CSSProperties = darkBg ? {
+            fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+            fontSize: 10, fontWeight: 700,
+            padding: '3px 9px', borderRadius: 999,
+            background: 'rgba(255,255,255,0.20)',
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.32)',
+            backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
+          } : {
+            fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+            fontSize: 10, fontWeight: 700,
+            padding: '3px 9px', borderRadius: 999,
+            background: 'rgba(27,60,45,0.12)',
+            color: 'var(--color-encore-green)',
+            border: '1px solid rgba(27,60,45,0.22)',
+          }
+          return (
+            <div style={{ position: 'absolute', bottom: 10, left: 12, display: 'flex', gap: 6, alignItems: 'center' }}>
+              {liveStatus !== '終了' && (
+                <span style={chipStyle}>{statusStyle.label}</span>
+              )}
+              <span style={chipStyle}>{typeStyle.label}</span>
+            </div>
+          )
+        })()}
       </div>
 
       {/* 日付 + コンテンツ */}
@@ -98,7 +170,8 @@ export default function LiveCard({ date, liveType, liveStatus, name, artist, ven
         justifyContent: 'flex-start',
         paddingTop: 16,
         paddingBottom: 14,
-        background: 'var(--color-encore-bg-section)',
+        background: 'var(--color-encore-bg)',
+        borderRight: '1px solid var(--color-encore-border-light)',
       }}>
         <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, fontWeight: 700, color: 'var(--color-encore-text-muted)', lineHeight: 1 }}>
           {month}月
@@ -107,62 +180,35 @@ export default function LiveCard({ date, liveType, liveStatus, name, artist, ven
           {day}
         </span>
         <span style={{ fontSize: 12, fontWeight: 700, color: DOW_COLOR[dow] ?? 'var(--color-encore-text-muted)', marginTop: 2, fontFamily: 'var(--font-google-sans), sans-serif' }}>
-          ({dow})
+          {dow}
         </span>
       </div>
 
       {/* コンテンツ */}
-      <div style={{ flex: 1, minWidth: 0, padding: '14px 12px 14px 16px', display: 'flex', gap: 10 }}>
-        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-          {/* ライブ名 */}
-          <div style={{ ...ty.sectionSM, lineHeight: 1.4, marginBottom: 4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>
-            {name}
-          </div>
-          {/* アーティスト */}
-          <div style={{ ...ty.sub, marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {artist}
-          </div>
-          {/* メタ */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 3, flex: 1 }}>
-            {venue && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <MapPin size={11} weight="light" color="var(--color-encore-green)" />
-                <span style={{ ...ty.caption, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{venue}</span>
-              </div>
-            )}
-            {time && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Clock size={11} weight="light" color="var(--color-encore-green)" />
-                <span style={ty.caption}>{time}</span>
-              </div>
-            )}
-          </div>
-          {/* バッジ（最下部） */}
-          <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
-            {liveStatus !== '終了' && (
-              <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'var(--font-google-sans), sans-serif', padding: '2px 8px', borderRadius: 999, background: statusStyle.bg, color: statusStyle.text, border: statusStyle.border }}>
-                {statusStyle.label}
-              </span>
-            )}
-            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', fontFamily: 'var(--font-google-sans), sans-serif', padding: '2px 8px', borderRadius: 999, background: typeStyle.bg, color: typeStyle.text }}>
-              {typeStyle.label}
-            </span>
-          </div>
+      <div style={{ flex: 1, minWidth: 0, padding: '14px 12px 14px 16px' }}>
+        {/* ライブ名 */}
+        <div style={{ ...ty.sectionSM, fontSize: 16, lineHeight: 1.4, marginBottom: 4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>
+          {name}
         </div>
-        {/* カバーエリア */}
-        {artistImages && artistImages.length > 1 ? (
-          <div style={{ display: 'flex', alignSelf: 'flex-start', flexShrink: 0 }}>
-            {artistImages.map((img, i) => (
-              <div key={i} style={{ width: 28, height: 28, flexShrink: 0, clipPath: `path("${squirclePath(28)}")`, background: typeStyle.gradient, overflow: 'hidden', marginLeft: i === 0 ? 0 : -8 }}>
-                <img src={img} alt={artist} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div style={{ width: 36, height: 36, flexShrink: 0, clipPath: `path("${squirclePath(36)}")`, background: typeStyle.gradient, alignSelf: 'flex-start', overflow: 'hidden' }}>
-            {artistImage && <img src={artistImage} alt={artist} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: artistImagePosition, display: 'block' }} />}
-          </div>
-        )}
+        {/* アーティスト */}
+        <div style={{ ...ty.sub, marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {artist}
+        </div>
+        {/* メタ */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          {venue && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <MapPin size={11} weight="light" color="var(--color-encore-green)" />
+              <span style={{ ...ty.caption, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{venue}</span>
+            </div>
+          )}
+          {time && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Clock size={11} weight="light" color="var(--color-encore-green)" />
+              <span style={ty.caption}>{time}</span>
+            </div>
+          )}
+        </div>
       </div>
       </div>
     </div>

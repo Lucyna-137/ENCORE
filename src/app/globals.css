@@ -8,7 +8,7 @@
   --color-encore-green-muted: #8BA898;
   --color-encore-amber: #C08A4A;
   --color-encore-text-sub: rgba(26,58,45,0.55);
-  --color-encore-text-muted: rgba(26,58,45,0.35);
+  --color-encore-text-muted: rgba(26,58,45,0.90);
   --color-encore-border: #BAC2BB;
   --color-encore-border-light: #E4E2DD;
   --color-encore-white: #FFFFFF;
@@ -51,6 +51,71 @@
 @keyframes stepper-change {
   0% { transform: scale(1.3); opacity: 0.6; }
   100% { transform: scale(1); opacity: 1; }
+}
+
+/* ─── Grape rgba パレット（@theme 非対応のため :root で定義） ──────────── */
+:root {
+  --color-grape-tint-04: rgba(27,60,45,0.04);
+  --color-grape-tint-06: rgba(27,60,45,0.06);
+  --color-grape-tint-08: rgba(27,60,45,0.08);
+  --color-grape-tint-10: rgba(27,60,45,0.10);
+  --color-grape-tint-12: rgba(27,60,45,0.12);
+  --color-grape-tint-18: rgba(27,60,45,0.18);
+  --color-grape-tint-35: rgba(27,60,45,0.35);
+
+  /* ライブタイプ背景グラデーション（EventPreviewScreen プレースホルダー） */
+  --gradient-live-wanman: linear-gradient(135deg, rgba(27,60,45,0.22),  rgba(27,60,45,0.06));
+  --gradient-live-taiban: linear-gradient(135deg, rgba(139,168,152,0.28), rgba(139,168,152,0.08));
+  --gradient-live-fes:    linear-gradient(135deg, rgba(192,138,74,0.28),  rgba(192,138,74,0.07));
+  --gradient-live-other:  linear-gradient(135deg, rgba(139,168,152,0.28), rgba(139,168,152,0.08));
+
+  /* インフォ色（BackupNote 等） */
+  --color-info-bg:   rgba(0,122,255,0.08);
+  --color-info-text: rgba(0,90,200,0.85);
+}
+
+/* ─── Dark mode ─────────────────────────────────────────────────────────── */
+html[data-theme="dark"] {
+  /* 背景 */
+  --color-encore-bg:           #141A17;
+  --color-encore-bg-section:   #1C2420;
+  --color-encore-bg-card:      #222C28;
+
+  /* プライマリ */
+  --color-encore-green:        #A8C8B4;
+  --color-encore-green-muted:  #5A8070;
+  --color-encore-amber:        #D4A060;
+
+  /* テキスト */
+  --color-encore-text-sub:     rgba(168,200,180,0.60);
+  --color-encore-text-muted:   rgba(168,200,180,0.40);
+
+  /* ボーダー */
+  --color-encore-border:       #2E3D36;
+  --color-encore-border-light: #1E2A24;
+
+  /* システム */
+  --color-encore-error: #FF453A;
+  --color-body-bg:      #000000;
+
+  /* Grape tint（ダーク背景上で視認できる明るいグリーン基調） */
+  --color-grape-tint-04: rgba(168,200,180,0.04);
+  --color-grape-tint-06: rgba(168,200,180,0.06);
+  --color-grape-tint-08: rgba(168,200,180,0.08);
+  --color-grape-tint-10: rgba(168,200,180,0.10);
+  --color-grape-tint-12: rgba(168,200,180,0.12);
+  --color-grape-tint-18: rgba(168,200,180,0.18);
+  --color-grape-tint-35: rgba(168,200,180,0.35);
+
+  /* ライブタイプグラデーション（ダーク背景用） */
+  --gradient-live-wanman: linear-gradient(135deg, rgba(168,200,180,0.20), rgba(168,200,180,0.06));
+  --gradient-live-taiban: linear-gradient(135deg, rgba(90,128,112,0.30),  rgba(90,128,112,0.10));
+  --gradient-live-fes:    linear-gradient(135deg, rgba(212,160,96,0.25),  rgba(212,160,96,0.08));
+  --gradient-live-other:  linear-gradient(135deg, rgba(90,128,112,0.30),  rgba(90,128,112,0.10));
+
+  /* インフォ色（ダーク用） */
+  --color-info-bg:   rgba(10,132,255,0.15);
+  --color-info-text: rgba(10,132,255,1);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -201,6 +266,49 @@ body {
   width: 100%;
 }
 
+/* Calendar slide navigation */
+@keyframes slot-appear {
+  from { opacity: 0; transform: scaleY(0.6); }
+  to   { opacity: 1; transform: scaleY(1); }
+}
+
+@keyframes cal-slide-in-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes cal-slide-in-left {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+/* Bell ring animation (A) */
+@keyframes encore-bell-ring {
+  0%,  100% { transform: rotate(0deg);   }
+  10%        { transform: rotate(-18deg); }
+  20%        { transform: rotate(18deg);  }
+  30%        { transform: rotate(-14deg); }
+  40%        { transform: rotate(14deg);  }
+  50%        { transform: rotate(-8deg);  }
+  60%        { transform: rotate(8deg);   }
+  70%        { transform: rotate(-4deg);  }
+  80%        { transform: rotate(4deg);   }
+  90%        { transform: rotate(0deg);   }
+}
+.encore-bell-ring {
+  animation: encore-bell-ring 1.4s ease-in-out 0.4s infinite;
+  transform-origin: top center;
+  display: inline-flex;
+}
+
+/* Border pulse animation (B) */
+@keyframes encore-border-pulse {
+  0%,  100% { opacity: 1;    }
+  50%        { opacity: 0.2;  }
+}
+.encore-border-pulse {
+  animation: encore-border-pulse 1.6s ease-in-out infinite;
+}
+
 /* Pie chart avatar float animation */
 @keyframes encore-float {
   0%, 100% { transform: translateY(0px); }
@@ -208,4 +316,10 @@ body {
 }
 .encore-float {
   animation: encore-float 3s ease-in-out infinite;
+}
+
+/* Hide native browser date/time picker icons */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  display: none;
 }

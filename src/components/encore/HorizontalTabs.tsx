@@ -6,6 +6,7 @@ import * as ty from './typographyStyles'
 interface HorizontalTabsProps {
   tabs: (string | React.ReactNode)[]
   defaultActive?: number
+  active?: number
   onChange?: (index: number) => void
   children?: React.ReactNode
 }
@@ -13,10 +14,12 @@ interface HorizontalTabsProps {
 export default function HorizontalTabs({
   tabs,
   defaultActive = 0,
+  active: controlledActive,
   onChange,
   children,
 }: HorizontalTabsProps) {
-  const [active, setActive] = useState(defaultActive)
+  const [internalActive, setInternalActive] = useState(defaultActive)
+  const active = controlledActive ?? internalActive
   const [indicator, setIndicator] = useState({ left: 0, width: 0 })
   const tabRefs = useRef<(HTMLDivElement | null)[]>([])
   const stripRef = useRef<HTMLDivElement>(null)
@@ -36,7 +39,7 @@ export default function HorizontalTabs({
   useEffect(() => { updateIndicator(active) }, [active])
 
   const handleClick = (i: number) => {
-    setActive(i)
+    if (controlledActive === undefined) setInternalActive(i)
     onChange?.(i)
   }
 

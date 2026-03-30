@@ -7,11 +7,13 @@ import * as ty from './typographyStyles'
 interface SearchBarProps {
   placeholder?: string
   suggestions?: string[]
+  containerStyle?: React.CSSProperties
 }
 
 export default function SearchBar({
   placeholder = 'アーティスト・ライブ名を検索',
   suggestions = [],
+  containerStyle,
 }: SearchBarProps) {
   const [value, setValue] = useState('')
   const [isFocused, setIsFocused] = useState(false)
@@ -34,6 +36,7 @@ export default function SearchBar({
           padding: '0 16px',
           height: 42,
           margin: '12px 20px',
+          ...containerStyle,
           border: isFocused ? '1px solid var(--color-encore-green)' : '1px solid transparent',
           transition: 'border-color 0.15s',
         }}
@@ -52,6 +55,7 @@ export default function SearchBar({
           className="flex-1 outline-none"
           style={{
             ...ty.body,
+            fontSize: 15,
             background: 'transparent',
             border: 'none',
           }}

@@ -36,11 +36,11 @@ export default function ListRow({ icon, label, value, showChevron = true, onClic
           {icon}
         </div>
       )}
-      <div className="flex-1" style={ty.body}>
+      <div className="flex-1" style={{ ...ty.body, fontSize: 15 }}>
         {label}
       </div>
       {value && (
-        <div style={{ ...ty.body, color: 'var(--color-encore-text-muted)' }}>{value}</div>
+        <div style={{ ...ty.body, fontSize: 15, color: 'var(--color-encore-text-muted)' }}>{value}</div>
       )}
       {showChevron && (
         <div className="flex-shrink-0 flex items-center">

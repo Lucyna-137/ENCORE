@@ -42,7 +42,7 @@ export default function BottomSheet({ isOpen, onClose, title, subtitle, children
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0 24px' }}>
-          <div style={{ width: 36, height: 4, background: 'var(--color-encore-border-light)', borderRadius: 999 }} />
+          <div style={{ width: 36, height: 4, background: 'var(--color-encore-border)', borderRadius: 999 }} />
         </div>
         <div style={{ ...ty.section, textAlign: 'center', marginBottom: 4 }}>
           {title}

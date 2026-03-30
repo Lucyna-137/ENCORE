@@ -774,7 +774,7 @@ export default function Page() {
             <div className="flex flex-col gap-2">
               <Chip>Live Status</Chip>
               <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '20px 24px', display: 'flex', flexWrap: 'wrap', gap: 10, width: 375 }}>
-                {(['抽選中', '当選', '落選'] as const).map(s => <LiveStatusBadge key={s} status={s} />)}
+                {(['予定', '抽選中', '当選', '落選', '終了'] as const).map(s => <LiveStatusBadge key={s} status={s} />)}
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
+import PaletteProvider from "@/components/encore/PaletteProvider";
 
 const googleSans = localFont({
   src: [
@@ -32,8 +33,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja" className={`${googleSans.variable} ${notoSansJP.variable}`}>
+    <html lang="ja" className={`${googleSans.variable} ${notoSansJP.variable}`} suppressHydrationWarning>
+      <head>
+        {/* ダークモードフラッシュ防止: React hydration より前に data-theme を付与 */}
+        <script dangerouslySetInnerHTML={{ __html:
+          `(function(){try{var t=localStorage.getItem('grape-theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();`
+        }} />
+      </head>
       <body className="antialiased">
+        <PaletteProvider />
         {children}
       </body>
     </html>

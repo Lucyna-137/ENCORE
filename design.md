@@ -196,3 +196,53 @@
 
 ## 今後の作業
 - ブランド名「ENCORE」は仮名 → 確定後に全置換が必要
+
+---
+
+## Grape アプリ デザイン仕様（2026-03-19 追加）
+
+### ルート構成
+- `/grape/calendar` — カレンダーページ（メイン）
+- `/grape/tickets` — チケット管理ページ
+- `/grape/report`, `/grape/settings` — 未実装（Tab Bar には表示あり）
+
+### Grape Tab Bar
+ENCORE `TabBar.tsx` と完全同一パターンで実装:
+- `weight="regular"`, `size=24`
+- アクティブ色: `var(--color-encore-amber)`
+- 非アクティブ色: `var(--color-encore-green)`
+- ラベル: uppercase, 9px, fontWeight 700, letterSpacing 0.08em
+- アイテム: CALENDAR（CalendarBlank）/ TICKETS（Ticket）/ REPORT（ChartBar）/ SETTINGS（GearSix）
+
+### Grape ページヘッダー
+```
+[captionMuted + uppercase + letterSpacing 0.14em] → "Grape"
+[ty.display, lineHeight: 1] → "Calendar" or "Tickets"
+```
+
+### Grape ViewToggle（CalendarViewToggle）
+- ENCORE `ViewToggle.tsx` と同一パターン（sliding indicator）
+- オプション: Month / Week / Day / List
+- 背景: `var(--color-encore-bg-section)`, 角丸: 999px
+- インジケーター: `var(--color-encore-green)`, left + width の CSS transition
+
+### Grape カレンダー仕様
+- **月ビュー**: 1px gap グリッド・32x32カバーサムネイル・overflow バッジ・today circle・選択セル bg
+- **週ビュー**: 48px/hour・現在時刻ライン・attendanceStatus カラーのイベントブロック
+- **日ビュー**: 56px/hour・CaretLeft/Right ナビ・「今日」ピル・mount 時 10時へスクロール
+- **リストビュー**: LiveCard コンポーネント使用・月区切りヘッダー・背景 `var(--color-encore-bg-section)`
+  - 過去イベント: opacity 0.6
+  - 月ヘッダー: `ty.title`（20px）＋ `ty.captionMuted`（年）
+
+### AttendanceStatus → LiveCard LiveStatus マッピング
+| AttendanceStatus | LiveCard LiveStatus |
+|-----------------|---------------------|
+| candidate / planned | 予定 |
+| raffle | 抽選中 |
+| won | 当選 |
+| lost | 落選 |
+| attended / skipped | 終了 |
+
+### Grape 静的アセット（public/grape/）
+- アーティスト画像: `/grape/artist/` — somei.JPG / シユイ.JPG / 優利香.JPG / Ado.JPG / スーパー登山部.JPG / yama.JPG
+- カバー画像: `/grape/cover/` — 各イベントフライヤー（詳細は MEMORY.md の画像紐付けを参照）

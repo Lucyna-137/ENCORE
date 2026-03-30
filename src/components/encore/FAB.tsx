@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useRef } from 'react'
 import { Plus } from '@phosphor-icons/react'
 import * as ty from './typographyStyles'
 
@@ -12,11 +12,31 @@ interface FABProps {
 
 export default function FAB({ label, onClick, variant = 'default' }: FABProps) {
   const isExtended = variant === 'extended' && label
+  const btnRef = useRef<HTMLButtonElement>(null)
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const btn = btnRef.current
+    if (btn) {
+      const rect = btn.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
+      const ripple = document.createElement('span')
+      ripple.className = 'encore-ripple'
+      ripple.style.left = `${x}px`
+      ripple.style.top = `${y}px`
+      btn.appendChild(ripple)
+      setTimeout(() => ripple.remove(), 600)
+    }
+    onClick?.()
+  }
 
   return (
     <button
-      onClick={onClick}
+      ref={btnRef}
+      onClick={handleClick}
       style={{
+        position: 'relative',
+        overflow: 'hidden',
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -30,13 +50,12 @@ export default function FAB({ label, onClick, variant = 'default' }: FABProps) {
         cursor: 'pointer',
         boxShadow: 'none',
         ...ty.bodySM,
+        fontWeight: 700,
         color: 'var(--color-encore-white)',
         letterSpacing: '0.02em',
-        transition: 'opacity 0.15s, transform 0.15s',
+        transition: 'transform 0.1s',
         WebkitTapHighlightColor: 'transparent',
       }}
-      onMouseDown={e => (e.currentTarget.style.opacity = '0.85')}
-      onMouseUp={e => (e.currentTarget.style.opacity = '1')}
     >
       <Plus size={20} weight="light" />
       {isExtended && <span>{label}</span>}

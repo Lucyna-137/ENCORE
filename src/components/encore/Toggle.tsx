@@ -28,7 +28,7 @@ export default function Toggle({ label, defaultChecked = true, onChange }: Toggl
         WebkitTapHighlightColor: 'transparent',
       }}
     >
-      <span style={{ ...ty.body, pointerEvents: 'none' }}>{label}</span>
+      <span style={{ ...ty.body, fontSize: 15, pointerEvents: 'none' }}>{label}</span>
       <div
         className="relative flex-shrink-0 transition-colors duration-[250ms]"
         style={{

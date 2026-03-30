@@ -60,6 +60,7 @@ export default function QuantityStepper({
         className="encore-stepper-val flex items-center justify-center"
         style={{
           ...ty.price,
+          fontSize: 18,
           minWidth: 40,
           textAlign: 'center',
           height: 40,
