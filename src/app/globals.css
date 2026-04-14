@@ -318,6 +318,12 @@ body {
   animation: encore-float 3s ease-in-out infinite;
 }
 
+/* ページタイトルのベースライン揃え（ディセンダー起因のズレを補正） */
+.grape-page-title {
+  text-box-trim: trim-end;
+  text-box-edge: cap alphabetic;
+}
+
 /* Hide native browser date/time picker icons */
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {

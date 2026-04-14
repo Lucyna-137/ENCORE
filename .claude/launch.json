@@ -2,16 +2,9 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "ENCORE Dev Server",
+      "name": "ENCORE",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "port": 3000,
-      "autoPort": false
-    },
-    {
-      "name": "ENCORE Production Preview",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "start"],
       "port": 3000
     }
   ]

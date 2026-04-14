@@ -10,13 +10,13 @@ import {
   Question, Envelope,
   FileText, ShieldCheck, Info, Star, ArrowSquareOut,
   MusicNote, UserCircle, PencilSimple, Trash, X,
-  Check, UserCirclePlus, UploadSimple, Cake, CaretDown, CaretUp, Warning,
+  Check, UserCirclePlus, UploadSimple, Cake, CaretDown, CaretUp, Warning, Plus,
 } from '@phosphor-icons/react'
 import { useGrapeStore } from '@/lib/grape/useGrapeStore'
-import type { GrapeArtist } from '@/lib/grape/types'
+import type { GrapeArtist, ArtistMember } from '@/lib/grape/types'
 import { DOW_SUN_COLOR, DOW_SAT_COLOR } from '@/lib/grape/constants'
 import ColorPicker from '@/components/encore/ColorPicker'
-import { PRESET_SCHEMES, loadPaletteScheme, getCurrentPaletteSchemeId } from '@/components/encore/ColorPalette'
+import { PRESET_SCHEMES, loadPaletteScheme, getCurrentPaletteSchemeId, subscribeToSchemeId } from '@/components/encore/ColorPalette'
 
 // ─── 定数 ─────────────────────────────────────────────────────────────────────
 
@@ -199,18 +199,27 @@ const SCHEME_PREVIEWS: Record<string, [string, string, string]> = {
 }
 
 function StyleSelector() {
-  const [activeId, setActiveId] = React.useState(() => getCurrentPaletteSchemeId())
+  // useSyncExternalStore を使うことで:
+  //   - getSnapshot (= getCurrentPaletteSchemeId) は毎レンダーに呼ばれる
+  //     → Next.js ルーターキャッシュでコンポーネントが再マウントされない場合も
+  //       ページ復帰時のレンダーで常に最新の localStorage 値を読み直せる
+  //   - encore-palette-update イベントで外部変更も即座に反映される
+  const activeId = React.useSyncExternalStore(
+    subscribeToSchemeId,
+    getCurrentPaletteSchemeId,
+    () => 'preset-grape',
+  )
 
   const options = PRESET_SCHEMES.map(s => ({ id: s.id, label: s.name }))
 
   const handleSelect = (id: string) => {
     loadPaletteScheme(id)
-    setActiveId(id)
+    // activeId は useSyncExternalStore が encore-palette-update で自動更新する
   }
 
   return (
     <div style={{ padding: '12px 20px', background: 'var(--color-encore-bg)' }}>
-      <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 2 }}>
+      <div style={{ display: 'flex', gap: 8 }}>
         {options.map(({ id, label }) => {
           const isActive = activeId === id
           const [bg, primary, accent] = SCHEME_PREVIEWS[id] ?? ['#FAF8F4', '#1A3A2D', '#C08A4A']
@@ -219,14 +228,16 @@ function StyleSelector() {
               key={id}
               onClick={() => handleSelect(id)}
               style={{
-                flexShrink: 0, height: 40, borderRadius: 8, padding: '0 12px',
+                flex: 1,
+                borderRadius: 10, padding: '9px 8px 8px',
                 border: isActive
                   ? '1.5px solid var(--color-encore-green)'
                   : '1.5px solid var(--color-encore-border-light)',
                 background: isActive ? 'var(--color-grape-tint-06)' : 'transparent',
-                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 7,
+                cursor: 'pointer',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
                 fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                fontSize: 13, fontWeight: isActive ? 700 : 400,
+                fontSize: 11, fontWeight: isActive ? 700 : 400,
                 color: isActive ? 'var(--color-encore-green)' : 'var(--color-encore-text-sub)',
                 WebkitTapHighlightColor: 'transparent', transition: 'all 0.15s',
               }}
@@ -235,7 +246,7 @@ function StyleSelector() {
               <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                 {[bg, primary, accent].map((c, i) => (
                   <div key={i} style={{
-                    width: 8, height: 8, borderRadius: '50%',
+                    width: 9, height: 9, borderRadius: '50%',
                     background: c,
                     border: '1px solid rgba(0,0,0,0.1)',
                     flexShrink: 0,
@@ -394,10 +405,14 @@ function ArtistEditSheet({
   const [name,         setName]         = useState(artist.name)
   const [image,        setImage]        = useState(artist.image ?? '')
   const [birthday,     setBirthday]     = useState(artist.birthday ?? '')
+  const [members,      setMembers]      = useState<ArtistMember[]>(artist.members ?? [])
   const [alwaysColor,  setAlwaysColor]  = useState(artist.alwaysColor ?? false)
   const [defaultColor, setDefaultColor] = useState<string | null>(artist.defaultColor ?? null)
   const [showOverlay,  setShowOverlay]  = useState(false)
   const [showBdPicker, setShowBdPicker] = useState(false)
+  // メンバー誕生日ピッカー（同時に1つだけ開く）
+  const [openMemberPicker,    setOpenMemberPicker]    = useState<number | null>(null)
+  const [memberPickerMonth,   setMemberPickerMonth]   = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // カレンダーの表示月（初期値: 選択済み誕生日の月 or 現在月）
@@ -430,6 +445,21 @@ function ArtistEditSheet({
   ]
   // 7の倍数に揃える
   while (calCells.length % 7 !== 0) calCells.push(null)
+
+  // メンバーピッカー用カレンダー計算
+  const memberFirstDow    = new Date(2000, memberPickerMonth, 1).getDay()
+  const memberDaysInMonth = new Date(2000, memberPickerMonth + 1, 0).getDate()
+  const memberCalCells: (number | null)[] = [
+    ...Array(memberFirstDow).fill(null),
+    ...Array.from({ length: memberDaysInMonth }, (_, i) => i + 1),
+  ]
+  while (memberCalCells.length % 7 !== 0) memberCalCells.push(null)
+
+  // 現在開いているメンバーの選択日
+  const openMemberBd     = openMemberPicker !== null ? (members[openMemberPicker]?.birthday ?? '') : ''
+  const openMemberBdParts = openMemberBd ? openMemberBd.split('-').map(Number) : null
+  const openMemberBdMonth = openMemberBdParts?.[1] ?? null
+  const openMemberBdDay   = openMemberBdParts?.[2] ?? null
 
   const DOW_LABELS = ['日', '月', '火', '水', '木', '金', '土']
 
@@ -513,6 +543,7 @@ function ArtistEditSheet({
               name: name.trim(),
               image: image || undefined,
               birthday: birthday || undefined,
+              members: members.length > 0 ? members : undefined,
               alwaysColor: alwaysColor || undefined,
               defaultColor: (alwaysColor && defaultColor) ? defaultColor : undefined,
             })}
@@ -718,6 +749,145 @@ function ArtistEditSheet({
                 </div>
               </div>
             )}
+          </div>
+
+          {/* メンバー誕生日 */}
+          <div>
+            <div style={{ ...ty.captionMuted, marginBottom: 6, textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>
+              メンバー誕生日（任意）
+            </div>
+
+            {members.map((member, idx) => (
+              <div key={idx}>
+                {/* メンバー行 */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  borderBottom: `1.5px solid ${openMemberPicker === idx ? 'var(--color-encore-green)' : 'var(--color-encore-border-light)'}`,
+                  padding: '8px 0',
+                  transition: 'border-color 0.15s',
+                }}>
+                  <input
+                    value={member.name}
+                    onChange={e => {
+                      const updated = [...members]
+                      updated[idx] = { ...updated[idx], name: e.target.value }
+                      setMembers(updated)
+                    }}
+                    placeholder="名前"
+                    style={{
+                      flex: 1, border: 'none', outline: 'none', background: 'transparent',
+                      fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                      fontSize: 15, fontWeight: 400, color: 'var(--color-encore-green)',
+                    }}
+                  />
+                  <button
+                    onClick={() => {
+                      if (openMemberPicker === idx) {
+                        setOpenMemberPicker(null)
+                      } else {
+                        const m = member.birthday ? parseInt(member.birthday.split('-')[1]) - 1 : new Date().getMonth()
+                        setMemberPickerMonth(m)
+                        setOpenMemberPicker(idx)
+                        setShowBdPicker(false)
+                      }
+                    }}
+                    style={{
+                      background: 'transparent', border: 'none', cursor: 'pointer',
+                      fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                      fontSize: 13, fontWeight: 400, flexShrink: 0,
+                      color: member.birthday ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)',
+                      padding: '2px 0',
+                      WebkitTapHighlightColor: 'transparent',
+                    }}
+                  >
+                    <Cake size={14} weight="regular" color="var(--color-encore-text-muted)" style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                    <span style={{ verticalAlign: 'middle' }}>
+                      {member.birthday ? formatBirthday(member.birthday) : '誕生日'}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMembers(members.filter((_, i) => i !== idx))
+                      if (openMemberPicker === idx) setOpenMemberPicker(null)
+                      else if (openMemberPicker !== null && openMemberPicker > idx) setOpenMemberPicker(openMemberPicker - 1)
+                    }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, lineHeight: 1, flexShrink: 0, WebkitTapHighlightColor: 'transparent' }}
+                  >
+                    <X size={14} weight="bold" color="var(--color-encore-text-muted)" />
+                  </button>
+                </div>
+
+                {/* メンバー誕生日ピッカー */}
+                {openMemberPicker === idx && (
+                  <div style={{
+                    marginTop: 8, marginBottom: 4,
+                    borderRadius: 10,
+                    border: '1px solid var(--color-encore-border-light)',
+                    background: 'var(--color-encore-bg)',
+                    padding: '12px 10px 14px',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
+                      <button onClick={() => setMemberPickerMonth(m => Math.max(0, m - 1))} disabled={memberPickerMonth === 0} style={navBtnStyle(memberPickerMonth === 0)}>‹</button>
+                      <span style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)' }}>
+                        {memberPickerMonth + 1}月
+                      </span>
+                      <button onClick={() => setMemberPickerMonth(m => Math.min(11, m + 1))} disabled={memberPickerMonth === 11} style={navBtnStyle(memberPickerMonth === 11)}>›</button>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 4 }}>
+                      {DOW_LABELS.map((d, i) => (
+                        <div key={d} style={{ textAlign: 'center', padding: '2px 0', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, fontWeight: 700, color: i === 0 ? DOW_SUN_COLOR : i === 6 ? DOW_SAT_COLOR : 'var(--color-encore-text-muted)' }}>{d}</div>
+                      ))}
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px 0' }}>
+                      {memberCalCells.map((day, ci) => {
+                        if (!day) return <div key={`me-${ci}`} />
+                        const isSelected = day === openMemberBdDay && memberPickerMonth + 1 === openMemberBdMonth
+                        const dow = (memberFirstDow + (day - 1)) % 7
+                        return (
+                          <button
+                            key={day}
+                            onClick={() => {
+                              const mm = String(memberPickerMonth + 1).padStart(2, '0')
+                              const dd = String(day).padStart(2, '0')
+                              const updated = [...members]
+                              updated[idx] = { ...updated[idx], birthday: `2000-${mm}-${dd}` }
+                              setMembers(updated)
+                              setOpenMemberPicker(null)
+                            }}
+                            style={{
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              height: 36, borderRadius: 999,
+                              background: isSelected ? 'var(--color-encore-green)' : 'transparent',
+                              border: 'none', cursor: 'pointer',
+                              fontFamily: 'var(--font-google-sans), sans-serif',
+                              fontSize: 12, fontWeight: isSelected ? 700 : 400,
+                              color: isSelected ? '#fff' : dow === 0 ? DOW_SUN_COLOR : dow === 6 ? DOW_SAT_COLOR : 'var(--color-encore-green)',
+                              WebkitTapHighlightColor: 'transparent',
+                              transition: 'background 0.12s',
+                            }}
+                          >{day}</button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {/* メンバー追加ボタン */}
+            <button
+              onClick={() => setMembers(prev => [...prev, { name: '' }])}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                background: 'transparent', border: 'none', cursor: 'pointer',
+                padding: '10px 0', WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              <Plus size={13} weight="bold" color="var(--color-encore-green)" />
+              <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 13, fontWeight: 700, color: 'var(--color-encore-green)' }}>
+                メンバーを追加
+              </span>
+            </button>
           </div>
 
           {/* イベントカラー設定 */}
@@ -995,7 +1165,7 @@ function ArtistManageSection({
               >
                 {expanded
                   ? <><CaretUp size={13} weight="bold" /> 折りたたむ</>
-                  : <><CaretDown size={13} weight="bold" /> 他{hiddenCount}人を表示</>
+                  : <><CaretDown size={13} weight="bold" /> 他{hiddenCount}組を表示</>
                 }
               </button>
             </>
@@ -1080,7 +1250,7 @@ export default function SettingsPage() {
           background: 'var(--color-encore-bg)',
           flexShrink: 0,
         }}>
-          <div style={{ ...ty.display, lineHeight: 1 }}>Settings</div>
+          <div className="grape-page-title" style={{ ...ty.display, lineHeight: 1 }}>Settings</div>
         </div>
 
         {/* ── スクロールコンテンツ ── */}
@@ -1096,6 +1266,11 @@ export default function SettingsPage() {
             onDelete={setDeletingArtist}
             onAdd={() => setIsAdding(true)}
           />
+
+          {/* 表示 */}
+          <SettingsSection label="表示">
+            <StyleSelector />
+          </SettingsSection>
 
           {/* 通知 */}
           <SettingsSection label="通知">
@@ -1148,11 +1323,6 @@ export default function SettingsPage() {
               onClick={() => {}}
             />
             <BackupNote />
-          </SettingsSection>
-
-          {/* 表示 */}
-          <SettingsSection label="表示">
-            <StyleSelector />
           </SettingsSection>
 
           {/* サポート */}

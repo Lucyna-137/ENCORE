@@ -11,30 +11,30 @@ interface AttendanceStatusMarkerProps {
 export default function AttendanceStatusMarker({ status }: AttendanceStatusMarkerProps) {
   switch (status) {
     case 'candidate':
-      // 気になる: ○ 空洞円（アンバー）
+      // 気になる: ○ 空洞円（ミュート）
       return (
         <Circle
           size={11}
           weight="regular"
-          color="var(--color-encore-amber)"
+          color="var(--color-encore-text-sub)"
         />
       )
     case 'planned':
-      // 行く: ● 塗り円（グリーン）
+      // 行く: ● 塗り円（アンバー）
       return (
         <Circle
           size={11}
           weight="fill"
-          color="var(--color-encore-green)"
+          color="var(--color-encore-amber)"
         />
       )
     case 'attended':
-      // 参戦済み: ✓ チェック（グリーン、薄め）
+      // 参戦済み: ✓ チェック（グリーン）
       return (
         <Check
           size={11}
           weight="bold"
-          color="var(--color-encore-green-muted)"
+          color="var(--color-encore-green)"
         />
       )
     case 'skipped':

@@ -39,6 +39,28 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html:
           `(function(){try{var t=localStorage.getItem('grape-theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();`
         }} />
+        {/* カラースキームフラッシュ防止: 最初のペイント前に CSS 変数を同期的に適用 */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{
+var defs=[
+['bg','--color-encore-bg','#F5F3FB',1],
+['bg-section','--color-encore-bg-section','#EDE9F5',1],
+['green','--color-encore-green','#3D1A78',1],
+['green-muted','--color-encore-green-muted','#9878CC',1],
+['amber','--color-encore-amber','#C04890',1],
+['text-sub','--color-encore-text-sub','#3D1A78',0.55],
+['text-muted','--color-encore-text-muted','#3D1A78',0.35],
+['border','--color-encore-border','#C0B2D8',1],
+['border-light','--color-encore-border-light','#E0DAF0',1],
+['white','--color-encore-white','#FFFFFF',1]
+];
+var saved=null;
+try{var raw=localStorage.getItem('encore-palette-v2');if(raw)saved=JSON.parse(raw);}catch(e){}
+for(var i=0;i<defs.length;i++){
+var d=defs[i],v=saved&&saved[d[0]]?saved[d[0]]:{hex:d[2],alpha:d[3]};
+var rr=parseInt(v.hex.slice(1,3),16),gg=parseInt(v.hex.slice(3,5),16),bb=parseInt(v.hex.slice(5,7),16);
+document.documentElement.style.setProperty(d[1],v.alpha<1?'rgba('+rr+','+gg+','+bb+','+v.alpha+')':v.hex);
+}
+}catch(e){}})();` }} />
       </head>
       <body className="antialiased">
         <PaletteProvider />

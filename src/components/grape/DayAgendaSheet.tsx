@@ -40,20 +40,22 @@ function getSummaryCounts(lives: GrapeLive[]) {
 export default function DayAgendaSheet({ date, lives, onClose, onAddLive, onStatusChange, onEventTap }: DayAgendaSheetProps) {
   const [mounted, setMounted] = useState(false)
   const [sort, setSort] = useState<SortKey>('time')
+  const [activeFilter, setActiveFilter] = useState<AttendanceStatus | null>(null)
   const isOpen = date !== null
 
   const sortedLives = useMemo(() => {
-    const arr = [...lives]
+    const arr = activeFilter ? lives.filter(l => l.attendanceStatus === activeFilter) : [...lives]
     if (sort === 'time') arr.sort((a, b) => a.startTime.localeCompare(b.startTime))
     else arr.sort((a, b) => STATUS_ORDER[a.attendanceStatus] - STATUS_ORDER[b.attendanceStatus])
     return arr
-  }, [lives, sort])
+  }, [lives, sort, activeFilter])
 
   useEffect(() => {
     if (isOpen) {
       requestAnimationFrame(() => setMounted(true))
     } else {
       setMounted(false)
+      setActiveFilter(null)
     }
   }, [isOpen])
 
@@ -115,53 +117,68 @@ export default function DayAgendaSheet({ date, lives, onClose, onAddLive, onStat
             </span>
           </div>
 
-          {/* Summary pills */}
+          {/* Summary pills（タップでフィルター） */}
           {lives.length > 0 && (
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {counts.attended > 0 && (
-                <span
+                <button
+                  onClick={() => setActiveFilter(f => f === 'attended' ? null : 'attended')}
                   style={{
                     ...ty.caption,
                     fontWeight: 700,
                     fontSize: 10,
                     padding: '3px 9px',
                     borderRadius: 999,
-                    background: 'var(--color-encore-green)',
-                    color: 'var(--color-encore-white)',
+                    background: activeFilter === 'attended' ? 'var(--color-encore-green)' : 'var(--color-encore-bg-section)',
+                    color: activeFilter === 'attended' ? 'var(--color-encore-white)' : 'var(--color-encore-green)',
+                    border: activeFilter === 'attended' ? 'none' : '1px solid var(--color-encore-green)',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                    WebkitTapHighlightColor: 'transparent',
                   }}
                 >
                   参戦済み {counts.attended}
-                </span>
+                </button>
               )}
               {counts.planned > 0 && (
-                <span
+                <button
+                  onClick={() => setActiveFilter(f => f === 'planned' ? null : 'planned')}
                   style={{
                     ...ty.caption,
                     fontWeight: 700,
                     fontSize: 10,
                     padding: '3px 9px',
                     borderRadius: 999,
-                    background: 'var(--color-grape-tint-08)',
+                    background: activeFilter === 'planned' ? 'var(--color-grape-tint-08)' : 'var(--color-encore-bg-section)',
                     color: 'var(--color-encore-green)',
+                    border: activeFilter === 'planned' ? 'none' : '1px solid var(--color-encore-border-light)',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                    WebkitTapHighlightColor: 'transparent',
                   }}
                 >
                   行く {counts.planned}
-                </span>
+                </button>
               )}
               {counts.candidate > 0 && (
-                <span
+                <button
+                  onClick={() => setActiveFilter(f => f === 'candidate' ? null : 'candidate')}
                   style={{
                     ...ty.caption,
                     fontWeight: 700,
                     fontSize: 10,
                     padding: '3px 9px',
                     borderRadius: 999,
-                    background: 'var(--color-encore-bg-section)',
-                    color: 'var(--color-encore-text-muted)',
+                    background: activeFilter === 'candidate' ? 'var(--color-encore-amber)' : 'var(--color-encore-bg-section)',
+                    color: activeFilter === 'candidate' ? 'var(--color-encore-white)' : 'var(--color-encore-text-muted)',
+                    border: activeFilter === 'candidate' ? 'none' : '1px solid var(--color-encore-border-light)',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                    WebkitTapHighlightColor: 'transparent',
                   }}
                 >
                   気になる {counts.candidate}
-                </span>
+                </button>
               )}
             </div>
           )}

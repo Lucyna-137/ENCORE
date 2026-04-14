@@ -452,12 +452,12 @@ export default function CalendarPage() {
             background: 'var(--color-encore-bg)',
             flexShrink: 0,
             display: 'flex',
-            alignItems: 'flex-end',
+            alignItems: 'flex-start',
             justifyContent: 'space-between',
           }}
         >
           <div>
-            <div style={{ ...ty.display, lineHeight: 1 }}>Calendar</div>
+            <div className="grape-page-title" style={{ ...ty.display, lineHeight: 1 }}>Calendar</div>
           </div>
           <button
             onClick={handleGoToToday}

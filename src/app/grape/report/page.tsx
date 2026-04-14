@@ -6,8 +6,9 @@ import { StatusBar } from '@/components/encore/NavHeader'
 import type { GrapeLive, GrapeArtist } from '@/lib/grape/types'
 import { useGrapeStore } from '@/lib/grape/useGrapeStore'
 import { LIVE_TYPE_COLOR } from '@/lib/grape/constants'
-import { CalendarBlank, Ticket, ChartBar, GearSix } from '@phosphor-icons/react'
+import { CalendarBlank, Ticket, ChartBar, GearSix, CaretLeft, CaretRight } from '@phosphor-icons/react'
 import ArtistCard from '@/components/encore/ArtistCard'
+import PieChart from '@/components/encore/PieChart'
 
 // ─── 定数 ─────────────────────────────────────────────────────────────────────
 
@@ -138,10 +139,11 @@ function SectionLabel({ label }: { label: string }) {
 // ─── HeroCard ──────────────────────────────────────────────────────────────────
 
 function HeroCard({
-  lives, period, artistStats, venueStats,
+  lives, period, periodLabel: propLabel, artistStats, venueStats,
 }: {
   lives: GrapeLive[]
   period: Period
+  periodLabel?: string
   artistStats: ReturnType<typeof computeArtistStats>
   venueStats: ReturnType<typeof computeVenueStats>
 }) {
@@ -159,11 +161,11 @@ function HeroCard({
   const animCandidate = useCountUp(candidate)
   const animSkipped   = useCountUp(skipped)
 
-  const heroLabel = period === '今月'
+  const heroLabel = propLabel ?? (period === '今月'
     ? `今月のイベント数 · ${CURRENT_MONTH}月`
     : period === '今年'
       ? `今年のイベント数 · ${CURRENT_YEAR}`
-      : '累計イベント数'
+      : '累計イベント数')
 
   return (
     <div style={{
@@ -565,14 +567,58 @@ function EmptyState({ period }: { period: Period }) {
 
 export default function ReportPage() {
   const { lives, artists } = useGrapeStore()
-  const [period, setPeriod] = useState<Period>('今年')
+  const [period, setPeriod]           = useState<Period>('今年')
+  const [monthOffset, setMonthOffset] = useState(0)
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
-  const filteredLives = useMemo(() => filterByPeriod(lives, period), [lives, period])
+  // 今月モード時に表示する年月
+  const displayDate = useMemo(() => {
+    const d = new Date(CURRENT_YEAR, CURRENT_MONTH - 1 + monthOffset)
+    return { year: d.getFullYear(), month: d.getMonth() + 1 }
+  }, [monthOffset])
+
+  const filteredLives = useMemo(() => {
+    if (period === '今月') {
+      const prefix = `${displayDate.year}-${String(displayDate.month).padStart(2, '0')}`
+      return lives.filter(l => l.date.startsWith(prefix))
+    }
+    return filterByPeriod(lives, period)
+  }, [lives, period, displayDate])
+
+  const heroLabel = period === '今月'
+    ? `イベント数 · ${displayDate.year !== CURRENT_YEAR ? `${displayDate.year}年` : ''}${displayDate.month}月`
+    : period === '今年'
+      ? `今年のイベント数 · ${CURRENT_YEAR}`
+      : '累計イベント数'
+
   const artistStats   = useMemo(() => computeArtistStats(filteredLives, artists), [filteredLives, artists])
   const venueStats    = useMemo(() => computeVenueStats(filteredLives), [filteredLives])
   const monthlyStats  = useMemo(() => computeMonthlyStats(filteredLives), [filteredLives])
   const typeStats     = useMemo(() => computeTypeStats(filteredLives), [filteredLives])
   const maxVenue      = venueStats[0]?.count ?? 1
+
+  // スワイプハンドラ（今月モード時のみ月送り）
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || period !== '今月') return
+    const dx = e.changedTouches[0].clientX - touchStartRef.current.x
+    const dy = e.changedTouches[0].clientY - touchStartRef.current.y
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      setMonthOffset(o => dx < 0 ? o + 1 : o - 1)
+    }
+    touchStartRef.current = null
+  }
+
+  // PieChart 用データ: alwaysColor 設定済みならそのカラー、未設定は ARTIST_COLORS ローテーション
+  const pieData = useMemo(() => artistStats.map((stat, i) => {
+    const artist = artists.find(a => a.name === stat.name)
+    const color  = (artist?.alwaysColor && artist?.defaultColor)
+      ? artist.defaultColor
+      : ARTIST_COLORS[i % ARTIST_COLORS.length]
+    return { label: stat.name, value: stat.count, color, image: stat.image, avatarColor: color }
+  }), [artistStats, artists])
 
   return (
     <div style={{
@@ -595,41 +641,75 @@ export default function ReportPage() {
           background: 'var(--color-encore-bg)',
           flexShrink: 0,
         }}>
-          <div style={{ ...ty.display, lineHeight: 1 }}>Report</div>
+          <div className="grape-page-title" style={{ ...ty.display, lineHeight: 1 }}>Report</div>
         </div>
 
         {/* ── 期間タブ ── */}
         <div style={{
-          display: 'flex', gap: 8, padding: '10px 20px',
+          display: 'flex', alignItems: 'center', padding: '10px 20px',
           background: 'var(--color-encore-bg)',
           borderBottom: '1px solid var(--color-encore-border-light)',
           flexShrink: 0,
         }}>
-          {PERIODS.map(p => {
-            const isActive = p === period
-            return (
+          <div style={{ display: 'flex', gap: 8, flex: 1 }}>
+            {PERIODS.map(p => {
+              const isActive = p === period
+              return (
+                <button
+                  key={p}
+                  onClick={() => { setPeriod(p); setMonthOffset(0) }}
+                  style={{
+                    padding: '5px 16px', borderRadius: 999,
+                    border: isActive ? 'none' : '1.5px solid var(--color-encore-border)',
+                    background: isActive ? 'var(--color-encore-green)' : 'transparent',
+                    color: isActive ? 'var(--color-encore-white)' : 'var(--color-encore-text-sub)',
+                    fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                    fontSize: 12, fontWeight: 700,
+                    cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {p}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* 月ナビゲーション（今月選択時のみ） */}
+          {period === '今月' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <button
-                key={p}
-                onClick={() => setPeriod(p)}
-                style={{
-                  padding: '5px 16px', borderRadius: 999,
-                  border: isActive ? 'none' : '1.5px solid var(--color-encore-border)',
-                  background: isActive ? 'var(--color-encore-green)' : 'transparent',
-                  color: isActive ? 'var(--color-encore-white)' : 'var(--color-encore-text-sub)',
-                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 12, fontWeight: 700,
-                  cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
-                  transition: 'all 0.15s',
-                }}
+                onClick={() => setMonthOffset(o => o - 1)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', display: 'flex', alignItems: 'center', WebkitTapHighlightColor: 'transparent' }}
               >
-                {p}
+                <CaretLeft size={13} weight="bold" color="var(--color-encore-green)" />
               </button>
-            )
-          })}
+              <span style={{
+                fontFamily: 'var(--font-google-sans), sans-serif',
+                fontSize: 12, fontWeight: 700,
+                color: 'var(--color-encore-green)',
+                minWidth: 28, textAlign: 'center',
+              }}>
+                {displayDate.year !== CURRENT_YEAR
+                  ? `${displayDate.year}/${displayDate.month}`
+                  : `${displayDate.month}月`}
+              </span>
+              <button
+                onClick={() => setMonthOffset(o => o + 1)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', display: 'flex', alignItems: 'center', WebkitTapHighlightColor: 'transparent' }}
+              >
+                <CaretRight size={13} weight="bold" color="var(--color-encore-green)" />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* ── スクロールコンテンツ ── */}
-        <div style={{ flex: 1, overflowY: 'auto' }}>
+        <div
+          style={{ flex: 1, overflowY: 'auto' }}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           {filteredLives.length === 0 ? (
             <EmptyState period={period} />
           ) : (
@@ -637,7 +717,7 @@ export default function ReportPage() {
 
               {/* Hero */}
               <HeroCard
-                lives={filteredLives} period={period}
+                lives={filteredLives} period={period} periodLabel={heroLabel}
                 artistStats={artistStats} venueStats={venueStats}
               />
 
@@ -651,6 +731,7 @@ export default function ReportPage() {
 
               {/* アーティスト別参戦数 */}
               <SectionLabel label="Artists" />
+              <PieChart data={pieData} totalLabel="TOTAL LIVES" unit="本" />
               <ArtistRankingList data={artistStats} artists={artists} period={period} />
 
               {/* ライブ種別比率 */}

@@ -1601,7 +1601,7 @@ export default function QuickEventSheet({ date, hour, live, artists: propArtists
           {/* アーティスト */}
           <div>
             <span style={{ ...ty.caption, display: 'block', marginBottom: 10, color: 'var(--color-encore-text-muted)' }}>
-              アーティスト{artistIds.length > 1 && <span style={{ marginLeft: 6, color: 'var(--color-encore-green)', fontWeight: 700 }}>{artistIds.length}人</span>}
+              アーティスト{artistIds.length > 1 && <span style={{ marginLeft: 6, color: 'var(--color-encore-green)', fontWeight: 700 }}>{artistIds.length}組</span>}
             </span>
             <ArtistSelect
               value={artistIds}

@@ -60,7 +60,24 @@ const PRESET_SCHEMES: ColorScheme[] = [
     },
   },
   {
-    // Scheme 2: Ocean — 深海ティールベース
+    // Scheme 2: BlueBerry — クールネイビー×ゴールド
+    id: 'preset-slate',
+    name: 'BlueBerry',
+    colors: {
+      'bg':           { hex: '#F3F4F7', alpha: 1 },
+      'bg-section':   { hex: '#E8EAEE', alpha: 1 },
+      'green':        { hex: '#1A2840', alpha: 1 },
+      'green-muted':  { hex: '#7888A8', alpha: 1 },
+      'amber':        { hex: '#C8901A', alpha: 1 },
+      'text-sub':     { hex: '#1A2840', alpha: 0.55 },
+      'text-muted':   { hex: '#1A2840', alpha: 0.35 },
+      'border':       { hex: '#B8C0D0', alpha: 1 },
+      'border-light': { hex: '#DCDEE8', alpha: 1 },
+      'white':        { hex: '#FFFFFF', alpha: 1 },
+    },
+  },
+  {
+    // Scheme 3: Ocean — 深海ティールベース
     id: 'preset-ocean',
     name: 'Ocean',
     colors: {
@@ -77,7 +94,7 @@ const PRESET_SCHEMES: ColorScheme[] = [
     },
   },
   {
-    // Scheme 3: Moss — アースグリーンベース（デフォルト配色）
+    // Scheme 4: Moss — アースグリーンベース（デフォルト配色）
     id: 'preset-moss',
     name: 'Moss',
     colors: {
@@ -90,23 +107,6 @@ const PRESET_SCHEMES: ColorScheme[] = [
       'text-muted':   { hex: '#1A3A2D', alpha: 0.35 },
       'border':       { hex: '#BAC2BB', alpha: 1 },
       'border-light': { hex: '#E4E2DD', alpha: 1 },
-      'white':        { hex: '#FFFFFF', alpha: 1 },
-    },
-  },
-  {
-    // Scheme 4: Slate — クールネイビー×ゴールド
-    id: 'preset-slate',
-    name: 'Slate',
-    colors: {
-      'bg':           { hex: '#F3F4F7', alpha: 1 },
-      'bg-section':   { hex: '#E8EAEE', alpha: 1 },
-      'green':        { hex: '#1A2840', alpha: 1 },
-      'green-muted':  { hex: '#7888A8', alpha: 1 },
-      'amber':        { hex: '#C8901A', alpha: 1 },
-      'text-sub':     { hex: '#1A2840', alpha: 0.55 },
-      'text-muted':   { hex: '#1A2840', alpha: 0.35 },
-      'border':       { hex: '#B8C0D0', alpha: 1 },
-      'border-light': { hex: '#DCDEE8', alpha: 1 },
       'white':        { hex: '#FFFFFF', alpha: 1 },
     },
   },
@@ -196,6 +196,22 @@ export function loadPaletteScheme(schemeId: string | 'default') {
   window.dispatchEvent(new Event('encore-palette-update'))
 }
 
+/** アプリ起動時にパレットをDOMへ適用。未設定の場合はGrapeをデフォルト適用 */
+export function initPalette() {
+  try {
+    const raw = localStorage.getItem(LS_KEY)
+    if (!raw) {
+      loadPaletteScheme('preset-grape')
+      return
+    }
+    const saved = JSON.parse(raw) as Record<string, TokenValue>
+    const merged: PaletteState = { ...getDefaults(), ...saved }
+    PALETTE_DEFS.forEach(def => applyToDom(def, merged[def.key]))
+  } catch {
+    loadPaletteScheme('preset-grape')
+  }
+}
+
 /** 現在適用中のスキーム ID を返す（一致なし = 'custom'） */
 export function getCurrentPaletteSchemeId(): string {
   try {
@@ -207,6 +223,16 @@ export function getCurrentPaletteSchemeId(): string {
     }
     return 'custom'
   } catch { return 'preset-grape' }
+}
+
+/**
+ * useSyncExternalStore 向け購読関数。
+ * encore-palette-update イベントが発火するたびに callback を呼ぶ。
+ */
+export function subscribeToSchemeId(callback: () => void): () => void {
+  if (typeof window === 'undefined') return () => {}
+  window.addEventListener('encore-palette-update', callback)
+  return () => window.removeEventListener('encore-palette-update', callback)
 }
 
 // ─── PaletteResetButton (exported) ──────────────────────────────────────────
@@ -399,8 +425,6 @@ export default function ColorPalette() {
     window.dispatchEvent(new Event('encore-palette-update'))
   }
 
-  const defaultColors = getDefaults()
-  const isDefaultLoaded = colorsMatch(colors, defaultColors)
 
   return (
     <>
@@ -562,38 +586,6 @@ export default function ColorPalette() {
           overflowX: 'auto',
           paddingBottom: 4,
         }}>
-          {/* Default pill */}
-          <div
-            onClick={() => loadScheme('default')}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '6px 10px',
-              borderRadius: 999,
-              border: '1px solid var(--color-encore-border)',
-              background: isDefaultLoaded ? 'var(--color-encore-green)' : 'var(--color-encore-bg-section)',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-            }}
-          >
-            {/* 3 mini dots for default */}
-            {[defaultColors['bg']?.hex ?? '#F2F0EB', '#1B3C2D', '#C08A4A'].map((c, i) => (
-              <div key={i} style={{
-                width: 8, height: 8, borderRadius: '50%',
-                background: c,
-                border: isDefaultLoaded ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(0,0,0,0.1)',
-                flexShrink: 0,
-              }} />
-            ))}
-            <span style={{
-              fontFamily: 'var(--font-google-sans), sans-serif',
-              fontSize: 12, fontWeight: 700,
-              color: isDefaultLoaded ? '#fff' : 'var(--color-encore-text-sub)',
-            }}>
-              Default
-            </span>
-          </div>
-
           {/* Preset scheme pills (built-in, no delete) */}
           {PRESET_SCHEMES.map(scheme => {
             const loaded = colorsMatch(colors, scheme.colors)

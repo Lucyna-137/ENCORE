@@ -3,9 +3,9 @@
 import React, { useState, useMemo, useRef } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import {
-  CaretLeft, MusicNote, MapPin, Question,
+  CaretLeft, CaretRight, CaretDown, MusicNote, MapPin, Question,
   DotsThree, Trash, X, UploadSimple, Cake, UserCirclePlus, UserCircle,
-  PencilSimple,
+  PencilSimple, CheckCircle,
 } from '@phosphor-icons/react'
 import * as ty from '@/components/encore/typographyStyles'
 import { useGrapeStore } from '@/lib/grape/useGrapeStore'
@@ -24,8 +24,8 @@ const ATTENDANCE_COLOR: Record<string, string> = {
   skipped:   'var(--color-encore-text-muted)',
 }
 
-type FilterTab = 'ALL' | '予定' | '参戦済み'
-const FILTER_TABS: FilterTab[] = ['ALL', '予定', '参戦済み']
+type FilterTab = 'ALL' | '予定' | '参戦済み' | '気になる'
+const FILTER_TABS: FilterTab[] = ['ALL', '予定', '参戦済み', '気になる']
 
 // ─── ユーティリティ ────────────────────────────────────────────────────────────
 
@@ -59,6 +59,7 @@ function StatChip({
   highlight,
   compact,
   suffix,
+  onClick,
 }: {
   icon?: React.ReactNode
   label: string
@@ -66,13 +67,19 @@ function StatChip({
   highlight?: boolean
   compact?: boolean
   suffix?: React.ReactNode
+  onClick?: () => void
 }) {
   return (
-    <div style={{
-      flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'flex-end',
-      padding: '16px 6px 12px', gap: 3,
-    }}>
+    <div
+      onClick={onClick}
+      style={{
+        flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'flex-end',
+        padding: '16px 6px 12px', gap: 3,
+        cursor: onClick ? 'pointer' : 'default',
+        WebkitTapHighlightColor: 'transparent',
+      }}
+    >
       {icon && (
         <div style={{ marginBottom: 2 }}>{icon}</div>
       )}
@@ -138,17 +145,29 @@ function ArtistEventCard({
             background: 'var(--color-encore-border-light)',
           }} />
         )}
-        {/* ドット: left: 50% + translateX(-50%) で完全センタリング */}
-        <div style={{
-          position: 'absolute',
-          top: DOT_TOP,
-          left: '50%', transform: 'translateX(-50%)',
-          width: DOT_SIZE, height: DOT_SIZE,
-          borderRadius: '50%',
-          background: ATTENDANCE_COLOR[live.attendanceStatus] ?? 'var(--color-encore-border)',
-          boxShadow: '0 0 0 2px var(--color-encore-bg)', // borderの代わりにboxShadow（サイズに影響しない）
-          zIndex: 1,
-        }} />
+        {/* ドット / チェック: left: 50% + translateX(-50%) で完全センタリング */}
+        {live.attendanceStatus === 'attended' ? (
+          <div style={{
+            position: 'absolute',
+            top: DOT_TOP - 1.5,
+            left: '50%', transform: 'translateX(-50%)',
+            lineHeight: 0, zIndex: 1,
+            filter: 'drop-shadow(0 0 0 2px var(--color-encore-bg))',
+          }}>
+            <CheckCircle size={12} weight="fill" color="var(--color-encore-green)" />
+          </div>
+        ) : (
+          <div style={{
+            position: 'absolute',
+            top: DOT_TOP,
+            left: '50%', transform: 'translateX(-50%)',
+            width: DOT_SIZE, height: DOT_SIZE,
+            borderRadius: '50%',
+            background: ATTENDANCE_COLOR[live.attendanceStatus] ?? 'var(--color-encore-border)',
+            boxShadow: '0 0 0 2px var(--color-encore-bg)',
+            zIndex: 1,
+          }} />
+        )}
         {/* 下ライン: ドット下端 → カード下端（次カードの上ラインと接続） */}
         {!isLast && (
           <div style={{
@@ -847,10 +866,14 @@ export default function ArtistDetailPage() {
 
   // Report ページから渡される期間クエリ（未指定時は「累計」扱い）
   const rawPeriod = searchParams.get('period')
-  const period: Period =
+  const defaultPeriod: Period =
     rawPeriod === '今月' || rawPeriod === '今年' || rawPeriod === '累計'
       ? rawPeriod
       : '累計'
+  const [period, setPeriod]           = useState<Period>(defaultPeriod)
+  const [monthOffset, setMonthOffset] = useState(0)
+  const [showPeriodMenu, setShowPeriodMenu] = useState(false)
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
   const { lives, artists, updateLive, deleteLive, addLive, updateArtist, deleteArtist } = useGrapeStore()
 
@@ -864,12 +887,24 @@ export default function ArtistDetailPage() {
       .sort((a, b) => b.date.localeCompare(a.date))  // newest first
   }, [lives, artist])
 
+  // 今月モード時の表示月
+  const displayDate = useMemo(() => {
+    const d = new Date(CURRENT_YEAR, CURRENT_MONTH - 1 + monthOffset)
+    return { year: d.getFullYear(), month: d.getMonth() + 1 }
+  }, [monthOffset])
+
   // 期間でフィルタしたライブ数（ヒーロー表示用）
-  const periodLives = useMemo(
-    () => filterLivesByPeriod(artistLives, period),
-    [artistLives, period]
-  )
-  const periodLabel = buildPeriodLabel(period)
+  const periodLives = useMemo(() => {
+    if (period === '今月') {
+      const prefix = `${displayDate.year}-${String(displayDate.month).padStart(2, '0')}`
+      return artistLives.filter(l => l.date.startsWith(prefix))
+    }
+    return filterLivesByPeriod(artistLives, period)
+  }, [artistLives, period, displayDate])
+
+  const periodLabel = period === '今月'
+    ? `${displayDate.month}月イベント数`
+    : buildPeriodLabel(period)
 
   // Stats
   const attended  = useMemo(() => artistLives.filter(l => l.attendanceStatus === 'attended'), [artistLives])
@@ -892,12 +927,14 @@ export default function ArtistDetailPage() {
   const filteredLives = useMemo(() => {
     if (activeTab === '予定')    return periodLives.filter(l => l.attendanceStatus === 'planned')
     if (activeTab === '参戦済み') return periodLives.filter(l => l.attendanceStatus === 'attended')
+    if (activeTab === '気になる') return periodLives.filter(l => l.attendanceStatus === 'candidate')
     return periodLives
   }, [periodLives, activeTab])
 
   // タブバッジ用カウント（期間ベース）
-  const periodPlannedCount  = useMemo(() => periodLives.filter(l => l.attendanceStatus === 'planned').length,  [periodLives])
-  const periodAttendedCount = useMemo(() => periodLives.filter(l => l.attendanceStatus === 'attended').length, [periodLives])
+  const periodPlannedCount    = useMemo(() => periodLives.filter(l => l.attendanceStatus === 'planned').length,    [periodLives])
+  const periodAttendedCount   = useMemo(() => periodLives.filter(l => l.attendanceStatus === 'attended').length,   [periodLives])
+  const periodCandidateCount  = useMemo(() => periodLives.filter(l => l.attendanceStatus === 'candidate').length,  [periodLives])
 
   // flex:1 等幅タブなのでパーセントで位置計算 → DOM計測不要・初回から即表示
   const tabN = FILTER_TABS.length
@@ -918,8 +955,22 @@ export default function ArtistDetailPage() {
     setShowEditSheet(false)
   }
   const handleDeleteArtist = () => {
-    deleteArtist(artist.id)
+    if (artist?.id) deleteArtist(artist.id)
     router.back()
+  }
+
+  // スワイプハンドラ（今月モード時のみ月送り）
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || period !== '今月') return
+    const dx = e.changedTouches[0].clientX - touchStartRef.current.x
+    const dy = e.changedTouches[0].clientY - touchStartRef.current.y
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      setMonthOffset(o => dx < 0 ? o + 1 : o - 1)
+    }
+    touchStartRef.current = null
   }
 
   // EventPreviewScreen
@@ -970,7 +1021,11 @@ export default function ArtistDetailPage() {
         <StatusBar />
 
         {/* ── 全体スクロールコンテナ ───────────────────────────── */}
-        <div style={{ flex: 1, overflowY: 'auto', position: 'relative' }}>
+        <div
+          style={{ flex: 1, overflowY: 'auto', position: 'relative' }}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
 
           {/* 戻るボタン / ...ボタン: height:0 の sticky wrapper で常に固定 */}
           <div style={{ position: 'sticky', top: 0, height: 0, zIndex: 30, pointerEvents: 'none' }}>
@@ -1083,15 +1138,15 @@ export default function ArtistDetailPage() {
             borderBottom: '1px solid var(--color-encore-border-light)',
             background: 'var(--color-encore-bg)',
           }}>
+            <StatChip label="予定" value={planned.length} highlight onClick={() => setActiveTab('予定')} />
+            <div style={{ width: 1, background: 'var(--color-encore-border-light)', flexShrink: 0, alignSelf: 'stretch', margin: '8px 0' }} />
             <StatChip
               label="参戦済み"
               value={attended.length}
-              highlight
+              onClick={() => setActiveTab('参戦済み')}
             />
             <div style={{ width: 1, background: 'var(--color-encore-border-light)', flexShrink: 0, alignSelf: 'stretch', margin: '8px 0' }} />
-            <StatChip label="予定" value={planned.length} />
-            <div style={{ width: 1, background: 'var(--color-encore-border-light)', flexShrink: 0, alignSelf: 'stretch', margin: '8px 0' }} />
-            <StatChip label="気になる" value={candidate.length} />
+            <StatChip label="気になる" value={candidate.length} onClick={() => setActiveTab('気になる')} />
             <div style={{ width: 1, background: 'var(--color-encore-border-light)', flexShrink: 0, alignSelf: 'stretch', margin: '8px 0' }} />
             <StatChip
               label="合計費用"
@@ -1153,30 +1208,125 @@ export default function ArtistDetailPage() {
         </div>
 
           {/* ── Period title ─────────────────────────────────── */}
-          <div style={{
-            padding: '11px 16px 10px',
-            background: 'var(--color-encore-bg-section)',
-            borderTop: '1px solid var(--color-encore-border-light)',
-            borderBottom: '1px solid var(--color-encore-border-light)',
-            display: 'flex', alignItems: 'baseline', gap: 8,
-          }}>
-            <span style={{
-              fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-              fontSize: 13, fontWeight: 700,
-              color: 'var(--color-encore-green)',
+          <div style={{ position: 'relative' }}>
+            <div style={{
+              padding: '8px 12px 8px',
+              background: 'var(--color-encore-bg-section)',
+              borderTop: '1px solid var(--color-encore-border-light)',
+              borderBottom: '1px solid var(--color-encore-border-light)',
+              display: 'flex', alignItems: 'center', gap: 8,
             }}>
-              {period === '今月' ? `${CURRENT_MONTH}月のレポート`
-               : period === '今年' ? `${CURRENT_YEAR}年のレポート`
-               : 'これまでのレポート'}
-            </span>
-            {period !== '今月' && (
-              <span style={{
-                fontFamily: 'var(--font-google-sans), sans-serif',
-                fontSize: 10, fontWeight: 400,
-                color: 'var(--color-encore-text-muted)',
-              }}>
-                {TODAY} 現在
-              </span>
+              {/* ドロップダウントリガー（左揃え） */}
+              <button
+                onClick={() => setShowPeriodMenu(v => !v)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  flex: 1, justifyContent: 'flex-start',
+                  background: 'none', border: 'none', padding: '4px 0',
+                  cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                }}
+              >
+                <span style={{
+                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                  fontSize: 13, fontWeight: 700,
+                  color: 'var(--color-encore-green)',
+                }}>
+                  {period === '今月'
+                    ? `${displayDate.year !== CURRENT_YEAR ? `${displayDate.year}年` : ''}${displayDate.month}月のレポート`
+                    : period === '今年' ? `${CURRENT_YEAR}年のレポート`
+                    : 'これまでのレポート'}
+                </span>
+                <CaretDown
+                  size={12} weight="bold"
+                  color="var(--color-encore-green)"
+                  style={{
+                    transition: 'transform 0.2s',
+                    transform: showPeriodMenu ? 'rotate(180deg)' : 'rotate(0deg)',
+                    flexShrink: 0,
+                  }}
+                />
+              </button>
+
+              {/* 日付（今月以外） */}
+              {period !== '今月' && (
+                <span style={{
+                  fontFamily: 'var(--font-google-sans), sans-serif',
+                  fontSize: 10, fontWeight: 400,
+                  color: 'var(--color-encore-text-muted)',
+                }}>
+                  {TODAY} 現在
+                </span>
+              )}
+
+              {/* ◀▶ 月送りボタン（今月時のみ、右端） */}
+              {period === '今月' && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 0, flexShrink: 0 }}>
+                  <button
+                    onClick={() => setMonthOffset(o => o - 1)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', display: 'flex', alignItems: 'center', WebkitTapHighlightColor: 'transparent' }}
+                  >
+                    <CaretLeft size={13} weight="bold" color="var(--color-encore-green)" />
+                  </button>
+                  <button
+                    onClick={() => setMonthOffset(o => o + 1)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', display: 'flex', alignItems: 'center', WebkitTapHighlightColor: 'transparent' }}
+                  >
+                    <CaretRight size={13} weight="bold" color="var(--color-encore-green)" />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* ── Period dropdown menu ── */}
+            {showPeriodMenu && (
+              <>
+                <div
+                  style={{ position: 'fixed', inset: 0, zIndex: 49 }}
+                  onClick={() => setShowPeriodMenu(false)}
+                />
+                <div style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 4px)',
+                  left: 16,
+                  zIndex: 50,
+                  background: 'var(--color-encore-bg)',
+                  borderRadius: 12,
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.14)',
+                  overflow: 'hidden',
+                  minWidth: 160,
+                }}>
+                  {(['今月', '今年', '累計'] as Period[]).map((p, idx) => {
+                    const label = p === '今月' ? `${CURRENT_MONTH}月のレポート`
+                                : p === '今年' ? `${CURRENT_YEAR}年のレポート`
+                                : 'これまでのレポート'
+                    const isSelected = p === period
+                    return (
+                      <button
+                        key={p}
+                        onClick={() => { setPeriod(p); setMonthOffset(0); setShowPeriodMenu(false) }}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          width: '100%', padding: '13px 16px',
+                          background: 'none', border: 'none', cursor: 'pointer',
+                          borderTop: idx > 0 ? '1px solid var(--color-encore-border-light)' : 'none',
+                          WebkitTapHighlightColor: 'transparent',
+                        }}
+                      >
+                        <span style={{
+                          fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                          fontSize: 13, fontWeight: isSelected ? 700 : 400,
+                          color: isSelected ? 'var(--color-encore-green)' : 'var(--color-encore-text-sub)',
+                        }}>
+                          {label}
+                        </span>
+                        {isSelected && (
+                          <CheckCircle size={16} weight="fill" color="var(--color-encore-green)" />
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+              </>
             )}
           </div>
 
@@ -1214,7 +1364,7 @@ export default function ArtistDetailPage() {
                       marginLeft: 5, fontSize: 10,
                       color: isActive ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)',
                     }}>
-                      {tab === '予定' ? periodPlannedCount : periodAttendedCount}
+                      {tab === '予定' ? periodPlannedCount : tab === '参戦済み' ? periodAttendedCount : periodCandidateCount}
                     </span>
                   )}
                 </button>
@@ -1245,6 +1395,7 @@ export default function ArtistDetailPage() {
               <span style={{ ...ty.sub, textAlign: 'center' }}>
                 {activeTab === '予定' ? '予定のイベントはありません' :
                  activeTab === '参戦済み' ? 'まだ参戦記録がありません' :
+                 activeTab === '気になる' ? '気になるイベントはありません' :
                  'イベントがありません'}
               </span>
             </div>

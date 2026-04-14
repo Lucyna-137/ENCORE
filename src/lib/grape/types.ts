@@ -48,11 +48,17 @@ export interface GrapeLive {
   color?: string                        // イベントカラー（HEX）。未設定 = デフォルト配色
 }
 
+export interface ArtistMember {
+  name: string
+  birthday?: string  // 'YYYY-MM-DD'
+}
+
 export interface GrapeArtist {
   id: string
   name: string
   image?: string
-  birthday?: string    // 'YYYY-MM-DD'
+  birthday?: string    // 'YYYY-MM-DD'（ソロ用）
+  members?: ArtistMember[]  // グループメンバー誕生日
   alwaysColor?: boolean // イベントを常にこのアーティストの色で表示
   defaultColor?: string // アーティスト固有の色（HEX）
 }

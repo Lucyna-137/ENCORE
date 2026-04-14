@@ -370,7 +370,7 @@ const CalendarListView = forwardRef<CalendarListViewHandle, CalendarListViewProp
 
         {/* リスト本体（バナー・アーティストフィルターもスクロール内） */}
         {filteredLives.length === 0 ? (
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--color-encore-bg-section)' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--color-encore-bg)' }}>
             {/* バナー群（スクロールエリア先頭） */}
             {todayBirthdays.length > 0 && !birthdayBannerDismissed && (
               <DismissableBanner onDismiss={onDismissBirthday!}>
@@ -394,8 +394,9 @@ const CalendarListView = forwardRef<CalendarListViewHandle, CalendarListViewProp
             {tomorrowLives.length > 0 && !notifDismissed && (
               <DismissableBanner onDismiss={onDismissNotif!}>
                 {(dismiss) => (
-                  <div style={{ background: BANNER_BG_COLOR, borderBottom: `1px solid ${BANNER_BORDER_COLOR}`, padding: '9px 16px', display: 'flex', alignItems: 'center', gap: 9 }}>
-                    <BellRinging size={15} weight="fill" color="var(--color-encore-amber)" style={{ flexShrink: 0 }} />
+                  <div style={{ position: 'relative', background: BANNER_BG_COLOR, borderBottom: `1px solid ${BANNER_BORDER_COLOR}`, padding: '9px 16px 9px 19px', display: 'flex', alignItems: 'center', gap: 9 }}>
+                    <span className="encore-border-pulse" style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 3, background: 'var(--color-encore-amber)' }} />
+                    <span className="encore-bell-ring" style={{ flexShrink: 0 }}><BellRinging size={15} weight="fill" color="var(--color-encore-amber)" /></span>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 12, fontWeight: 700, color: 'var(--color-encore-amber)', marginRight: 6 }}>明日</span>
                       <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 12, fontWeight: 400, color: 'var(--color-encore-green)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -419,7 +420,7 @@ const CalendarListView = forwardRef<CalendarListViewHandle, CalendarListViewProp
         ) : (
           <div
             ref={scrollRef}
-            style={{ flex: 1, overflowY: 'auto', background: 'var(--color-encore-bg-section)' }}
+            style={{ flex: 1, overflowY: 'auto', background: 'var(--color-encore-bg)' }}
           >
             {/* バナー群（スクロールエリア先頭） */}
             {todayBirthdays.length > 0 && !birthdayBannerDismissed && (
@@ -444,8 +445,9 @@ const CalendarListView = forwardRef<CalendarListViewHandle, CalendarListViewProp
             {tomorrowLives.length > 0 && !notifDismissed && (
               <DismissableBanner onDismiss={onDismissNotif!}>
                 {(dismiss) => (
-                  <div style={{ background: BANNER_BG_COLOR, borderBottom: `1px solid ${BANNER_BORDER_COLOR}`, padding: '9px 16px', display: 'flex', alignItems: 'center', gap: 9 }}>
-                    <BellRinging size={15} weight="fill" color="var(--color-encore-amber)" style={{ flexShrink: 0 }} />
+                  <div style={{ position: 'relative', background: BANNER_BG_COLOR, borderBottom: `1px solid ${BANNER_BORDER_COLOR}`, padding: '9px 16px 9px 19px', display: 'flex', alignItems: 'center', gap: 9 }}>
+                    <span className="encore-border-pulse" style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 3, background: 'var(--color-encore-amber)' }} />
+                    <span className="encore-bell-ring" style={{ flexShrink: 0 }}><BellRinging size={15} weight="fill" color="var(--color-encore-amber)" /></span>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 12, fontWeight: 700, color: 'var(--color-encore-amber)', marginRight: 6 }}>明日</span>
                       <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 12, fontWeight: 400, color: 'var(--color-encore-green)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

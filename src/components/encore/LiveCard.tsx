@@ -114,12 +114,37 @@ export default function LiveCard({ date, liveType, liveStatus, name, artist, ven
           justifyContent: 'center',
           position: 'relative',
         }}>
+          {/* ぼかし背景（カバーアートなし・アーティスト画像あり時） */}
+          {!flyerImage && (artistImage || (artistImages && artistImages.length > 0)) && (
+            <>
+              <img
+                src={artistImage ?? artistImages![0]}
+                alt=""
+                aria-hidden
+                style={{
+                  position: 'absolute', inset: 0,
+                  width: '100%', height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: artistImagePosition,
+                  filter: 'blur(28px)',
+                  transform: 'scale(1.3)',
+                  opacity: 0.8,
+                }}
+              />
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'rgba(255,255,255,0.12)',
+              }} />
+            </>
+          )}
           {flyerImage ? (
             <img src={flyerImage} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: flyerImagePosition, display: 'block', position: 'absolute', inset: 0 }} />
           ) : artistImages && artistImages.length > 1 ? (
-            <CyclingArtistImage images={artistImages} alt={artist} gradient={typeStyle.gradient} size={112} />
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <CyclingArtistImage images={artistImages} alt={artist} gradient="transparent" size={112} />
+            </div>
           ) : artistImage ? (
-            <div style={{ width: 112, height: 112, clipPath: `path("${squirclePath(112)}")`, overflow: 'hidden', background: typeStyle.gradient, flexShrink: 0 }}>
+            <div style={{ width: 112, height: 112, clipPath: `path("${squirclePath(112)}")`, overflow: 'hidden', background: 'transparent', flexShrink: 0, position: 'relative', zIndex: 1 }}>
               <img src={artistImage} alt={artist} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: artistImagePosition, display: 'block' }} />
             </div>
           ) : null}

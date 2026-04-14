@@ -10,17 +10,18 @@
 import { useEffect } from 'react'
 
 // ColorPalette.tsx と同一の定義（import すると循環しうるため複製）
+// defaultHex / defaultAlpha は未保存時のフォールバック = Grape カラー
 const PALETTE_DEFS = [
-  { key: 'bg',           cssVar: '--color-encore-bg',           defaultHex: '#FAF8F4', defaultAlpha: 1 },
-  { key: 'bg-section',   cssVar: '--color-encore-bg-section',   defaultHex: '#E9E8E4', defaultAlpha: 1 },
-  { key: 'green',        cssVar: '--color-encore-green',        defaultHex: '#1A3A2D', defaultAlpha: 1 },
-  { key: 'green-muted',  cssVar: '--color-encore-green-muted',  defaultHex: '#8BA898', defaultAlpha: 1 },
-  { key: 'amber',        cssVar: '--color-encore-amber',        defaultHex: '#C08A4A', defaultAlpha: 1 },
-  { key: 'text-sub',     cssVar: '--color-encore-text-sub',     defaultHex: '#1A3A2D', defaultAlpha: 0.55 },
-  { key: 'text-muted',   cssVar: '--color-encore-text-muted',   defaultHex: '#1A3A2D', defaultAlpha: 0.35 },
-  { key: 'border',       cssVar: '--color-encore-border',       defaultHex: '#BAC2BB', defaultAlpha: 1 },
-  { key: 'border-light', cssVar: '--color-encore-border-light', defaultHex: '#E4E2DD', defaultAlpha: 1 },
-  { key: 'white',        cssVar: '--color-encore-white',        defaultHex: '#FFFFFF', defaultAlpha: 1 },
+  { key: 'bg',           cssVar: '--color-encore-bg',           defaultHex: '#F5F3FB', defaultAlpha: 1    },
+  { key: 'bg-section',   cssVar: '--color-encore-bg-section',   defaultHex: '#EDE9F5', defaultAlpha: 1    },
+  { key: 'green',        cssVar: '--color-encore-green',        defaultHex: '#3D1A78', defaultAlpha: 1    },
+  { key: 'green-muted',  cssVar: '--color-encore-green-muted',  defaultHex: '#9878CC', defaultAlpha: 1    },
+  { key: 'amber',        cssVar: '--color-encore-amber',        defaultHex: '#C04890', defaultAlpha: 1    },
+  { key: 'text-sub',     cssVar: '--color-encore-text-sub',     defaultHex: '#3D1A78', defaultAlpha: 0.55 },
+  { key: 'text-muted',   cssVar: '--color-encore-text-muted',   defaultHex: '#3D1A78', defaultAlpha: 0.35 },
+  { key: 'border',       cssVar: '--color-encore-border',       defaultHex: '#C0B2D8', defaultAlpha: 1    },
+  { key: 'border-light', cssVar: '--color-encore-border-light', defaultHex: '#E0DAF0', defaultAlpha: 1    },
+  { key: 'white',        cssVar: '--color-encore-white',        defaultHex: '#FFFFFF', defaultAlpha: 1    },
 ] as const
 
 const LS_KEY = 'encore-palette-v2'
@@ -35,20 +36,10 @@ function hexToRgb(hex: string): [number, number, number] | null {
 function applyPaletteFromStorage() {
   try {
     const raw = localStorage.getItem(LS_KEY)
-    if (!raw) {
-      // カスタムパレットなし → インラインスタイルを全削除し CSS 変数（dark mode 含む）に委ねる
-      for (const def of PALETTE_DEFS) {
-        document.documentElement.style.removeProperty(def.cssVar)
-      }
-      return
-    }
-    const saved = JSON.parse(raw) as Record<string, { hex: string; alpha: number }>
+    // 未保存時は Grape をデフォルトとして適用（CSS デフォルトの Moss が見えるのを防ぐ）
+    const saved = raw ? JSON.parse(raw) as Record<string, { hex: string; alpha: number }> : null
     for (const def of PALETTE_DEFS) {
-      const val = saved[def.key]
-      if (!val) {
-        document.documentElement.style.removeProperty(def.cssVar)
-        continue
-      }
+      const val = saved?.[def.key] ?? { hex: def.defaultHex, alpha: def.defaultAlpha }
       const rgb = hexToRgb(val.hex)
       if (!rgb) continue
       const value = val.alpha < 1

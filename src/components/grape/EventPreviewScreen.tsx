@@ -246,10 +246,31 @@ export default function EventPreviewScreen({
                 width: '100%', height: '100%',
                 background: TYPE_GRADIENT[live?.liveType ?? ''] ?? 'linear-gradient(135deg, rgba(27,60,45,0.18), rgba(27,60,45,0.05))',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
+                position: 'relative',
+                overflow: 'hidden',
               }}
             >
+              {/* ぼかし背景（アーティスト画像あり時） */}
+              {(live?.artistImage || (live?.artistImages && live.artistImages.length > 0)) && (
+                <>
+                  <img
+                    src={live?.artistImage ?? live?.artistImages![0]}
+                    alt=""
+                    aria-hidden
+                    style={{
+                      position: 'absolute', inset: 0,
+                      width: '100%', height: '100%',
+                      objectFit: 'cover',
+                      filter: 'blur(28px)',
+                      transform: 'scale(1.3)',
+                      opacity: 0.8,
+                    }}
+                  />
+                  <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.12)' }} />
+                </>
+              )}
               {live?.artistImages && live.artistImages.length > 1 ? (
-                <div style={{ width: 144, height: 144, clipPath: `path("${squirclePath(144)}")`, overflow: 'hidden', flexShrink: 0 }}>
+                <div style={{ width: 144, height: 144, clipPath: `path("${squirclePath(144)}")`, overflow: 'hidden', flexShrink: 0, position: 'relative', zIndex: 1 }}>
                   <CyclingArtistImage images={live.artistImages} alt={live?.artist ?? ''} size={144} borderRadius={0} intervalMs={2400} />
                 </div>
               ) : live?.artistImage ? (
@@ -257,31 +278,16 @@ export default function EventPreviewScreen({
                   width: 144, height: 144,
                   clipPath: `path("${squirclePath(144)}")`,
                   overflow: 'hidden',
-                  background: TYPE_GRADIENT[live?.liveType ?? ''] ?? 'linear-gradient(135deg, rgba(27,60,45,0.18), rgba(27,60,45,0.05))',
+                  background: 'transparent',
                   flexShrink: 0,
+                  position: 'relative',
+                  zIndex: 1,
                 }}>
                   <img src={live.artistImage} alt={live?.artist ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                 </div>
               ) : null}
             </div>
           )}
-
-          {/* グラデーション（上部：ボタン可読性） */}
-          <div
-            style={{
-              position: 'absolute', top: 0, left: 0, right: 0, height: 90,
-              background: 'linear-gradient(to bottom, rgba(0,0,0,0.48), transparent)',
-              pointerEvents: 'none',
-            }}
-          />
-          {/* グラデーション（下部：情報エリアとの連続性） */}
-          <div
-            style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0, height: 80,
-              background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.6))',
-              pointerEvents: 'none',
-            }}
-          />
 
           {/* ── ヘッダーボタン群 ─────────────────────────────── */}
           <div
@@ -384,11 +390,11 @@ export default function EventPreviewScreen({
                 <span
                   style={{
                     fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                    fontSize: 10, fontWeight: 700,
-                    padding: '3px 9px', borderRadius: 999,
-                    background: 'rgba(255,255,255,0.18)',
+                    fontSize: 12, fontWeight: 700,
+                    padding: '5px 13px', borderRadius: 999,
+                    background: 'rgba(0,0,0,0.38)',
                     color: '#fff',
-                    border: '1px solid rgba(255,255,255,0.28)',
+                    border: '1px solid rgba(255,255,255,0.15)',
                     backdropFilter: 'blur(4px)',
                   }}
                 >
@@ -401,11 +407,11 @@ export default function EventPreviewScreen({
                 style={{
                   display: 'flex', alignItems: 'center', gap: 4,
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 10, fontWeight: 700,
-                  padding: '3px 7px 3px 9px', borderRadius: 999,
-                  background: 'rgba(255,255,255,0.26)',
+                  fontSize: 12, fontWeight: 700,
+                  padding: '5px 10px 5px 13px', borderRadius: 999,
+                  background: 'rgba(0,0,0,0.38)',
                   color: '#fff',
-                  border: '1px solid rgba(255,255,255,0.42)',
+                  border: '1px solid rgba(255,255,255,0.15)',
                   backdropFilter: 'blur(4px)',
                   cursor: 'pointer',
                   WebkitTapHighlightColor: 'transparent',

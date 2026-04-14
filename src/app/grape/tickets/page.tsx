@@ -11,7 +11,7 @@ import { TICKET_STATUS_CONFIG } from '@/lib/grape/constants'
 import HorizontalTabs from '@/components/encore/HorizontalTabs'
 import {
   CalendarBlank, Ticket, ChartBar, GearSix,
-  MagnifyingGlass, Plus, Warning, CaretRight, Clock, CheckCircle, X,
+  MagnifyingGlass, Plus, Warning, CaretRight, Clock, CheckCircle, X, UserCircle,
 } from '@phosphor-icons/react'
 
 import { TODAY } from '@/lib/grape/constants'
@@ -278,6 +278,12 @@ export default function TicketsPage() {
     [lives]
   )
 
+  // チケット登録済みのイベント（タブフィルタ前）
+  const allTickets = useMemo(
+    () => lives.filter(l => l.ticketStatus !== undefined),
+    [lives]
+  )
+
   const filteredLives = useMemo(() => {
     let result = filterByTab(lives, activeTab)
     if (searchQuery.trim()) {
@@ -343,11 +349,11 @@ export default function TicketsPage() {
           <div style={{
             padding: '8px 20px 12px',
             display: 'flex',
-            alignItems: 'flex-end',
+            alignItems: 'flex-start',
             justifyContent: 'space-between',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ ...ty.display, lineHeight: 1 }}>Tickets</div>
+              <div className="grape-page-title" style={{ ...ty.display, lineHeight: 1 }}>Tickets</div>
               {urgentLives.length > 0 && (
                 <span style={{
                   ...ty.caption,
@@ -463,19 +469,111 @@ export default function TicketsPage() {
 
           {/* Empty state */}
           {filteredLives.length === 0 ? (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '60px 0',
-                gap: 8,
-              }}
-            >
-              <Ticket size={56} weight="light" color="var(--color-encore-border)" />
-              <span style={{ ...ty.body, color: 'var(--color-encore-text-muted)' }}>該当するチケットはありません</span>
-            </div>
+            (() => {
+              // ① 登録ゼロ → オンボーディング
+              if (allTickets.length === 0) {
+                return (
+                  <div style={{
+                    display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', justifyContent: 'center',
+                    padding: '52px 32px 40px', gap: 0,
+                    textAlign: 'center',
+                  }}>
+                    {/* アイコン背景 */}
+                    <div style={{
+                      width: 96, height: 96, borderRadius: '50%',
+                      background: 'var(--color-encore-bg-section)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      marginBottom: 20,
+                    }}>
+                      <Ticket size={44} weight="light" color="var(--color-encore-green)" />
+                    </div>
+                    {/* タイトル */}
+                    <div style={{
+                      fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                      fontSize: 16, fontWeight: 700,
+                      color: 'var(--color-encore-green)',
+                      marginBottom: 10,
+                    }}>
+                      まだチケットがありません
+                    </div>
+                    {/* 説明 */}
+                    <div style={{
+                      fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                      fontSize: 12, fontWeight: 400, lineHeight: 1.7,
+                      color: 'var(--color-encore-text-sub)',
+                      marginBottom: 28,
+                    }}>
+                      チケット情報を追加すると、<br />
+                      申込状況や入金期限をまとめて<br />
+                      管理できます。
+                    </div>
+                    {/* 追加ボタン */}
+                    <button
+                      onClick={() => setShowAddSheet(true)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 7,
+                        padding: '11px 24px', borderRadius: 999,
+                        background: 'var(--color-encore-green)',
+                        border: 'none', cursor: 'pointer',
+                        WebkitTapHighlightColor: 'transparent',
+                      }}
+                    >
+                      <Plus size={15} weight="regular" color="#fff" />
+                      <span style={{
+                        fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                        fontSize: 13, fontWeight: 700, color: '#fff',
+                      }}>
+                        チケットを追加
+                      </span>
+                    </button>
+                  </div>
+                )
+              }
+              // ② 検索結果ゼロ
+              if (searchQuery.trim()) {
+                return (
+                  <div style={{
+                    display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', justifyContent: 'center',
+                    padding: '60px 32px', gap: 10, textAlign: 'center',
+                  }}>
+                    <MagnifyingGlass size={40} weight="light" color="var(--color-encore-border)" />
+                    <span style={{
+                      fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                      fontSize: 13, fontWeight: 400,
+                      color: 'var(--color-encore-text-muted)',
+                      lineHeight: 1.6,
+                    }}>
+                      「{searchQuery}」に一致する<br />チケットはありません
+                    </span>
+                  </div>
+                )
+              }
+              // ③ タブフィルタゼロ
+              const tabEmptyMsg: Record<TabKey, string> = {
+                all:    'チケットはありません',
+                active: '申込中のチケットはありません',
+                urgent: '要対応のチケットはありません',
+                done:   '完了したチケットはありません',
+              }
+              return (
+                <div style={{
+                  display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', justifyContent: 'center',
+                  padding: '60px 0', gap: 8,
+                }}>
+                  <Ticket size={40} weight="light" color="var(--color-encore-border)" />
+                  <span style={{
+                    fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                    fontSize: 13, fontWeight: 400,
+                    color: 'var(--color-encore-text-muted)',
+                  }}>
+                    {tabEmptyMsg[activeTab]}
+                  </span>
+                </div>
+              )
+            })()
           ) : (
             filteredLives.map(live => (
               <TicketCard

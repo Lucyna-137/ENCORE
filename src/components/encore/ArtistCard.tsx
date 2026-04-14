@@ -73,7 +73,7 @@ export default function ArtistCard({ name, color, image, liveCount = 0, nextLive
         </div>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <span style={ty.sub}>
-            <span style={{ color: 'var(--color-encore-green)', fontWeight: 700 }}>{liveCount}</span> 本のイベント
+            <span style={{ color: 'var(--color-encore-green)', fontWeight: 700 }}>{liveCount}</span> イベント
           </span>
           {nextLiveDate && (
             <span style={ty.sub}>
