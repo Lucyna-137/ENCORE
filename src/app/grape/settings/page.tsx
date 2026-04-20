@@ -13,6 +13,7 @@ import {
   Check, UserCirclePlus, UploadSimple, Cake, CaretDown, CaretUp, Warning, Plus,
   Lock, Crown, UsersThree, ChartLineUp, CloudCheck, CaretRight,
 } from '@phosphor-icons/react'
+import PhoneFrame from '@/components/grape/PhoneFrame'
 import { useGrapeStore } from '@/lib/grape/useGrapeStore'
 import type { GrapeArtist, ArtistMember } from '@/lib/grape/types'
 import { DOW_SUN_COLOR, DOW_SAT_COLOR } from '@/lib/grape/constants'
@@ -1090,13 +1091,14 @@ function PremiumUpgradeSheet({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    /* フルカバー — スクロール可能なシート */
+    /* フルカバー — スクロール可能なシート
+       （borderRadiusは親PhoneFrameの overflow:hidden による clipping に任せる） */
     <div style={{
       position: 'absolute', inset: 0,
       background: PUR.bg,
       zIndex: 200,
       display: 'flex', flexDirection: 'column',
-      borderRadius: 44, overflow: 'hidden',
+      overflow: 'hidden',
     }}>
 
       {/* ── トップバー ── */}
@@ -1494,18 +1496,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh', display: 'flex',
-      alignItems: 'center', justifyContent: 'center',
-      background: 'var(--color-body-bg)', padding: '20px 0',
-    }}>
-      <div style={{
-        width: 393, height: 852,
-        background: 'var(--color-encore-bg)',
-        borderRadius: 44, overflow: 'hidden',
-        position: 'relative', display: 'flex', flexDirection: 'column',
-        boxShadow: 'var(--shadow-phone)',
-      }}>
+    <PhoneFrame>
         <StatusBar />
 
         {/* ── ヘッダー ── */}
@@ -1725,7 +1716,6 @@ export default function SettingsPage() {
           </div>
         )}
 
-      </div>
-    </div>
+    </PhoneFrame>
   )
 }

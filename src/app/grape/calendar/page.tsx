@@ -6,6 +6,7 @@ import { StatusBar } from '@/components/encore/NavHeader'
 import type { GrapeLive, ViewMode } from '@/lib/grape/types'
 import { useGrapeStore } from '@/lib/grape/useGrapeStore'
 import { TODAY, CURRENT_YEAR, CURRENT_MONTH, BANNER_BG_COLOR, BANNER_BORDER_COLOR, resolveEventColor } from '@/lib/grape/constants'
+import PhoneFrame from '@/components/grape/PhoneFrame'
 
 function fmtTime(totalMin: number): string {
   const h = Math.min(Math.floor(totalMin / 60), 23)
@@ -419,30 +420,7 @@ export default function CalendarPage() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--color-body-bg)',
-        padding: '20px 0',
-      }}
-    >
-      {/* ── Phone frame ── */}
-      <div
-        style={{
-          width: 393,
-          height: 852,
-          background: 'var(--color-encore-bg)',
-          borderRadius: 44,
-          overflow: 'hidden',
-          position: 'relative',
-          display: 'flex',
-          flexDirection: 'column',
-          boxShadow: 'var(--shadow-phone)',
-        }}
-      >
+    <PhoneFrame>
         <StatusBar />
 
         {/* ── Large title header ── */}
@@ -842,7 +820,6 @@ export default function CalendarPage() {
             )
           })}
         </div>
-      </div>
-    </div>
+    </PhoneFrame>
   )
 }

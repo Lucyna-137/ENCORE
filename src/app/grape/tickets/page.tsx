@@ -8,6 +8,7 @@ import { useGrapeStore } from '@/lib/grape/useGrapeStore'
 import QuickEventSheet from '@/components/grape/QuickEventSheet'
 import EventPreviewScreen from '@/components/grape/EventPreviewScreen'
 import { TICKET_STATUS_CONFIG } from '@/lib/grape/constants'
+import PhoneFrame from '@/components/grape/PhoneFrame'
 import HorizontalTabs from '@/components/encore/HorizontalTabs'
 import {
   CalendarBlank, Ticket, ChartBar, GearSix,
@@ -311,30 +312,7 @@ export default function TicketsPage() {
   const showUrgencyBanner = activeTab !== 'urgent' && urgentLives.length > 0
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--color-body-bg)',
-        padding: '20px 0',
-      }}
-    >
-      {/* Phone frame */}
-      <div
-        style={{
-          width: 393,
-          height: 852,
-          background: 'var(--color-encore-bg)',
-          borderRadius: 44,
-          overflow: 'hidden',
-          position: 'relative',
-          display: 'flex',
-          flexDirection: 'column',
-          boxShadow: 'var(--shadow-phone)',
-        }}
-      >
+    <PhoneFrame>
         <StatusBar />
 
         {/* ── Header ── */}
@@ -703,7 +681,6 @@ export default function TicketsPage() {
             }}
           />
         )}
-      </div>
-    </div>
+    </PhoneFrame>
   )
 }

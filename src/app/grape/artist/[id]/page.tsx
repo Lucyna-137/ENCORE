@@ -14,6 +14,7 @@ import EventPreviewScreen from '@/components/grape/EventPreviewScreen'
 import { StatusBar } from '@/components/encore/NavHeader'
 import { ATTENDANCE_LABEL, CURRENT_YEAR, CURRENT_MONTH, TODAY, LIVE_TYPE_COLOR, DOW_SUN_COLOR, DOW_SAT_COLOR } from '@/lib/grape/constants'
 import ColorPicker from '@/components/encore/ColorPicker'
+import PhoneFrame from '@/components/grape/PhoneFrame'
 
 // ─── 定数 ─────────────────────────────────────────────────────────────────────
 
@@ -978,16 +979,7 @@ export default function ArtistDetailPage() {
 
   if (!artist) {
     return (
-      <div style={{
-        minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'var(--color-body-bg)',
-      }}>
-        <div style={{
-          width: 393, height: 852, background: 'var(--color-encore-bg)',
-          borderRadius: 44, overflow: 'hidden', display: 'flex',
-          flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          boxShadow: 'var(--shadow-phone)', gap: 12,
-        }}>
+      <PhoneFrame center>
           <span style={{ ...ty.section, color: 'var(--color-encore-text-sub)' }}>アーティストが見つかりません</span>
           <button
             onClick={() => router.back()}
@@ -998,26 +990,14 @@ export default function ArtistDetailPage() {
           >
             ← 戻る
           </button>
-        </div>
-      </div>
+      </PhoneFrame>
     )
   }
 
   const HERO_H = 230
 
   return (
-    <div style={{
-      minHeight: '100vh', display: 'flex',
-      alignItems: 'center', justifyContent: 'center',
-      background: 'var(--color-body-bg)', padding: '20px 0',
-    }}>
-      <div style={{
-        width: 393, height: 852,
-        background: 'var(--color-encore-bg)',
-        borderRadius: 44, overflow: 'hidden',
-        position: 'relative', display: 'flex', flexDirection: 'column',
-        boxShadow: 'var(--shadow-phone)',
-      }}>
+    <PhoneFrame>
         <StatusBar />
 
         {/* ── 全体スクロールコンテナ ───────────────────────────── */}
@@ -1477,7 +1457,6 @@ export default function ArtistDetailPage() {
             setPreviewLive(null)
           }}
         />
-      </div>
-    </div>
+    </PhoneFrame>
   )
 }

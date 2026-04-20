@@ -8,6 +8,7 @@ import { useGrapeStore } from '@/lib/grape/useGrapeStore'
 import { LIVE_TYPE_COLOR } from '@/lib/grape/constants'
 import { CalendarBlank, Ticket, ChartBar, GearSix, CaretLeft, CaretRight } from '@phosphor-icons/react'
 import ArtistCard from '@/components/encore/ArtistCard'
+import PhoneFrame from '@/components/grape/PhoneFrame'
 import PieChart from '@/components/encore/PieChart'
 
 // ─── 定数 ─────────────────────────────────────────────────────────────────────
@@ -621,18 +622,7 @@ export default function ReportPage() {
   }), [artistStats, artists])
 
   return (
-    <div style={{
-      minHeight: '100vh', display: 'flex',
-      alignItems: 'center', justifyContent: 'center',
-      background: 'var(--color-body-bg)', padding: '20px 0',
-    }}>
-      <div style={{
-        width: 393, height: 852,
-        background: 'var(--color-encore-bg)',
-        borderRadius: 44, overflow: 'hidden',
-        position: 'relative', display: 'flex', flexDirection: 'column',
-        boxShadow: 'var(--shadow-phone)',
-      }}>
+    <PhoneFrame>
         <StatusBar />
 
         {/* ── ヘッダー ── */}
@@ -778,7 +768,6 @@ export default function ReportPage() {
             )
           })}
         </div>
-      </div>
-    </div>
+    </PhoneFrame>
   )
 }
