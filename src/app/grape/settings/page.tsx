@@ -7,10 +7,11 @@ import { StatusBar } from '@/components/encore/NavHeader'
 import {
   CalendarBlank, Ticket, ChartBar, GearSix,
   Bell, CloudArrowUp, CloudArrowDown,
-  Question, Envelope,
+  Envelope,
   FileText, ShieldCheck, Info, Star, ArrowSquareOut,
   MusicNote, UserCircle, PencilSimple, Trash, X,
   Check, UserCirclePlus, UploadSimple, Cake, CaretDown, CaretUp, Warning, Plus,
+  Lock, Crown, UsersThree, ChartLineUp, CloudCheck, CaretRight,
 } from '@phosphor-icons/react'
 import { useGrapeStore } from '@/lib/grape/useGrapeStore'
 import type { GrapeArtist, ArtistMember } from '@/lib/grape/types'
@@ -287,47 +288,56 @@ function BackupNote() {
 
 // ─── PremiumInfoCard ──────────────────────────────────────────────────────────
 
-function PremiumInfoCard() {
+function PremiumInfoCard({ onShowPremium }: { onShowPremium: () => void }) {
+  const GOLD = '#F5C850'
   return (
-    <div style={{
-      margin: '0 16px', borderRadius: 8,
-      background: 'var(--color-encore-bg-section)',
-      padding: '18px 20px', display: 'flex', gap: 14, alignItems: 'flex-start',
-    }}>
-      {/* アイコン */}
+    <button
+      onClick={onShowPremium}
+      style={{
+        margin: '0 16px', borderRadius: 10,
+        background: '#1C0F42',
+        padding: '16px 18px',
+        display: 'flex', gap: 14, alignItems: 'center',
+        width: 'calc(100% - 32px)',
+        border: 'none', cursor: 'pointer',
+        WebkitTapHighlightColor: 'transparent',
+        textAlign: 'left',
+      }}
+    >
+      {/* クラウンアイコン */}
       <div style={{
-        width: 34, height: 34, borderRadius: 9,
-        background: 'rgba(192,138,74,0.11)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+        width: 38, height: 38, borderRadius: 10, flexShrink: 0,
+        background: 'rgba(245,200,80,0.15)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        <Star size={17} weight="fill" color="var(--color-encore-amber)" />
+        <Crown size={19} weight="fill" color={GOLD} />
       </div>
+
       {/* テキスト */}
       <div style={{ flex: 1 }}>
-        <div style={{ ...ty.sectionSM, marginBottom: 5 }}>Premium</div>
-        <div style={{ ...ty.sub, lineHeight: 1.65 }}>
-          複数アーティスト管理・詳細レポート・クラウドバックアップ・テーマカスタマイズ・マルチデバイス同期が利用可能になります。
+        <div style={{
+          fontFamily: 'var(--font-google-sans), sans-serif',
+          fontSize: 17, fontWeight: 700,
+          color: '#FFFFFF',
+          marginBottom: 4,
+        }}>
+          GRAPE Premium
         </div>
-        <button
-          style={{
-            marginTop: 12,
-            display: 'inline-flex', alignItems: 'center', gap: 5,
-            padding: '5px 14px', borderRadius: 999,
-            border: '1.5px solid var(--color-encore-amber)',
-            background: 'transparent', cursor: 'pointer',
-            WebkitTapHighlightColor: 'transparent',
-          }}
-        >
-          <span style={{
-            fontFamily: 'var(--font-google-sans), sans-serif',
-            fontSize: 11, fontWeight: 700, color: 'var(--color-encore-amber)',
-          }}>
-            詳しく見る
-          </span>
-          <ArrowSquareOut size={11} weight="regular" color="var(--color-encore-amber)" />
-        </button>
+        <div style={{
+          fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+          fontSize: 11, fontWeight: 400,
+          color: 'rgba(255,255,255,0.55)',
+          lineHeight: 1.6,
+        }}>
+          アーティスト無制限・詳細なレポートにアップグレード
+        </div>
       </div>
-    </div>
+
+      {/* シェブロン */}
+      <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+        <CaretRight size={16} weight="bold" color={GOLD} />
+      </div>
+    </button>
   )
 }
 
@@ -1045,20 +1055,259 @@ function DeleteConfirmDialog({
   )
 }
 
+// ─── PremiumUpgradeSheet ──────────────────────────────────────────────────────
+
+const PREMIUM_FEATURES = [
+  {
+    icon: UsersThree,
+    label: 'アーティスト無制限登録',
+    desc: '好きなアーティストを何組でも登録できます',
+  },
+  {
+    icon: ChartLineUp,
+    label: '詳細レポート・統計機能',
+    desc: 'ライブ参加履歴をグラフで深く振り返れます',
+  },
+  {
+    icon: CloudCheck,
+    label: 'クラウドバックアップ',
+    desc: 'データを安全にバックアップ・復元できます',
+  },
+]
+
+function PremiumUpgradeSheet({ onClose }: { onClose: () => void }) {
+  // ダークパープル背景用カラー定数
+  const PUR = {
+    bg:        '#1C0F42',
+    card:      'rgba(255,255,255,0.08)',
+    divider:   'rgba(255,255,255,0.09)',
+    iconBg:    'rgba(245,200,80,0.16)',
+    title:     '#FFFFFF',
+    sub:       'rgba(255,255,255,0.58)',
+    muted:     'rgba(255,255,255,0.32)',
+    gold:      '#F5C850',
+    btnBg:     'rgba(245,200,80,0.22)',
+  }
+
+  return (
+    /* フルカバー — スクロール可能なシート */
+    <div style={{
+      position: 'absolute', inset: 0,
+      background: PUR.bg,
+      zIndex: 200,
+      display: 'flex', flexDirection: 'column',
+      borderRadius: 44, overflow: 'hidden',
+    }}>
+
+      {/* ── トップバー ── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '14px 16px 0',
+        flexShrink: 0,
+      }}>
+        {/* × 閉じる */}
+        <button
+          onClick={onClose}
+          style={{
+            width: 32, height: 32, borderRadius: 999,
+            background: 'rgba(255,255,255,0.12)',
+            border: 'none', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            WebkitTapHighlightColor: 'transparent',
+          }}
+        >
+          <X size={15} weight="bold" color="rgba(255,255,255,0.85)" />
+        </button>
+
+        {/* 購入を復元 */}
+        <button
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+            fontSize: 12, fontWeight: 400,
+            color: PUR.sub,
+            padding: '6px 0',
+            WebkitTapHighlightColor: 'transparent',
+          }}
+        >
+          購入を復元
+        </button>
+      </div>
+
+      {/* ── スクロールコンテンツ ── */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 20px 0' }}>
+
+        {/* クラウンアイコン */}
+        <div style={{
+          display: 'flex', justifyContent: 'center', marginBottom: 16,
+        }}>
+          <div style={{
+            width: 64, height: 64, borderRadius: 18,
+            background: PUR.iconBg,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Crown size={32} weight="fill" color={PUR.gold} />
+          </div>
+        </div>
+
+        {/* タイトル・タグライン */}
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <div style={{
+            fontFamily: 'var(--font-google-sans), sans-serif',
+            fontSize: 22, fontWeight: 700,
+            color: PUR.title,
+            marginBottom: 6,
+          }}>
+            GRAPE Premium
+          </div>
+          <div style={{
+            fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+            fontSize: 13, fontWeight: 400, lineHeight: 1.65,
+            color: PUR.sub,
+          }}>
+            好きなアーティストと、もっと深く。<br />
+            制限なしで全機能にアクセスしよう。
+          </div>
+        </div>
+
+        {/* 機能リスト */}
+        <div style={{
+          background: PUR.card,
+          borderRadius: 10, padding: '4px 16px',
+          marginBottom: 20,
+        }}>
+          {PREMIUM_FEATURES.map(({ icon: Icon, label, desc }, i) => (
+            <div key={label} style={{
+              display: 'flex', alignItems: 'center', gap: 14,
+              padding: '12px 0',
+              borderBottom: i < PREMIUM_FEATURES.length - 1
+                ? `1px solid ${PUR.divider}`
+                : 'none',
+            }}>
+              {/* アイコン */}
+              <div style={{
+                width: 34, height: 34, borderRadius: 9, flexShrink: 0,
+                background: PUR.iconBg,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Icon size={16} weight="regular" color={PUR.gold} />
+              </div>
+              {/* テキスト */}
+              <div style={{ flex: 1 }}>
+                <div style={{
+                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                  fontSize: 13, fontWeight: 700,
+                  color: PUR.title,
+                  marginBottom: 2,
+                }}>{label}</div>
+                <div style={{
+                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                  fontSize: 11, fontWeight: 400,
+                  color: PUR.sub,
+                  lineHeight: 1.5,
+                }}>{desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* 価格カード */}
+        <div style={{
+          background: PUR.card,
+          borderRadius: 12, padding: '16px 18px',
+          marginBottom: 14,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <div>
+            <div style={{
+              fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+              fontSize: 13, fontWeight: 700,
+              color: PUR.title,
+              marginBottom: 3,
+            }}>買い切り</div>
+            <div style={{
+              fontFamily: 'var(--font-google-sans), sans-serif',
+              fontSize: 11, fontWeight: 400,
+              color: PUR.sub,
+            }}>リリース記念価格 · サブスクなし · 税込</div>
+          </div>
+          {/* 価格（打ち消し＋現在価格） */}
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+            <span style={{
+              fontFamily: 'var(--font-google-sans), sans-serif',
+              fontSize: 12, fontWeight: 400,
+              color: PUR.muted,
+              textDecoration: 'line-through',
+            }}>¥980</span>
+            <span style={{
+              fontFamily: 'var(--font-google-sans), sans-serif',
+              fontSize: 24, fontWeight: 700,
+              color: PUR.gold,
+            }}>¥480</span>
+          </div>
+        </div>
+
+        {/* アップグレードボタン（準備中） */}
+        <button
+          disabled
+          style={{
+            width: '100%', padding: '15px 0', borderRadius: 12,
+            background: PUR.btnBg,
+            border: 'none', cursor: 'default',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            marginBottom: 14,
+          }}
+        >
+          <Crown size={15} weight="fill" color={PUR.gold} />
+          <span style={{
+            fontFamily: 'var(--font-google-sans), sans-serif',
+            fontSize: 14, fontWeight: 700,
+            color: PUR.gold,
+          }}>
+            アップグレード（準備中）
+          </span>
+        </button>
+
+        {/* 利用規約・プライバシーポリシー */}
+        <div style={{
+          display: 'flex', justifyContent: 'center', gap: 4,
+          paddingBottom: 32,
+        }}>
+          <a href="/terms" style={{
+            fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+            fontSize: 11, fontWeight: 400,
+            color: PUR.muted, textDecoration: 'none',
+          }}>利用規約</a>
+          <span style={{ fontSize: 11, color: PUR.muted }}>·</span>
+          <a href="/privacy" style={{
+            fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+            fontSize: 11, fontWeight: 400,
+            color: PUR.muted, textDecoration: 'none',
+          }}>プライバシーポリシー</a>
+        </div>
+
+      </div>
+    </div>
+  )
+}
+
 // ─── ArtistManageSection ──────────────────────────────────────────────────────
 
 const ARTIST_VISIBLE_COUNT = 5
+const FREE_ARTIST_LIMIT    = 5
 
 function ArtistManageSection({
   artists,
   onEdit,
   onDelete,
   onAdd,
+  atLimit,
 }: {
   artists: GrapeArtist[]
   onEdit: (artist: GrapeArtist) => void
   onDelete: (artist: GrapeArtist) => void
   onAdd: () => void
+  atLimit: boolean
 }) {
   const [expanded, setExpanded] = useState(false)
   const hiddenCount = Math.max(0, artists.length - ARTIST_VISIBLE_COUNT)
@@ -1067,21 +1316,35 @@ function ArtistManageSection({
     <SettingsSection
       label="アーティスト"
       action={
-        <button
-          onClick={onAdd}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 4,
-            background: 'none', border: 'none', cursor: 'pointer',
-            padding: '2px 0',
-            color: 'var(--color-encore-green)',
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* N / 5 カウンター */}
+          <span style={{
             fontFamily: 'var(--font-google-sans), sans-serif',
-            fontSize: 13, fontWeight: 700,
-            WebkitTapHighlightColor: 'transparent',
-          }}
-        >
-          <span style={{ fontSize: 18, lineHeight: 1, marginTop: -1 }}>+</span>
-          追加
-        </button>
+            fontSize: 11, fontWeight: 400,
+            color: atLimit ? 'var(--color-encore-amber)' : 'var(--color-encore-text-muted)',
+          }}>
+            {artists.length} / {FREE_ARTIST_LIMIT}
+          </span>
+          {/* 追加ボタン */}
+          <button
+            onClick={onAdd}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 4,
+              background: 'none', border: 'none', cursor: 'pointer',
+              padding: '2px 0',
+              color: atLimit ? 'var(--color-encore-amber)' : 'var(--color-encore-green)',
+              fontFamily: 'var(--font-google-sans), sans-serif',
+              fontSize: 13, fontWeight: 700,
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            {atLimit
+              ? <Lock size={14} weight="regular" />
+              : <span style={{ fontSize: 18, lineHeight: 1, marginTop: -1 }}>+</span>
+            }
+            追加
+          </button>
+        </div>
       }
     >
       {artists.length === 0 ? (
@@ -1187,9 +1450,10 @@ export default function SettingsPage() {
 
   // ── アーティスト管理 ──────────────────────────────────────────────────────
   const { lives, artists, addArtist, updateArtist, deleteArtist, updateLives } = useGrapeStore()
-  const [editingArtist,  setEditingArtist]  = useState<GrapeArtist | null>(null)
-  const [isAdding,       setIsAdding]       = useState(false)
-  const [deletingArtist, setDeletingArtist] = useState<GrapeArtist | null>(null)
+  const [editingArtist,    setEditingArtist]    = useState<GrapeArtist | null>(null)
+  const [isAdding,         setIsAdding]         = useState(false)
+  const [deletingArtist,   setDeletingArtist]   = useState<GrapeArtist | null>(null)
+  const [showPremiumSheet, setShowPremiumSheet] = useState(false)
 
   // 保存済みトースト
   const [savedToast, setSavedToast] = useState(false)
@@ -1264,7 +1528,14 @@ export default function SettingsPage() {
             artists={artists}
             onEdit={setEditingArtist}
             onDelete={setDeletingArtist}
-            onAdd={() => setIsAdding(true)}
+            atLimit={artists.length >= FREE_ARTIST_LIMIT}
+            onAdd={() => {
+              if (artists.length >= FREE_ARTIST_LIMIT) {
+                setShowPremiumSheet(true)
+              } else {
+                setIsAdding(true)
+              }
+            }}
           />
 
           {/* 表示 */}
@@ -1328,15 +1599,9 @@ export default function SettingsPage() {
           {/* サポート */}
           <SettingsSection label="サポート">
             <SettingsRow
-              icon={<SettingsIconWrap><Question size={15} weight="regular" /></SettingsIconWrap>}
-              label="使い方"
-              onClick={() => {}}
-            />
-            <SettingsDivider />
-            <SettingsRow
               icon={<SettingsIconWrap><Envelope size={15} weight="regular" /></SettingsIconWrap>}
               label="お問い合わせ"
-              onClick={() => {}}
+              onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLSdZ9wyVHTzeiWjt2nxXk_FMZhQ_MxeIStcXDSwWPBuyHTILLw/viewform', '_blank')}
             />
             <SettingsDivider />
             <SettingsRow
@@ -1370,7 +1635,7 @@ export default function SettingsPage() {
             }}>
               Premium
             </div>
-            <PremiumInfoCard />
+            <PremiumInfoCard onShowPremium={() => setShowPremiumSheet(true)} />
           </div>
 
         </div>
@@ -1432,6 +1697,11 @@ export default function SettingsPage() {
             onConfirmKeepEvents={handleDeleteKeepEvents}
             onCancel={() => setDeletingArtist(null)}
           />
+        )}
+
+        {/* ── Premium アップグレードシート ── */}
+        {showPremiumSheet && (
+          <PremiumUpgradeSheet onClose={() => setShowPremiumSheet(false)} />
         )}
 
         {/* ── 保存完了トースト ── */}
