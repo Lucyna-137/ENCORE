@@ -63,11 +63,11 @@ export default function Typography() {
         </div>
         <div className="flex items-center" style={{ gap: 20 }}>
           <CopyLabel text="Body —13px 400" cls="ty.body" />
-          <div style={{ fontFamily: JA, fontSize: 13, color: 'var(--color-encore-green)', lineHeight: 1.6 }}>Vaundy LIVE TOUR 2026</div>
+          <div style={{ fontFamily: JA, fontSize: 13, color: 'var(--color-encore-green)', lineHeight: 1.6 }}>AOI ONE MAN LIVE 2026</div>
         </div>
         <div className="flex items-center" style={{ gap: 20 }}>
           <CopyLabel text="Body SM —12px 400" cls="ty.bodySM" />
-          <div style={{ fontFamily: JA, fontSize: 12, color: 'var(--color-encore-green)', lineHeight: 1.6 }}>Vaundy LIVE TOUR 2026</div>
+          <div style={{ fontFamily: JA, fontSize: 12, color: 'var(--color-encore-green)', lineHeight: 1.6 }}>AOI ONE MAN LIVE 2026</div>
         </div>
         <div className="flex items-center" style={{ gap: 20 }}>
           <CopyLabel text="Sub —12px 400" cls="ty.sub" />

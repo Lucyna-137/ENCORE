@@ -38,11 +38,11 @@ const PERIODS: Period[] = ['今月', '今年', '累計']
 
 // 曲トレンド（ダミー）
 const SONG_TREND = [
-  { title: 'ASYLUM',   artist: 'somei',    count: 3, image: '/grape/artist/somei.JPG' },
-  { title: '花になって', artist: '優利香',  count: 2, image: '/grape/artist/優利香.JPG' },
-  { title: 'ロキ',      artist: 'Ado',     count: 2, image: '/grape/artist/Ado.JPG' },
-  { title: 'deep sea', artist: 'yama',     count: 2, image: '/grape/artist/yama.JPG' },
-  { title: '光るとき',  artist: 'シユイ',  count: 1, image: '/grape/artist/シユイ.JPG' },
+  { title: 'NOCTURNE',      artist: 'AOI',      count: 3, image: '/grape/artist/soloA_ssw.png' },
+  { title: 'Citylights',    artist: 'NANA',     count: 2, image: '/grape/artist/soloB_RB.png' },
+  { title: 'Aurora',        artist: 'Luna',     count: 2, image: '/grape/artist/vtuber.jpg'   },
+  { title: 'Silent Bloom',  artist: 'koharu',   count: 2, image: '/grape/artist/soloD.png'    },
+  { title: 'Paper Plane',   artist: 'MEI',      count: 1, image: '/grape/artist/soloC.png'    },
 ]
 
 // ─── カウントアップフック ─────────────────────────────────────────────────────

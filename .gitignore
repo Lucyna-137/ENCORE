@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# LP素材: スクリプトで再生成可能なので追跡しない
+/public/screenshots/
+
+# 予備アーティスト画像（低品質版バックアップ、使用しない）
+/public/grape/artist/*2.png

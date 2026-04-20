@@ -338,7 +338,7 @@ export default function Page() {
               <Chip>Back Arrow</Chip>
               <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden', width: 375 }}>
                 <StatusBar />
-                <NavHeader title="RADWIMPS LIVE 2026" variant="back" />
+                <NavHeader title="AOI ONE MAN LIVE『NOCTURNE』" variant="back" />
               </div>
             </div>
             <div className="flex flex-col gap-2">
@@ -559,13 +559,13 @@ export default function Page() {
         <SectionBlock id="s12" num="12" title="Search Bar">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, maxWidth: 375, padding: '8px 0' }}>
             <SearchBar suggestions={[
-              'RADWIMPS LIVE TOUR 2026',
-              'Vaundy ONE MAN TOUR',
-              '優里 LIVE 2026',
-              'King Gnu ARENA TOUR',
-              'あいみょん ACOUSTIC LIVE',
-              'back number TOUR',
-              'Creepy Nuts LIVE',
+              'AOI 1st ONE MAN LIVE『NOCTURNE』',
+              'NANA ONE MAN『CONTINUE』',
+              'MEI DAYDREAM LIVE',
+              'lumenade POP-UP!!',
+              'Luna STARLIGHT LIVE 2026',
+              'koharu acoustic night',
+              'Cross Roads 4th Anniversary',
             ]} />
           </div>
         </SectionBlock>
@@ -619,25 +619,25 @@ export default function Page() {
             <div className="flex flex-col gap-2">
               <Chip>ワンマン / 予定</Chip>
               <div style={{ width: 375 }}>
-                <LiveCard date="2026-05-15" liveType="ワンマン" liveStatus="予定" name="somei TOUR 2026 -BLISS-" artist="somei" venue="Zepp Tokyo" time="Open 18:00 / Start 19:00" flyerImage="/liveimg/01.jpeg" flyerImagePosition="top" artistImage="/Artistimg/01.jpg" />
+                <LiveCard date="2026-05-10" liveType="ワンマン" liveStatus="予定" name="AOI 1st ONE MAN LIVE『NOCTURNE』" artist="AOI" venue="WWW" time="Open 17:30 / Start 18:00" flyerImage="/grape/cover/cover-ssw.png" flyerImagePosition="top" artistImage="/grape/artist/soloA_ssw.png" />
               </div>
             </div>
             <div className="flex flex-col gap-2">
               <Chip>対バン / 抽選中</Chip>
               <div style={{ width: 375 }}>
-                <LiveCard date="2026-04-03" liveType="対バン" liveStatus="抽選中" name="春の対バンナイト vol.7" artist="シユイ / 優利香 / yama" venue="渋谷WWW X" flyerImage="/liveimg/02.jpg" artistImage="/Artistimg/02.jpg" />
+                <LiveCard date="2026-04-06" liveType="対バン" liveStatus="抽選中" name="Cross Roads 4th Anniversary" artist="NANA / AOI / MEI" venue="下北沢LOFT" flyerImage="/grape/cover/cover-rock.png" artistImage="/grape/artist/soloB_RB.png" />
               </div>
             </div>
             <div className="flex flex-col gap-2">
               <Chip>フェス / 当選</Chip>
               <div style={{ width: 375 }}>
-                <LiveCard date="2026-08-11" liveType="フェス" liveStatus="当選" name="SUMMER SONIC 2026" artist="Ado / スーパー登山部 ほか" venue="幕張メッセ" time="Start 10:00" flyerImage="/liveimg/03.jpeg.webp" flyerImagePosition="top" artistImages={['/Artistimg/01.jpg', '/Artistimg/02.jpg', '/Artistimg/03.jpg', '/Artistimg/04.jpg']} />
+                <LiveCard date="2026-05-03" liveType="フェス" liveStatus="当選" name="MOON ROCK FESTIVAL 2026 GW" artist="koharu / Luna / lumenade ほか" venue="横浜スタジアム" time="Start 10:00" flyerImage="/grape/cover/cover-festival.png" flyerImagePosition="top" artistImages={['/grape/artist/soloD.png', '/grape/artist/vtuber.jpg', '/grape/artist/girlsgroup.png', '/grape/artist/soloA_ssw.png']} />
               </div>
             </div>
             <div className="flex flex-col gap-2">
               <Chip>配信 / 終了</Chip>
               <div style={{ width: 375 }}>
-                <LiveCard date="2026-03-01" liveType="配信" liveStatus="終了" name="yama online live 2026" artist="yama" flyerImage="/liveimg/04.jpeg" flyerImagePosition="top" artistImage="/Artistimg/04.jpg" />
+                <LiveCard date="2026-04-19" liveType="配信" liveStatus="終了" name="koharu acoustic night" artist="koharu" flyerImage="/grape/cover/cover-acoustic.png" flyerImagePosition="top" artistImage="/grape/artist/soloD.png" />
               </div>
             </div>
           </div>
@@ -650,9 +650,9 @@ export default function Page() {
               <Chip>Overlay Style</Chip>
               <ProductCard
                 variant="overlay"
-                title="RADWIMPS LIVE 2026"
-                description="Zepp Tokyo・2026年3月20日(金)・18:00〜"
-                price="¥8,800"
+                title="MOON ROCK FESTIVAL 2026 GW"
+                description="横浜スタジアム・2026年5月3日(日)・10:00〜"
+                price="¥9,800"
                 badge="S席"
                 emoji="🎸"
               />
@@ -661,9 +661,9 @@ export default function Page() {
               <Chip>Like Card</Chip>
               <ProductCard
                 variant="like"
-                title="優里 ONE MAN TOUR"
-                description="東京ガーデンシアター・2026年4月5日(日)・17:00〜"
-                price="¥7,700"
+                title="NANA ONE MAN『CONTINUE』"
+                description="LIVE STUDIO LODGE・2026年3月25日(水)・19:00〜"
+                price="¥3,300"
                 emoji="🎤"
               />
             </div>
@@ -676,18 +676,18 @@ export default function Page() {
             <div style={{ flex: 1, minWidth: 280, maxWidth: 375 }}>
               <Chip>Artist Card</Chip>
               <div className="flex flex-col gap-2" style={{ marginTop: 6 }}>
-                <ArtistCard name="somei" color="var(--color-encore-green)" image="/Artistimg/01.jpg" liveCount={8} nextLiveDate="5/15" />
-                <ArtistCard name="シユイ" color="var(--color-encore-amber)" image="/Artistimg/02.jpg" liveCount={5} nextLiveDate="4/3" />
-                <ArtistCard name="Ado" color="#7C3AED" image="/Artistimg/03.jpg" liveCount={2} />
-                <ArtistCard name="yama" color="#0EA5E9" image="/Artistimg/04.jpg" liveCount={3} nextLiveDate="6/20" />
+                <ArtistCard name="AOI" color="var(--color-encore-green)" image="/grape/artist/soloA_ssw.png" liveCount={8} nextLiveDate="5/10" />
+                <ArtistCard name="NANA" color="var(--color-encore-amber)" image="/grape/artist/soloB_RB.png" liveCount={5} nextLiveDate="4/14" />
+                <ArtistCard name="Luna" color="#7C3AED" image="/grape/artist/vtuber.jpg" liveCount={2} />
+                <ArtistCard name="koharu" color="#0EA5E9" image="/grape/artist/soloD.png" liveCount={3} nextLiveDate="5/3" />
               </div>
             </div>
             <div style={{ width: 375 }}>
               <Chip>Artist Avatar — サイズバリアント</Chip>
               <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '24px 20px', marginTop: 6, display: 'flex', alignItems: 'center', gap: 20 }}>
-                <ArtistAvatar name="somei" color="var(--color-encore-green)" size="sm" />
-                <ArtistAvatar name="somei" color="var(--color-encore-green)" size="md" />
-                <ArtistAvatar name="somei" color="var(--color-encore-green)" size="lg" />
+                <ArtistAvatar name="AOI" color="var(--color-encore-green)" size="sm" />
+                <ArtistAvatar name="AOI" color="var(--color-encore-green)" size="md" />
+                <ArtistAvatar name="AOI" color="var(--color-encore-green)" size="lg" />
               </div>
             </div>
           </div>
@@ -935,10 +935,10 @@ export default function Page() {
               <Chip>Horizontal — アーティスト別</Chip>
               <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '24px 20px', marginTop: 6 }}>
                 <BarChart orientation="horizontal" unit="回" data={[
-                  { label: 'somei', value: 8, color: 'var(--color-encore-green)', image: '/Artistimg/01.jpg' },
-                  { label: 'シユイ', value: 5, color: 'var(--color-encore-amber)', image: '/Artistimg/02.jpg' },
-                  { label: '優利香', value: 4, color: '#0EA5E9', image: '/Artistimg/03.jpg' },
-                  { label: 'Ado', value: 2, color: '#7C3AED', image: '/Artistimg/04.jpg' },
+                  { label: 'AOI',    value: 8, color: 'var(--color-encore-green)', image: '/grape/artist/soloA_ssw.png' },
+                  { label: 'MEI',    value: 5, color: 'var(--color-encore-amber)', image: '/grape/artist/soloC.png' },
+                  { label: 'NANA',   value: 4, color: '#0EA5E9',                   image: '/grape/artist/soloB_RB.png' },
+                  { label: 'Luna',   value: 2, color: '#7C3AED',                   image: '/grape/artist/vtuber.jpg' },
                 ]} />
               </div>
             </div>
@@ -965,10 +965,10 @@ export default function Page() {
               totalLabel="TOTAL LIVES"
               unit="回"
               data={[
-                { label: 'somei',  value: 8, color: 'var(--color-encore-green)', image: '/Artistimg/01.jpg' },
-                { label: 'シユイ', value: 5, color: 'var(--color-encore-amber)', image: '/Artistimg/02.jpg' },
-                { label: '優利香', value: 4, color: '#0EA5E9',                   image: '/Artistimg/03.jpg' },
-                { label: 'Ado',    value: 2, color: '#7C3AED',                   image: '/Artistimg/04.jpg' },
+                { label: 'AOI',    value: 8, color: 'var(--color-encore-green)', image: '/grape/artist/soloA_ssw.png' },
+                { label: 'MEI',    value: 5, color: 'var(--color-encore-amber)', image: '/grape/artist/soloC.png' },
+                { label: 'NANA',   value: 4, color: '#0EA5E9',                   image: '/grape/artist/soloB_RB.png' },
+                { label: 'Luna',   value: 2, color: '#7C3AED',                   image: '/grape/artist/vtuber.jpg' },
               ]}
             />
           </div>

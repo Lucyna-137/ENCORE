@@ -20,9 +20,9 @@ export interface GrapeLive {
   title: string
   artist: string
   artists?: string[]            // 対バン等で複数アーティスト名
-  artistImage?: string          // /Artistimg/NN.jpg
+  artistImage?: string          // /grape/artist/*.png
   artistImages?: string[]       // 対バン等で複数アーティスト画像（フェード切り替え用）
-  coverImage?: string           // /liveimg/NN.jpeg etc
+  coverImage?: string           // /grape/cover/*.png
   coverImagePosition?: string   // object-position e.g. '50% 30%'
   images?: string[]             // 追加画像（タイムテーブル/マップ等）base64 or URL
   venue: string

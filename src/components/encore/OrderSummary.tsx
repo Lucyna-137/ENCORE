@@ -30,15 +30,15 @@ const ChevronRight = () => (
 
 const defaultItems: OrderItem[] = [
   {
-    image: '/Artistimg/01.jpg',
-    name: 'RADWIMPS LIVE 2026 東京',
-    detail: 'S席・1枚 | Zepp Tokyo・3月20日(金)',
+    image: '/grape/artist/soloA_ssw.png',
+    name: 'AOI 1st ONE MAN LIVE『NOCTURNE』',
+    detail: 'S席・1枚 | WWW・5月10日(日)',
     qty: 1,
-    price: '¥8,800',
+    price: '¥3,500',
   },
 ]
 
-export default function OrderSummary({ items = defaultItems, total = '¥8,800' }: OrderSummaryProps) {
+export default function OrderSummary({ items = defaultItems, total = '¥3,500' }: OrderSummaryProps) {
   return (
     <div style={{ background: 'var(--color-encore-bg)' }}>
       {items.map((item, i) => (
