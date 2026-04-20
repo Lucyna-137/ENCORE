@@ -68,6 +68,45 @@ const SHOTS = [
 ]
 
 /**
+ * 各ページの「Phone frame」ラッパー（borderRadius 44 + boxShadow + 中央寄せpadding）を
+ * 除去して、純粋なUIだけのフラットなスクショにする
+ */
+async function removePhoneFrame(page) {
+  await page.evaluate(() => {
+    const allDivs = Array.from(document.querySelectorAll('div'))
+    allDivs.forEach(el => {
+      const cs = getComputedStyle(el)
+
+      // Phone frame: borderRadius 44px の要素を発見 → 角R/シャドウ除去 + 親もリセット
+      if (cs.borderTopLeftRadius === '44px') {
+        el.style.borderRadius = '0'
+        el.style.boxShadow = 'none'
+
+        // 直接の親（外側センタリング用ラッパー）から祖先3段まで余白除去
+        let parent = el.parentElement
+        for (let i = 0; i < 3 && parent; i++) {
+          parent.style.padding = '0'
+          parent.style.margin = '0'
+          parent.style.background = 'var(--color-encore-bg)'
+          parent.style.alignItems = 'flex-start'
+          parent.style.minHeight = '0'
+          parent = parent.parentElement
+        }
+      }
+    })
+
+    // body/html 外周の余白・背景もクリア
+    document.body.style.background = 'var(--color-encore-bg)'
+    document.body.style.margin = '0'
+    document.body.style.padding = '0'
+    document.documentElement.style.background = 'var(--color-encore-bg)'
+    document.documentElement.style.margin = '0'
+    document.documentElement.style.padding = '0'
+  })
+  await page.waitForTimeout(200)
+}
+
+/**
  * 内部スクロールコンテナとその親の高さ制約をすべて解放し、
  * 固定位置 TabBar を絶対位置に変えて文書末尾に配置
  */
@@ -158,6 +197,9 @@ async function main() {
 
       // アニメーション・画像ロード待機
       await page.waitForTimeout(shot.wait ?? 800)
+
+      // スマホ枠（角R / シャドウ / 外周余白）を除去（全ショット共通）
+      await removePhoneFrame(page)
 
       if (shot.mode === 'full') {
         await releaseAllConstraints(page)
