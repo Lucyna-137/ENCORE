@@ -92,8 +92,7 @@ export const LIVES: GrapeLive[] = [
     startTime: '15:30',
     endTime: '16:00',
     liveType: '対バン',
-    attendanceStatus: 'planned',
-    ticketStatus: 'pay-at-door',
+    attendanceStatus: 'attended',
     price: 0,
   },
   {
@@ -167,8 +166,6 @@ export const LIVES: GrapeLive[] = [
     endTime: '20:00',
     liveType: 'フェス',
     attendanceStatus: 'planned',
-    ticketStatus: 'issued',
-    priority: 'medium',
     price: 5500,
   },
   {
@@ -232,10 +229,8 @@ export const LIVES: GrapeLive[] = [
     startTime: '19:00',
     endTime: '21:30',
     liveType: 'ワンマン',
-    attendanceStatus: 'planned',
-    ticketStatus: 'issued',
+    attendanceStatus: 'attended',
     seatInfo: 'スタンディング',
-    priority: 'low',
     price: 3000,
   },
   {
@@ -252,9 +247,7 @@ export const LIVES: GrapeLive[] = [
     endTime: '20:00',
     liveType: 'フェス',
     attendanceStatus: 'planned',
-    ticketStatus: 'issued',
     seatInfo: '未登録',
-    priority: 'high',
     price: 9800,
   },
   {
@@ -335,8 +328,7 @@ export const LIVES: GrapeLive[] = [
     startTime: '14:00',
     endTime: '17:00',
     liveType: '対バン',
-    attendanceStatus: 'planned',
-    ticketStatus: 'issued',
+    attendanceStatus: 'attended',
     price: 2500,
   },
   {
@@ -350,8 +342,7 @@ export const LIVES: GrapeLive[] = [
     startTime: '19:00',
     endTime: '21:00',
     liveType: '配信',
-    attendanceStatus: 'planned',
-    ticketStatus: 'issued',
+    attendanceStatus: 'attended',
     price: 2000,
   },
 ]
