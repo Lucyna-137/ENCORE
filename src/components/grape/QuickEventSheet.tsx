@@ -1746,6 +1746,7 @@ export default function QuickEventSheet({ date, hour, live, artists: propArtists
             <CoverArtEditor
               coverImage={coverImage}
               position={coverImagePosition}
+              availableImages={images}
               onImageChange={setCoverImage}
               onPositionChange={setCoverImagePosition}
               onRemove={() => { setCoverImage(''); setCoverImagePosition('50% 50%') }}
@@ -2089,19 +2090,26 @@ function ImageUploadGrid({ images, onChange }: { images: string[]; onChange: (v:
 function CoverArtEditor({
   coverImage,
   position,
+  availableImages = [],
   onImageChange,
   onPositionChange,
   onRemove,
 }: {
   coverImage: string
   position: string
+  /** 「画像」欄に登録済みの画像（これらからもカバーアート選択可能） */
+  availableImages?: string[]
   onImageChange: (url: string) => void
   onPositionChange: (pos: string) => void
   onRemove: () => void
 }) {
   const fileRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
+  const [showPicker, setShowPicker] = useState(false)
   const dragStart = useRef({ x: 0, y: 0, px: 50, py: 50 })
+
+  // カバーアートとして選択可能な画像（現在のカバー以外）
+  const pickableImages = availableImages.filter(img => img !== coverImage)
 
   const parsePos = (pos: string) => {
     const parts = pos.split(' ')
@@ -2135,12 +2143,21 @@ function CoverArtEditor({
     e.target.value = ''
   }
 
+  // 変更ボタンの処理: availableImages があれば Picker、なければ直接ファイル選択
+  const handleChangeClick = () => {
+    if (pickableImages.length > 0) {
+      setShowPicker(true)
+    } else {
+      fileRef.current?.click()
+    }
+  }
+
   if (!coverImage) {
     return (
       <>
         <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
         <div
-          onClick={() => fileRef.current?.click()}
+          onClick={() => availableImages.length > 0 ? setShowPicker(true) : fileRef.current?.click()}
           style={{
             height: 96, borderRadius: 8,
             border: '1.5px dashed var(--color-encore-border)',
@@ -2150,8 +2167,21 @@ function CoverArtEditor({
           }}
         >
           <Camera size={24} weight="light" color="var(--color-encore-text-sub)" />
-          <span style={{ ...ty.captionMuted, fontSize: 11 }}>タップして画像を追加</span>
+          <span style={{ ...ty.captionMuted, fontSize: 11 }}>
+            {availableImages.length > 0
+              ? `タップして画像を選択（登録済み${availableImages.length}枚/ローカル）`
+              : 'タップして画像を追加'}
+          </span>
         </div>
+        {showPicker && (
+          <CoverArtPicker
+            images={availableImages}
+            currentCover={coverImage}
+            onPick={(url) => { onImageChange(url); onPositionChange('50% 50%'); setShowPicker(false) }}
+            onPickLocal={() => { setShowPicker(false); setTimeout(() => fileRef.current?.click(), 0) }}
+            onClose={() => setShowPicker(false)}
+          />
+        )}
       </>
     )
   }
@@ -2205,7 +2235,7 @@ function CoverArtEditor({
       {/* アクション */}
       <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
         <button
-          onClick={() => fileRef.current?.click()}
+          onClick={handleChangeClick}
           style={{
             height: 32, padding: '0 14px', borderRadius: 999,
             border: '1.5px solid var(--color-encore-green)',
@@ -2237,7 +2267,179 @@ function CoverArtEditor({
           削除
         </button>
       </div>
+
+      {/* Picker Modal */}
+      {showPicker && (
+        <CoverArtPicker
+          images={availableImages}
+          currentCover={coverImage}
+          onPick={(url) => { onImageChange(url); onPositionChange('50% 50%'); setShowPicker(false) }}
+          onPickLocal={() => { setShowPicker(false); setTimeout(() => fileRef.current?.click(), 0) }}
+          onClose={() => setShowPicker(false)}
+        />
+      )}
     </>
+  )
+}
+
+// ─── CoverArtPicker ───────────────────────────────────────────────────────────
+/** 登録済み画像 or ローカルから選ぶモーダル */
+function CoverArtPicker({
+  images,
+  currentCover,
+  onPick,
+  onPickLocal,
+  onClose,
+}: {
+  images: string[]
+  currentCover: string
+  onPick: (url: string) => void
+  onPickLocal: () => void
+  onClose: () => void
+}) {
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'absolute', inset: 0,
+        background: 'rgba(26, 58, 45, 0.48)',
+        zIndex: 300,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: 'var(--color-encore-bg)',
+          borderRadius: '18px 18px 0 0',
+          padding: '16px 0 20px',
+          maxHeight: '72%',
+          display: 'flex', flexDirection: 'column',
+          animation: 'grape-slide-up 280ms cubic-bezier(0.32, 0.72, 0, 1)',
+        }}
+      >
+        {/* ドラッグハンドル */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 6 }}>
+          <div style={{
+            width: 36, height: 4,
+            background: 'var(--color-encore-border)',
+            borderRadius: 999,
+          }} />
+        </div>
+        <div style={{
+          ...ty.section, textAlign: 'center',
+          padding: '8px 0 14px',
+          color: 'var(--color-encore-text-sub)',
+        }}>
+          カバーアートを選択
+        </div>
+
+        {/* 登録済み画像グリッド */}
+        {images.length > 0 && (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: 8,
+            padding: '0 16px 16px',
+            overflowY: 'auto',
+          }}>
+            {images.map((img, i) => {
+              const isCurrent = img === currentCover
+              return (
+                <button
+                  key={i}
+                  onClick={() => onPick(img)}
+                  disabled={isCurrent}
+                  style={{
+                    position: 'relative',
+                    aspectRatio: '1 / 1',
+                    borderRadius: 8,
+                    overflow: 'hidden',
+                    padding: 0,
+                    border: isCurrent
+                      ? '2px solid var(--color-encore-green)'
+                      : '1.5px solid var(--color-encore-border-light)',
+                    background: 'var(--color-encore-bg-section)',
+                    cursor: isCurrent ? 'default' : 'pointer',
+                    WebkitTapHighlightColor: 'transparent',
+                  }}
+                >
+                  <img
+                    src={img}
+                    alt={`画像${i + 1}`}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', opacity: isCurrent ? 0.5 : 1 }}
+                  />
+                  {isCurrent && (
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: 'rgba(255,255,255,0.1)',
+                    }}>
+                      <span style={{
+                        fontFamily: 'var(--font-google-sans), sans-serif',
+                        fontSize: 10, fontWeight: 700,
+                        background: 'var(--color-encore-green)',
+                        color: '#fff',
+                        padding: '3px 8px',
+                        borderRadius: 999,
+                      }}>
+                        使用中
+                      </span>
+                    </div>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {/* ローカルから選ぶ */}
+        <div style={{ height: 1, background: 'var(--color-encore-border-light)', margin: '0 16px 8px' }} />
+        <button
+          onClick={onPickLocal}
+          style={{
+            padding: '14px 20px',
+            background: 'none', border: 'none',
+            display: 'flex', alignItems: 'center', gap: 12,
+            cursor: 'pointer',
+            WebkitTapHighlightColor: 'transparent',
+            textAlign: 'left',
+          }}
+        >
+          <div style={{
+            width: 32, height: 32, borderRadius: 9,
+            background: 'var(--color-encore-bg-section)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Camera size={14} weight="regular" color="var(--color-encore-green)" />
+          </div>
+          <div>
+            <div style={{ ...ty.section }}>ローカルから選ぶ</div>
+            <div style={{ ...ty.bodySM, color: 'var(--color-encore-text-sub)', marginTop: 1 }}>
+              端末の写真ライブラリから選択
+            </div>
+          </div>
+        </button>
+
+        {/* キャンセル */}
+        <div style={{ height: 8, background: 'var(--color-encore-bg-section)', margin: '8px 0 0' }} />
+        <button
+          onClick={onClose}
+          style={{
+            padding: '14px 20px',
+            background: 'none', border: 'none',
+            ...ty.section, color: 'var(--color-encore-text-sub)',
+            cursor: 'pointer',
+            textAlign: 'center',
+            WebkitTapHighlightColor: 'transparent',
+          }}
+        >
+          キャンセル
+        </button>
+      </div>
+    </div>
   )
 }
 

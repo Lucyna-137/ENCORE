@@ -294,7 +294,8 @@ export async function POST(request: Request) {
     }
 
     const coverImage = availableImages[0] ?? null
-    const extraImages = availableImages.slice(1)
+    // 「画像」欄にはカバーアートを含めた全画像を保持（後から拡大・切替できるように）
+    const allImages = availableImages
 
     // ─── Step 4: Claude Haiku Vision で構造化 ──────────────────
     const client = new Anthropic({ apiKey })
@@ -349,7 +350,7 @@ ${textContent}
 
     parsed.sourceUrl = url
     parsed.coverImage = coverImage
-    parsed.images = extraImages.length > 0 ? extraImages : null
+    parsed.images = allImages.length > 0 ? allImages : null
 
     return Response.json({
       event: parsed,
