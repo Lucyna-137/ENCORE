@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
-import { X, LinkSimple, MagnifyingGlass, Sparkle, CalendarBlank, MapPin, Clock, UserCircle, Ticket, Warning, UserCirclePlus, type Icon } from '@phosphor-icons/react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { X, LinkSimple, MagnifyingGlass, Sparkle, CalendarBlank, MapPin, Clock, UserCircle, Ticket, Warning, UserCirclePlus, PencilSimple, type Icon } from '@phosphor-icons/react'
 import * as ty from '@/components/encore/typographyStyles'
 import type { GrapeLive, GrapeArtist, LiveTypeGrape, TicketStatus } from '@/lib/grape/types'
 
@@ -44,6 +44,26 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
   const [result, setResult] = useState<ExtractedEvent | null>(null)
   /** 未登録アーティストのうち、新規登録する/しない のチェック状態 */
   const [toRegister, setToRegister] = useState<Record<string, boolean>>({})
+
+  // ─── 読み込み中の経過時間ベースのスピナーメッセージ ─────────────────
+  const [loadingMessage, setLoadingMessage] = useState<string>('ページを読み込み中…')
+  const loadingTimersRef = useRef<number[]>([])
+
+  useEffect(() => {
+    if (stage === 'loading') {
+      // リセット
+      setLoadingMessage('ページを読み込み中…')
+      const timers = [
+        window.setTimeout(() => setLoadingMessage('イベント情報を抽出中…'), 1500),
+        window.setTimeout(() => setLoadingMessage('もう少しお待ちください…'), 5000),
+        window.setTimeout(() => setLoadingMessage('公式サイトが重いようです…'), 10000),
+      ]
+      loadingTimersRef.current = timers
+      return () => {
+        timers.forEach(clearTimeout)
+      }
+    }
+  }, [stage])
 
   // ─── 未登録アーティスト検出 ─────────────────────────────────────
   const unregisteredArtists = useMemo(() => {
@@ -289,7 +309,7 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
           {stage === 'loading' ? (
             <>
               <Spinner />
-              <span>解析中...</span>
+              <span>{loadingMessage}</span>
             </>
           ) : (
             <>
@@ -301,20 +321,71 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
 
         {/* エラー */}
         {stage === 'error' && error && (
-          <div style={{
-            padding: '12px 14px', borderRadius: 8,
-            background: 'rgba(192, 57, 43, 0.08)',
-            border: '1px solid rgba(192, 57, 43, 0.3)',
-            display: 'flex', alignItems: 'flex-start', gap: 10,
-            marginBottom: 16,
-          }}>
-            <Warning size={16} weight="fill" color="var(--color-encore-error)" style={{ flexShrink: 0, marginTop: 2 }} />
+          <>
             <div style={{
-              ...ty.bodySM, color: 'var(--color-encore-error)', lineHeight: 1.55,
+              padding: '12px 14px', borderRadius: 8,
+              background: 'rgba(192, 57, 43, 0.08)',
+              border: '1px solid rgba(192, 57, 43, 0.3)',
+              display: 'flex', alignItems: 'flex-start', gap: 10,
+              marginBottom: 12,
             }}>
-              {error}
+              <Warning size={16} weight="fill" color="var(--color-encore-error)" style={{ flexShrink: 0, marginTop: 2 }} />
+              <div style={{
+                ...ty.bodySM, color: 'var(--color-encore-error)', lineHeight: 1.55,
+              }}>
+                {error}
+              </div>
             </div>
-          </div>
+            <div style={{
+              ...ty.bodySM,
+              color: 'var(--color-encore-text-sub)',
+              textAlign: 'center',
+              margin: '4px 0 12px',
+              lineHeight: 1.6,
+            }}>
+              公式サイトが混み合っているか、このページは自動取り込みに対応していない可能性があります。
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+              <button
+                onClick={() => {
+                  // URLだけ保存して手動入力へ
+                  onImport({
+                    sourceUrl: url,
+                    ticketUrl: url,
+                    attendanceStatus: 'candidate',
+                  } as Partial<GrapeLive>)
+                }}
+                style={{
+                  width: '100%', padding: '12px 0', borderRadius: 10,
+                  background: 'var(--color-encore-bg-section)',
+                  color: 'var(--color-encore-green)',
+                  border: 'none',
+                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                  fontSize: 13, fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+              >
+                <PencilSimple size={14} weight="regular" />
+                URLだけ保存して手動で入力
+              </button>
+              <button
+                onClick={() => { setStage('input'); setError(null) }}
+                style={{
+                  width: '100%', padding: '10px 0',
+                  background: 'none', border: 'none',
+                  color: 'var(--color-encore-text-sub)',
+                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                  fontSize: 12,
+                  cursor: 'pointer',
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+              >
+                もう一度試す
+              </button>
+            </div>
+          </>
         )}
 
         {/* プレビュー */}
@@ -327,6 +398,34 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
               <Sparkle size={11} weight="fill" color={GOLD} />
               解析結果（確認して編集できます）
             </div>
+
+            {/* 情報不足時の警告バナー（主要3項目以上 null の時） */}
+            {(() => {
+              const missing = [
+                !result.title, !result.date, !result.venue,
+                !result.artists || result.artists.length === 0,
+                !result.startTime,
+              ].filter(Boolean).length
+              if (missing < 3) return null
+              return (
+                <div style={{
+                  padding: '10px 12px', borderRadius: 8,
+                  background: 'rgba(192, 138, 74, 0.10)',
+                  border: '1px solid rgba(192, 138, 74, 0.28)',
+                  display: 'flex', alignItems: 'flex-start', gap: 8,
+                  marginBottom: 12,
+                }}>
+                  <Warning size={14} weight="fill" color="var(--color-encore-amber)" style={{ flexShrink: 0, marginTop: 2 }} />
+                  <div style={{
+                    ...ty.bodySM,
+                    color: 'var(--color-encore-green)',
+                    lineHeight: 1.55,
+                  }}>
+                    情報が少ないようです。次の画面で手動入力も併用してください。
+                  </div>
+                </div>
+              )
+            })()}
 
             {/* カバー画像プレビュー */}
             {result.coverImage && (

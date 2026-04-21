@@ -10,6 +10,34 @@ export interface PageContent {
   canonicalUrl?: string
 }
 
+/**
+ * OGP / description が汎用テンプレートでイベント固有の情報がない場合を判定
+ * 例: 「〇〇をチケットぴあで今すぐチェック」「Peatix: Tools for Communities and Events」など
+ */
+export function isGenericOgp(title: string, description: string, textContent: string): boolean {
+  const combined = `${title} ${description}`.toLowerCase()
+
+  // 汎用テンプレート文句（サイト共通の売り文句）
+  const genericPhrases = [
+    'をチケットぴあで今すぐチェック',
+    'チケットの先行情報',
+    'tools for communities',
+    'grow your communities',
+    'official website',
+    'オフィシャル ウェブサイト',
+    'オフィシャルサイト',
+    'チケット情報のご紹介',
+    'チケット販売サイト',
+  ]
+
+  const hasGenericPhrase = genericPhrases.some(p => combined.includes(p.toLowerCase()))
+
+  // description が短すぎる & 本文もスカスカなら SPA/空ページの可能性
+  const emptyShell = description.length < 40 && textContent.length < 200
+
+  return hasGenericPhrase || emptyShell
+}
+
 /** HTMLからメタ情報・本文・画像URLを抽出（サーバサイド） */
 export function extractPageContent(html: string, baseUrl: string): PageContent {
   const absolute = (url: string): string => {
