@@ -44,6 +44,8 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
   const [result, setResult] = useState<ExtractedEvent | null>(null)
   /** 未登録アーティストのうち、新規登録する/しない のチェック状態 */
   const [toRegister, setToRegister] = useState<Record<string, boolean>>({})
+  /** 画像リスト（先頭=カバー、残り=ギャラリー）。ユーザが×で削除可能 */
+  const [editedImages, setEditedImages] = useState<string[]>([])
 
   // ─── 読み込み中の経過時間ベースのスピナーメッセージ ─────────────────
   const [loadingMessage, setLoadingMessage] = useState<string>('ページを読み込み中…')
@@ -130,6 +132,12 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
         const unregistered = event.artists.filter(n => !registeredSet.has(n.toLowerCase()))
         initializeCheckboxes(unregistered)
       }
+      // 画像リスト初期化（重複除去）
+      const imgs = [
+        ...(event.coverImage ? [event.coverImage] : []),
+        ...(event.images ?? []),
+      ]
+      setEditedImages([...new Set(imgs)])
       setStage('preview')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'ネットワークエラー')
@@ -186,8 +194,8 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
       saleStartTime: result.saleStartTime ?? undefined,
       price: result.price ?? undefined,
       memo: result.memo ?? undefined,
-      coverImage: result.coverImage ?? undefined,
-      images: result.images && result.images.length > 0 ? result.images : undefined,
+      coverImage: editedImages[0] ?? undefined,
+      images: editedImages.length > 0 ? editedImages : undefined,
     }
 
     onImport(prefill)
@@ -427,27 +435,55 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
               )
             })()}
 
-            {/* カバー画像プレビュー */}
-            {result.coverImage && (
+            {/* カバー画像プレビュー（先頭の画像） */}
+            {editedImages.length > 0 && (
               <div style={{
+                position: 'relative',
                 width: '100%', aspectRatio: '16 / 9',
                 borderRadius: 10, overflow: 'hidden',
                 background: 'var(--color-encore-bg-section)',
                 marginBottom: 10,
               }}>
                 <img
-                  src={result.coverImage}
-                  alt="イベント画像"
+                  src={editedImages[0]}
+                  alt="カバーアート"
                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
+                {/* 削除ボタン */}
+                <button
+                  onClick={() => setEditedImages(prev => prev.slice(1))}
+                  aria-label="カバーアートを削除"
+                  style={{
+                    position: 'absolute', top: 8, right: 8,
+                    width: 30, height: 30, borderRadius: 999,
+                    background: 'rgba(0,0,0,0.55)',
+                    border: 'none', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    WebkitTapHighlightColor: 'transparent',
+                  }}
+                >
+                  <X size={14} weight="bold" color="#fff" />
+                </button>
+                {/* カバーバッジ */}
+                <div style={{
+                  position: 'absolute', bottom: 8, left: 8,
+                  background: 'rgba(0,0,0,0.55)',
+                  padding: '3px 8px', borderRadius: 999,
+                  fontFamily: 'var(--font-google-sans), sans-serif',
+                  fontSize: 10, fontWeight: 700,
+                  color: '#fff', letterSpacing: '0.05em',
+                }}>
+                  カバー
+                </div>
               </div>
             )}
 
-            {/* 追加画像（X複数投稿対応） */}
-            {result.images && result.images.length > 0 && (
-              <div style={{ display: 'flex', gap: 6, marginBottom: 14, overflowX: 'auto' }}>
-                {result.images.map((img, i) => (
-                  <div key={i} style={{
+            {/* 追加画像サムネ（2枚目以降、削除可） */}
+            {editedImages.length > 1 && (
+              <div style={{ display: 'flex', gap: 6, marginBottom: 8, overflowX: 'auto' }}>
+                {editedImages.slice(1).map((img, i) => (
+                  <div key={img + i} style={{
+                    position: 'relative',
                     flexShrink: 0,
                     width: 72, height: 72,
                     borderRadius: 8, overflow: 'hidden',
@@ -458,8 +494,39 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
                       alt={`追加画像${i + 1}`}
                       style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                     />
+                    <button
+                      onClick={() => {
+                        setEditedImages(prev => {
+                          // editedImages[0] はカバー、editedImages.slice(1) の i 番目 = editedImages[i+1]
+                          const next = [...prev]
+                          next.splice(i + 1, 1)
+                          return next
+                        })
+                      }}
+                      aria-label="画像を削除"
+                      style={{
+                        position: 'absolute', top: 2, right: 2,
+                        width: 20, height: 20, borderRadius: 999,
+                        background: 'rgba(0,0,0,0.65)',
+                        border: 'none', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        WebkitTapHighlightColor: 'transparent',
+                      }}
+                    >
+                      <X size={10} weight="bold" color="#fff" />
+                    </button>
                   </div>
                 ))}
+              </div>
+            )}
+            {editedImages.length > 0 && (
+              <div style={{
+                ...ty.caption,
+                color: 'var(--color-encore-text-muted)',
+                marginBottom: 14,
+                textAlign: 'right',
+              }}>
+                不要な画像は × で削除できます
               </div>
             )}
 
