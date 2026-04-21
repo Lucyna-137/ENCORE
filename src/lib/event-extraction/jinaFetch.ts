@@ -84,10 +84,36 @@ export async function fetchViaJina(
       imageUrls.push(imgUrl)
     }
 
-    // body を AIに渡せるサイズに切り詰め（Jinaは情報密度が高いので多めでOK）
-    const textContent = body
+    // body を AIに渡せるサイズに切り詰め
+    // ヘッダー/ナビゲーション/追跡ピクセル等のノイズを落としてから truncate
+    let cleaned = body
+      // 追跡ピクセル画像を除去
+      .replace(/!\[[^\]]*\]\((?:https?:\/\/)?(?:analytics\.twitter|t\.co\/i\/adsct|ads\.google|ad\.doubleclick|google-analytics|googletagmanager|googlesyndication|amplitude|segment\.com|mxpnl|hotjar|facebook\.com\/tr)[^)]*\)/g, '')
+      // 異常に長いURL（Trackingパラメータ大量のpixel）を含む画像を除去
+      .replace(/!\[[^\]]*\]\([^)]{200,}\)/g, '')
+      // 200文字超のプレーンURL行を除去
+      .replace(/^https?:\/\/[^\s]{200,}$/gm, '')
+      // 単純なナビリンク行を除去
+      .replace(/^\*\s+\[[^\]]+\]\([^)]+\)\s*$/gm, '')
+      // ログイン/会員登録等の共通UI文字列を削除
+      .replace(/^(ログイン|ログアウト|会員登録|メニュー|閉じる|シェア|\s*Twitter\s*|\s*line\s*|\s*Facebook\s*)$/gm, '')
+      // 連続する空行を1つに
       .replace(/\n{3,}/g, '\n\n')
-      .slice(0, 8000)
+
+    // eplus・pia等で「受付終了」の行を除去（"受付中"が他にあれば混乱を避ける）
+    if (cleaned.includes('受付中') && cleaned.includes('受付終了')) {
+      // "####" で区切られる各チケット行を分解し、「受付終了」だけの行を削除
+      const rows = cleaned.split(/(?=^####?\s)/m)
+      const filteredRows = rows.filter(row => {
+        // ステータスが受付終了で、受付中が含まれていない → 除外
+        if (/受付終了/.test(row) && !/受付中/.test(row)) return false
+        return true
+      })
+      // 「受付は全て終了しました」の誤解ブロックも除去
+      cleaned = filteredRows.join('').replace(/#+\s*受付は全て終了しました[\s\S]{0,200}/g, '')
+    }
+
+    const textContent = cleaned.slice(0, 10000)
 
     return {
       title,

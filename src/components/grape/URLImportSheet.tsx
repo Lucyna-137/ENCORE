@@ -17,6 +17,7 @@ interface ExtractedEvent {
   price: number | null
   liveType: string | null
   memo: string | null
+  salePhase: string | null
   ticketUrl: string | null
   saleStartDate: string | null
   saleStartTime: string | null
@@ -192,6 +193,7 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
       attendanceStatus: 'candidate',
       ticketStatus,
       ticketUrl,
+      salePhase: result.salePhase ?? undefined,
       saleStartDate: result.saleStartDate ?? undefined,
       saleStartTime: result.saleStartTime ?? undefined,
       price: result.price ?? undefined,
