@@ -6,6 +6,8 @@ import type { GrapeLive, AttendanceStatus, GrapeArtist, LiveTypeGrape, TicketSta
 import { CaretDown, CaretUp, CaretLeft, CaretRight, Camera, LinkSimple, Note, Car, X, CalendarBlank, ArrowsOutCardinal, Trash, Plus, UserCirclePlus, Clock, CheckCircle, Images, Palette } from '@phosphor-icons/react'
 import ColorPicker, { DEFAULT_EVENT_COLOR_VISUAL, type ColorValue } from '@/components/encore/ColorPicker'
 import { TODAY, DOW_SUN_COLOR, DOW_SAT_COLOR, TICKET_STATUS_LABEL } from '@/lib/grape/constants'
+import { useIsPremium } from '@/lib/grape/premium'
+import { Sparkle as SparkleIcon } from '@phosphor-icons/react'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 interface QuickEventSheetProps {
@@ -17,6 +19,8 @@ interface QuickEventSheetProps {
   onClose: () => void
   onSave?: (live: Partial<GrapeLive>) => void
   openSection?: 'ticket'
+  /** Freeユーザ向けのPremium訴求バナー表示用コールバック（新規作成時のみ有効） */
+  onShowPremium?: () => void
 }
 
 // ─── ENCORE準拠: 下線スタイルのinput wrapper ─────────────────────────────────
@@ -1345,11 +1349,13 @@ function ConfirmDiscardDialog({ onDiscard, onCancel }: { onDiscard: () => void; 
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
-export default function QuickEventSheet({ date, hour, live, artists: propArtists = [], onAddArtist: propOnAddArtist, onClose, onSave, openSection }: QuickEventSheetProps) {
+export default function QuickEventSheet({ date, hour, live, artists: propArtists = [], onAddArtist: propOnAddArtist, onClose, onSave, openSection, onShowPremium }: QuickEventSheetProps) {
   const [mounted, setMounted] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const isEditMode = !!live
+  const isPremium  = useIsPremium()
+  const showUpsellBanner = !isEditMode && !isPremium && !!onShowPremium
   const scrollableRef = React.useRef<HTMLDivElement>(null)
   const ticketSectionRef = React.useRef<HTMLDivElement>(null)
 
@@ -1594,6 +1600,58 @@ export default function QuickEventSheet({ date, hour, live, artists: propArtists
 
         {/* Scrollable form */}
         <div ref={scrollableRef} style={{ flex: 1, overflowY: 'auto', padding: '20px 20px 8px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* Premium 訴求バナー（Freeユーザの新規作成時のみ表示） */}
+          {showUpsellBanner && (
+            <button
+              onClick={onShowPremium}
+              style={{
+                background: 'rgba(192, 138, 74, 0.10)',
+                border: '1px solid rgba(192, 138, 74, 0.28)',
+                borderRadius: 10,
+                padding: '10px 14px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                cursor: 'pointer',
+                width: '100%',
+                textAlign: 'left',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              <div style={{
+                width: 28, height: 28, borderRadius: 8,
+                background: 'rgba(192, 138, 74, 0.18)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+              }}>
+                <SparkleIcon size={14} weight="fill" color="var(--color-encore-amber)" />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{
+                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                  fontSize: 12, fontWeight: 700,
+                  color: 'var(--color-encore-green)',
+                  lineHeight: 1.4,
+                }}>
+                  URLから自動取り込みがPremiumで使えます
+                </div>
+                <div style={{
+                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                  fontSize: 10, fontWeight: 400,
+                  color: 'var(--color-encore-text-sub)',
+                  marginTop: 1,
+                }}>
+                  公式サイトのURLから日時・会場・出演者を一括入力
+                </div>
+              </div>
+              <span style={{
+                fontFamily: 'var(--font-google-sans), sans-serif',
+                fontSize: 16, fontWeight: 400,
+                color: 'var(--color-encore-amber)',
+              }}>›</span>
+            </button>
+          )}
 
           {/* イベント名 */}
           <BigTitleInput value={title} onChange={setTitle} />

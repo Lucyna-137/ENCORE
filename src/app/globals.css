@@ -330,6 +330,17 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   display: none;
 }
 
+/* Loading spinner rotation */
+@keyframes grape-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ActionSheet / BottomSheet slide-up */
+@keyframes grape-slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
 /* PhoneFrame - Grape full-page wrapper. Desktop: 393x852 iPhone frame. Mobile(<900px): fullscreen */
 .grape-outer {
   min-height: 100vh;

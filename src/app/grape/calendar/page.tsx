@@ -25,6 +25,10 @@ import DismissableBanner from '@/components/grape/DismissableBanner'
 import QuickEventSheet from '@/components/grape/QuickEventSheet'
 import MiniEventSheet from '@/components/grape/MiniEventSheet'
 import EventPreviewScreen from '@/components/grape/EventPreviewScreen'
+import AddActionSheet from '@/components/grape/AddActionSheet'
+import URLImportSheet from '@/components/grape/URLImportSheet'
+import PremiumUpgradeSheet from '@/components/grape/PremiumUpgradeSheet'
+import { useIsPremium } from '@/lib/grape/premium'
 import {
   CalendarBlank,
   Ticket,
@@ -202,6 +206,12 @@ export default function CalendarPage() {
   const [editOpenSection, setEditOpenSection] = useState<'ticket' | undefined>(undefined)
   const [previewLive, setPreviewLive] = useState<GrapeLive | null>(null)
   const [dayDate, setDayDate] = useState(TODAY)
+  // Add flow (Premium: ActionSheet / URLImport / Prefill for QuickEventSheet)
+  const [showAddSheet, setShowAddSheet] = useState(false)
+  const [showUrlImport, setShowUrlImport] = useState(false)
+  const [showPremiumSheet, setShowPremiumSheet] = useState(false)
+  const [prefillLive, setPrefillLive] = useState<Partial<GrapeLive> | null>(null)
+  const isPremium = useIsPremium()
   // 週ビュー: 月曜始まりの週開始日
   const [weekStart, setWeekStart] = useState(() => getMondayOf(TODAY))
 
@@ -650,7 +660,14 @@ export default function CalendarPage() {
           {/* FAB */}
           {sheetState === 'none' && !previewLive && (
             <button
-              onClick={() => { setEditingLive(null); setSlotHour(undefined); setSheetState('full') }}
+              onClick={() => {
+                setEditingLive(null); setSlotHour(undefined); setPrefillLive(null)
+                if (isPremium) {
+                  setShowAddSheet(true)
+                } else {
+                  setSheetState('full')
+                }
+              }}
               style={{
                 position: 'absolute',
                 bottom: 16,
@@ -676,13 +693,14 @@ export default function CalendarPage() {
         {/* ── QuickEventSheet — フォンフレーム直下に配置してCalendarタイトルを覆う ── */}
         {showQuickEvent && (
           <QuickEventSheet
-            date={editingLive?.date ?? slotDate ?? TODAY}
+            date={editingLive?.date ?? prefillLive?.date ?? slotDate ?? TODAY}
             hour={slotHour}
-            live={editingLive ?? undefined}
+            live={editingLive ?? (prefillLive as GrapeLive | undefined)}
             artists={artists}
             onAddArtist={addArtist}
             openSection={editOpenSection}
-            onClose={() => { setSheetState('none'); setEditingLive(null); setSlotHour(undefined); setEditOpenSection(undefined) }}
+            onShowPremium={() => setShowPremiumSheet(true)}
+            onClose={() => { setSheetState('none'); setEditingLive(null); setSlotHour(undefined); setEditOpenSection(undefined); setPrefillLive(null) }}
             onSave={(payload) => {
               let savedLive: GrapeLive
               if (editingLive) {
@@ -692,10 +710,42 @@ export default function CalendarPage() {
                 savedLive = { id: `live-${Date.now()}`, ...payload } as GrapeLive
                 addLive(savedLive)
               }
-              setSheetState('none'); setEditingLive(null); setSlotHour(undefined)
+              setSheetState('none'); setEditingLive(null); setSlotHour(undefined); setPrefillLive(null)
               setPreviewLive(savedLive)
             }}
           />
+        )}
+
+        {/* ── AddActionSheet (Premium only) ── */}
+        {showAddSheet && (
+          <AddActionSheet
+            onClose={() => setShowAddSheet(false)}
+            onNewEvent={() => {
+              setShowAddSheet(false)
+              setSheetState('full')
+            }}
+            onImportFromUrl={() => {
+              setShowAddSheet(false)
+              setShowUrlImport(true)
+            }}
+          />
+        )}
+
+        {/* ── URLImportSheet (Premium only) ── */}
+        {showUrlImport && (
+          <URLImportSheet
+            onClose={() => setShowUrlImport(false)}
+            onImport={(prefill) => {
+              setShowUrlImport(false)
+              setPrefillLive(prefill)
+              setSheetState('full')
+            }}
+          />
+        )}
+
+        {/* ── PremiumUpgradeSheet ── */}
+        {showPremiumSheet && (
+          <PremiumUpgradeSheet onClose={() => setShowPremiumSheet(false)} />
         )}
 
         {/* ── EventPreviewScreen — フォンフレーム直下に配置してViewToggleを覆う ── */}

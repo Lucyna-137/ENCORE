@@ -1,0 +1,370 @@
+'use client'
+
+import React, { useState } from 'react'
+import { X, LinkSimple, MagnifyingGlass, Sparkle, CalendarBlank, MapPin, Clock, UserCircle, Ticket, Warning, type Icon } from '@phosphor-icons/react'
+import * as ty from '@/components/encore/typographyStyles'
+import type { GrapeLive, LiveTypeGrape } from '@/lib/grape/types'
+
+// ─── 解析レスポンス型 ────────────────────────────────────────────────────────
+interface ExtractedEvent {
+  title: string | null
+  date: string | null
+  openingTime: string | null
+  startTime: string | null
+  endTime: string | null
+  venue: string | null
+  artists: string[] | null
+  price: number | null
+  liveType: string | null
+  memo: string | null
+  sourceUrl: string
+  coverImageUrl?: string | null
+}
+
+type Stage = 'input' | 'loading' | 'preview' | 'error'
+
+interface URLImportSheetProps {
+  onClose: () => void
+  /** 確認後に呼ばれ、QuickEventSheet をプリロードデータで開く側が担当 */
+  onImport: (prefill: Partial<GrapeLive> & { coverImageUrl?: string | null }) => void
+}
+
+export default function URLImportSheet({ onClose, onImport }: URLImportSheetProps) {
+  const [stage, setStage] = useState<Stage>('input')
+  const [url, setUrl] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [result, setResult] = useState<ExtractedEvent | null>(null)
+
+  const handleParse = async () => {
+    if (!url.trim() || !/^https?:\/\//.test(url.trim())) {
+      setError('https:// から始まる有効なURLを入力してください')
+      setStage('error')
+      return
+    }
+
+    setStage('loading')
+    setError(null)
+
+    try {
+      const res = await fetch('/api/event-from-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url.trim() }),
+      })
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error ?? '解析に失敗しました')
+        setStage('error')
+        return
+      }
+
+      setResult(data.event as ExtractedEvent)
+      setStage('preview')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'ネットワークエラー')
+      setStage('error')
+    }
+  }
+
+  const handleConfirm = () => {
+    if (!result) return
+
+    // ExtractedEvent → Partial<GrapeLive> に変換
+    const liveType: LiveTypeGrape | undefined =
+      ['ワンマン', '対バン', 'フェス', '配信', '舞台・公演', 'メディア出演', 'リリースイベント'].includes(
+        result.liveType ?? ''
+      )
+        ? (result.liveType as LiveTypeGrape)
+        : undefined
+
+    const prefill: Partial<GrapeLive> & { coverImageUrl?: string | null } = {
+      title: result.title ?? '',
+      date: result.date ?? '',
+      openingTime: result.openingTime ?? undefined,
+      startTime: result.startTime ?? '',
+      endTime: result.endTime ?? undefined,
+      venue: result.venue ?? '',
+      liveType,
+      attendanceStatus: 'candidate',
+      price: result.price ?? undefined,
+      memo: result.memo ?? undefined,
+      coverImageUrl: result.coverImageUrl,
+    }
+
+    onImport(prefill)
+  }
+
+  const GOLD = '#C08A4A'
+  const PUR_GOLD = '#F5C850'
+
+  return (
+    <div style={{
+      position: 'absolute', inset: 0,
+      background: 'var(--color-encore-bg)',
+      zIndex: 200,
+      display: 'flex', flexDirection: 'column',
+      overflow: 'hidden',
+    }}>
+      {/* ── ヘッダー ── */}
+      <div style={{
+        padding: '14px 20px 16px',
+        flexShrink: 0,
+        borderBottom: '1px solid var(--color-encore-border-light)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <button
+            onClick={onClose}
+            style={{
+              width: 32, height: 32, borderRadius: 999,
+              background: 'var(--color-encore-bg-section)',
+              border: 'none', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            <X size={14} weight="bold" color="var(--color-encore-green)" />
+          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Sparkle size={13} weight="fill" color={GOLD} />
+            <span style={{
+              fontFamily: 'var(--font-google-sans), sans-serif',
+              fontSize: 10, fontWeight: 700,
+              letterSpacing: '0.08em', textTransform: 'uppercase',
+              color: GOLD,
+            }}>PREMIUM</span>
+          </div>
+        </div>
+        <div style={{
+          fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+          fontSize: 22, fontWeight: 700,
+          color: 'var(--color-encore-green)', lineHeight: 1.2,
+        }}>
+          URLから取り込む
+        </div>
+        <div style={{
+          ...ty.body, color: 'var(--color-encore-text-sub)',
+          marginTop: 4,
+        }}>
+          公式サイト・チケット販売ページ・告知ページのURLを貼り付け
+        </div>
+      </div>
+
+      {/* ── コンテンツ ── */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
+
+        {/* URL入力 */}
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ ...ty.caption, display: 'block', marginBottom: 6, color: 'var(--color-encore-text-muted)' }}>
+            イベントページのURL
+          </label>
+          <div style={{ position: 'relative' }}>
+            <div style={{
+              position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
+              pointerEvents: 'none', color: 'var(--color-encore-text-muted)',
+            }}>
+              <LinkSimple size={16} weight="regular" />
+            </div>
+            <input
+              type="url"
+              value={url}
+              onChange={(e) => { setUrl(e.target.value); setError(null) }}
+              placeholder="https://x.com/... または https://..."
+              disabled={stage === 'loading'}
+              style={{
+                width: '100%',
+                padding: '12px 12px 12px 38px',
+                fontSize: 14,
+                fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                color: 'var(--color-encore-green)',
+                background: 'var(--color-encore-bg-section)',
+                border: '1px solid var(--color-encore-border-light)',
+                borderRadius: 8,
+                outline: 'none',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            />
+          </div>
+        </div>
+
+        {/* 解析ボタン */}
+        <button
+          onClick={handleParse}
+          disabled={stage === 'loading' || !url.trim()}
+          style={{
+            width: '100%', padding: '12px 0', borderRadius: 10,
+            background: stage === 'loading' || !url.trim()
+              ? 'var(--color-encore-bg-section)'
+              : 'var(--color-encore-green)',
+            color: stage === 'loading' || !url.trim()
+              ? 'var(--color-encore-text-muted)'
+              : '#fff',
+            border: 'none',
+            fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+            fontSize: 14, fontWeight: 700,
+            cursor: stage === 'loading' || !url.trim() ? 'default' : 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            WebkitTapHighlightColor: 'transparent',
+            marginBottom: 16,
+          }}
+        >
+          {stage === 'loading' ? (
+            <>
+              <Spinner />
+              <span>解析中...</span>
+            </>
+          ) : (
+            <>
+              <MagnifyingGlass size={15} weight="bold" />
+              <span>イベント情報を取得</span>
+            </>
+          )}
+        </button>
+
+        {/* エラー */}
+        {stage === 'error' && error && (
+          <div style={{
+            padding: '12px 14px', borderRadius: 8,
+            background: 'rgba(192, 57, 43, 0.08)',
+            border: '1px solid rgba(192, 57, 43, 0.3)',
+            display: 'flex', alignItems: 'flex-start', gap: 10,
+            marginBottom: 16,
+          }}>
+            <Warning size={16} weight="fill" color="var(--color-encore-error)" style={{ flexShrink: 0, marginTop: 2 }} />
+            <div style={{
+              ...ty.bodySM, color: 'var(--color-encore-error)', lineHeight: 1.55,
+            }}>
+              {error}
+            </div>
+          </div>
+        )}
+
+        {/* プレビュー */}
+        {stage === 'preview' && result && (
+          <>
+            <div style={{
+              ...ty.caption, color: 'var(--color-encore-text-muted)',
+              marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6,
+            }}>
+              <Sparkle size={11} weight="fill" color={GOLD} />
+              解析結果（確認して編集できます）
+            </div>
+
+            {/* カバー画像プレビュー */}
+            {result.coverImageUrl && (
+              <div style={{
+                width: '100%', aspectRatio: '16 / 9',
+                borderRadius: 10, overflow: 'hidden',
+                background: 'var(--color-encore-bg-section)',
+                marginBottom: 14,
+              }}>
+                <img
+                  src={result.coverImageUrl}
+                  alt="イベント画像"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                />
+              </div>
+            )}
+
+            {/* 取得項目リスト */}
+            <div style={{
+              background: 'var(--color-encore-bg-section)',
+              borderRadius: 10, padding: '4px 14px',
+              marginBottom: 20,
+            }}>
+              <PreviewRow icon={Ticket} label="イベント名" value={result.title} />
+              <PreviewRow icon={CalendarBlank} label="日付" value={result.date} />
+              <PreviewRow icon={Clock} label="時間"
+                value={
+                  [result.openingTime && `開場 ${result.openingTime}`, result.startTime && `開演 ${result.startTime}`, result.endTime && `終演 ${result.endTime}`]
+                    .filter(Boolean)
+                    .join(' / ') || null
+                }
+              />
+              <PreviewRow icon={MapPin} label="会場" value={result.venue} />
+              <PreviewRow
+                icon={UserCircle}
+                label="出演"
+                value={result.artists && result.artists.length > 0 ? result.artists.join(' / ') : null}
+              />
+              {result.liveType && <PreviewRow icon={Sparkle} label="種別" value={result.liveType} />}
+              {result.price !== null && result.price !== undefined && (
+                <PreviewRow icon={Ticket} label="料金" value={`¥${result.price.toLocaleString()}`} />
+              )}
+            </div>
+
+            {/* 確認ボタン */}
+            <button
+              onClick={handleConfirm}
+              style={{
+                width: '100%', padding: '13px 0', borderRadius: 10,
+                background: 'var(--color-encore-green)',
+                color: '#fff', border: 'none',
+                fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                fontSize: 14, fontWeight: 700,
+                cursor: 'pointer',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              この内容で詳細を編集
+            </button>
+            <div style={{
+              ...ty.caption, color: 'var(--color-encore-text-muted)',
+              textAlign: 'center', marginTop: 8,
+            }}>
+              次の画面で修正・保存できます
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─── サブコンポーネント ─────────────────────────────────────────────────
+function PreviewRow({
+  icon: IconComp,
+  label,
+  value,
+}: {
+  icon: Icon
+  label: string
+  value: string | null | undefined
+}) {
+  const hasValue = value !== null && value !== undefined && value !== ''
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'flex-start', gap: 10,
+      padding: '10px 0',
+      borderBottom: '1px solid var(--color-encore-border-light)',
+    }}>
+      <IconComp size={14} weight="regular" color="var(--color-encore-text-muted)" />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ ...ty.caption, color: 'var(--color-encore-text-muted)', marginBottom: 2 }}>
+          {label}
+        </div>
+        <div style={{
+          ...ty.body,
+          color: hasValue ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)',
+          fontStyle: hasValue ? 'normal' : 'italic',
+          wordBreak: 'break-word',
+        }}>
+          {hasValue ? value : '— 取得できず（手動入力できます）'}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Spinner() {
+  return (
+    <span style={{
+      width: 14, height: 14,
+      border: '2px solid rgba(255,255,255,0.3)',
+      borderTopColor: '#fff',
+      borderRadius: '50%',
+      animation: 'grape-spin 0.8s linear infinite',
+      display: 'inline-block',
+    }} />
+  )
+}

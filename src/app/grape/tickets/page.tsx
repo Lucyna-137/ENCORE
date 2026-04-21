@@ -9,6 +9,10 @@ import QuickEventSheet from '@/components/grape/QuickEventSheet'
 import EventPreviewScreen from '@/components/grape/EventPreviewScreen'
 import { TICKET_STATUS_CONFIG } from '@/lib/grape/constants'
 import PhoneFrame from '@/components/grape/PhoneFrame'
+import AddActionSheet from '@/components/grape/AddActionSheet'
+import URLImportSheet from '@/components/grape/URLImportSheet'
+import PremiumUpgradeSheet from '@/components/grape/PremiumUpgradeSheet'
+import { useIsPremium } from '@/lib/grape/premium'
 import HorizontalTabs from '@/components/encore/HorizontalTabs'
 import {
   CalendarBlank, Ticket, ChartBar, GearSix,
@@ -272,6 +276,12 @@ export default function TicketsPage() {
   const [editOpenSection, setEditOpenSection] = useState<'ticket' | undefined>(undefined)
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  // Premium: +ボタンのActionSheet / URL取り込み / Premium訴求
+  const [showActionSheet, setShowActionSheet] = useState(false)
+  const [showUrlImport,   setShowUrlImport]   = useState(false)
+  const [showPremiumSheet, setShowPremiumSheet] = useState(false)
+  const [prefillLive,     setPrefillLive]     = useState<Partial<GrapeLive> | null>(null)
+  const isPremium = useIsPremium()
   const searchInputRef = React.useRef<HTMLInputElement>(null)
 
   const urgentLives = useMemo(
@@ -616,9 +626,16 @@ export default function TicketsPage() {
         </div>
 
         {/* ── FAB ── */}
-        {!showAddSheet && !previewLive && !editLive && (
+        {!showAddSheet && !previewLive && !editLive && !showActionSheet && !showUrlImport && !showPremiumSheet && (
           <button
-            onClick={() => setShowAddSheet(true)}
+            onClick={() => {
+              setPrefillLive(null)
+              if (isPremium) {
+                setShowActionSheet(true)
+              } else {
+                setShowAddSheet(true)
+              }
+            }}
             style={{
               position: 'absolute',
               bottom: 16 + 68,
@@ -644,13 +661,48 @@ export default function TicketsPage() {
         {showAddSheet && (
           <QuickEventSheet
             artists={artists}
+            live={prefillLive as GrapeLive | undefined}
             onAddArtist={addArtist}
-            onClose={() => setShowAddSheet(false)}
+            onShowPremium={() => setShowPremiumSheet(true)}
+            onClose={() => { setShowAddSheet(false); setPrefillLive(null) }}
             onSave={(payload) => {
               addLive(payload as GrapeLive)
               setShowAddSheet(false)
+              setPrefillLive(null)
             }}
           />
+        )}
+
+        {/* ── AddActionSheet (Premium only) ── */}
+        {showActionSheet && (
+          <AddActionSheet
+            onClose={() => setShowActionSheet(false)}
+            onNewEvent={() => {
+              setShowActionSheet(false)
+              setShowAddSheet(true)
+            }}
+            onImportFromUrl={() => {
+              setShowActionSheet(false)
+              setShowUrlImport(true)
+            }}
+          />
+        )}
+
+        {/* ── URLImportSheet (Premium only) ── */}
+        {showUrlImport && (
+          <URLImportSheet
+            onClose={() => setShowUrlImport(false)}
+            onImport={(prefill) => {
+              setShowUrlImport(false)
+              setPrefillLive(prefill)
+              setShowAddSheet(true)
+            }}
+          />
+        )}
+
+        {/* ── PremiumUpgradeSheet ── */}
+        {showPremiumSheet && (
+          <PremiumUpgradeSheet onClose={() => setShowPremiumSheet(false)} />
         )}
 
         {/* ── Edit Event Sheet ── */}
