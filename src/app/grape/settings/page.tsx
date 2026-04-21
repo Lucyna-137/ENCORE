@@ -11,7 +11,7 @@ import {
   FileText, ShieldCheck, Info, Star, ArrowSquareOut,
   MusicNote, UserCircle, PencilSimple, Trash, X,
   Check, UserCirclePlus, UploadSimple, Cake, CaretDown, CaretUp, Warning, Plus,
-  Lock, Crown, UsersThree, ChartLineUp, CloudCheck, CaretRight, Question,
+  Lock, Crown, UsersThree, ChartLineUp, CaretRight, Question,
 } from '@phosphor-icons/react'
 import PhoneFrame from '@/components/grape/PhoneFrame'
 import { useGrapeStore } from '@/lib/grape/useGrapeStore'
@@ -1202,11 +1202,6 @@ const PREMIUM_FEATURES = [
     icon: ChartLineUp,
     label: '詳細レポート・統計機能',
     desc: 'ライブ参加履歴をグラフで深く振り返れます',
-  },
-  {
-    icon: CloudCheck,
-    label: 'クラウドバックアップ',
-    desc: 'データを安全にバックアップ・復元できます',
   },
 ]
 
