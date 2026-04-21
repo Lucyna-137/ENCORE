@@ -32,7 +32,7 @@ const defaultItems: OrderItem[] = [
   {
     image: '/grape/artist/soloA_ssw.png',
     name: 'AOI 1st ONE MAN LIVE『NOCTURNE』',
-    detail: 'S席・1枚 | WWW・5月10日(日)',
+    detail: 'S席・1枚 | CAVE Shibuya・5月10日(日)',
     qty: 1,
     price: '¥3,500',
   },

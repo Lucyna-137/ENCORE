@@ -532,11 +532,11 @@ export default function Page() {
               <Chip>会場選択</Chip>
               <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '20px', marginTop: 6 }}>
                 <Select label="会場" placeholder="会場を選択" options={[
-                  { value: 'zepp_tokyo', label: 'Zepp Tokyo' },
-                  { value: 'www', label: '渋谷WWW X' },
-                  { value: 'makuhari', label: '幕張メッセ' },
-                  { value: 'budokan', label: '日本武道館' },
-                  { value: 'dome', label: '東京ドーム' },
+                  { value: 'tokyo_stage',  label: 'TOKYO STAGE' },
+                  { value: 'cave_shibuya', label: 'CAVE Shibuya X' },
+                  { value: 'bayside',      label: 'BAYSIDE HALL' },
+                  { value: 'central',      label: 'CENTRAL DOJO' },
+                  { value: 'grand_dome',   label: 'GRAND DOME' },
                 ]} />
               </div>
             </div>
@@ -619,19 +619,19 @@ export default function Page() {
             <div className="flex flex-col gap-2">
               <Chip>ワンマン / 予定</Chip>
               <div style={{ width: 375 }}>
-                <LiveCard date="2026-05-10" liveType="ワンマン" liveStatus="予定" name="AOI 1st ONE MAN LIVE『NOCTURNE』" artist="AOI" venue="WWW" time="Open 17:30 / Start 18:00" flyerImage="/grape/cover/cover-ssw.png" flyerImagePosition="top" artistImage="/grape/artist/soloA_ssw.png" />
+                <LiveCard date="2026-05-10" liveType="ワンマン" liveStatus="予定" name="AOI 1st ONE MAN LIVE『NOCTURNE』" artist="AOI" venue="CAVE Shibuya" time="Open 17:30 / Start 18:00" flyerImage="/grape/cover/cover-ssw.png" flyerImagePosition="top" artistImage="/grape/artist/soloA_ssw.png" />
               </div>
             </div>
             <div className="flex flex-col gap-2">
               <Chip>対バン / 抽選中</Chip>
               <div style={{ width: 375 }}>
-                <LiveCard date="2026-04-06" liveType="対バン" liveStatus="抽選中" name="Cross Roads 4th Anniversary" artist="NANA / AOI / MEI" venue="下北沢LOFT" flyerImage="/grape/cover/cover-rock.png" artistImage="/grape/artist/soloB_RB.png" />
+                <LiveCard date="2026-04-06" liveType="対バン" liveStatus="抽選中" name="Cross Roads 4th Anniversary" artist="NANA / AOI / MEI" venue="下北沢 LIGHTBOX" flyerImage="/grape/cover/cover-rock.png" artistImage="/grape/artist/soloB_RB.png" />
               </div>
             </div>
             <div className="flex flex-col gap-2">
               <Chip>フェス / 当選</Chip>
               <div style={{ width: 375 }}>
-                <LiveCard date="2026-05-03" liveType="フェス" liveStatus="当選" name="MOON ROCK FESTIVAL 2026 GW" artist="koharu / Luna / lumenade ほか" venue="横浜スタジアム" time="Start 10:00" flyerImage="/grape/cover/cover-festival.png" flyerImagePosition="top" artistImages={['/grape/artist/soloD.png', '/grape/artist/vtuber.jpg', '/grape/artist/girlsgroup.png', '/grape/artist/soloA_ssw.png']} />
+                <LiveCard date="2026-05-03" liveType="フェス" liveStatus="当選" name="MOON ROCK FESTIVAL 2026 GW" artist="koharu / Luna / lumenade ほか" venue="みなとみらい ARENA" time="Start 10:00" flyerImage="/grape/cover/cover-festival.png" flyerImagePosition="top" artistImages={['/grape/artist/soloD.png', '/grape/artist/vtuber.jpg', '/grape/artist/girlsgroup.png', '/grape/artist/soloA_ssw.png']} />
               </div>
             </div>
             <div className="flex flex-col gap-2">
@@ -651,7 +651,7 @@ export default function Page() {
               <ProductCard
                 variant="overlay"
                 title="MOON ROCK FESTIVAL 2026 GW"
-                description="横浜スタジアム・2026年5月3日(日)・10:00〜"
+                description="みなとみらい ARENA・2026年5月3日(日)・10:00〜"
                 price="¥9,800"
                 badge="S席"
                 emoji="🎸"
@@ -662,7 +662,7 @@ export default function Page() {
               <ProductCard
                 variant="like"
                 title="NANA ONE MAN『CONTINUE』"
-                description="LIVE STUDIO LODGE・2026年3月25日(水)・19:00〜"
+                description="STUDIO HAVEN・2026年3月25日(水)・19:00〜"
                 price="¥3,300"
                 emoji="🎤"
               />
@@ -791,7 +791,7 @@ export default function Page() {
                   <div style={{ width: 36, height: 4, background: 'var(--color-encore-border)', borderRadius: 999 }} />
                 </div>
                 <div style={{ fontSize: 15, fontWeight: 700, textAlign: 'center', marginBottom: 4, color: 'var(--color-encore-green)', fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>前回のライブ</div>
-                <div style={{ fontSize: 12, color: 'var(--color-encore-text-sub)', textAlign: 'center', marginBottom: 24, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>2026.3.1 | Zepp Tokyo</div>
+                <div style={{ fontSize: 12, color: 'var(--color-encore-text-sub)', textAlign: 'center', marginBottom: 24, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>2026.3.1 | TOKYO STAGE</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <Button variant="primary">チケットを購入</Button>
                   <Button variant="secondary">変更する</Button>
@@ -803,7 +803,7 @@ export default function Page() {
             isOpen={sheetOpen}
             onClose={() => setSheetOpen(false)}
             title="前回のライブ"
-            subtitle="2026.3.1 | Zepp Tokyo"
+            subtitle="2026.3.1 | TOKYO STAGE"
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <Button variant="primary" onClick={() => setSheetOpen(false)}>チケットを購入</Button>
