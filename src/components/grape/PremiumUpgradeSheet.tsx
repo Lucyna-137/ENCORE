@@ -216,23 +216,7 @@ export default function PremiumUpgradeSheet({ onClose }: { onClose: () => void }
           </span>
         </button>
 
-        {/* 利用規約・プライバシーポリシー */}
-        <div style={{
-          display: 'flex', justifyContent: 'center', gap: 4,
-          paddingBottom: 32,
-        }}>
-          <a href="/terms" style={{
-            fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-            fontSize: 11, fontWeight: 400,
-            color: PUR.muted, textDecoration: 'none',
-          }}>利用規約</a>
-          <span style={{ fontSize: 11, color: PUR.muted }}>·</span>
-          <a href="/privacy" style={{
-            fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-            fontSize: 11, fontWeight: 400,
-            color: PUR.muted, textDecoration: 'none',
-          }}>プライバシーポリシー</a>
-        </div>
+        <div style={{ paddingBottom: 32 }} />
 
       </div>
     </div>
