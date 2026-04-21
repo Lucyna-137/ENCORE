@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useState } from 'react'
-import { X, LinkSimple, MagnifyingGlass, Sparkle, CalendarBlank, MapPin, Clock, UserCircle, Ticket, Warning, type Icon } from '@phosphor-icons/react'
+import React, { useMemo, useState } from 'react'
+import { X, LinkSimple, MagnifyingGlass, Sparkle, CalendarBlank, MapPin, Clock, UserCircle, Ticket, Warning, UserCirclePlus, type Icon } from '@phosphor-icons/react'
 import * as ty from '@/components/encore/typographyStyles'
-import type { GrapeLive, LiveTypeGrape } from '@/lib/grape/types'
+import type { GrapeLive, GrapeArtist, LiveTypeGrape, TicketStatus } from '@/lib/grape/types'
 
 // ─── 解析レスポンス型 ────────────────────────────────────────────────────────
 interface ExtractedEvent {
@@ -17,23 +17,50 @@ interface ExtractedEvent {
   price: number | null
   liveType: string | null
   memo: string | null
+  ticketUrl: string | null
+  saleStartDate: string | null
+  saleStartTime: string | null
   sourceUrl: string
-  coverImageUrl?: string | null
+  coverImage?: string | null
+  images?: string[] | null
 }
 
 type Stage = 'input' | 'loading' | 'preview' | 'error'
 
 interface URLImportSheetProps {
   onClose: () => void
+  /** 現在登録されているアーティスト一覧（未登録の出演者検出用） */
+  artists: GrapeArtist[]
+  /** 新規アーティスト登録用のコールバック */
+  onAddArtist: (artist: GrapeArtist) => void
   /** 確認後に呼ばれ、QuickEventSheet をプリロードデータで開く側が担当 */
-  onImport: (prefill: Partial<GrapeLive> & { coverImageUrl?: string | null }) => void
+  onImport: (prefill: Partial<GrapeLive>) => void
 }
 
-export default function URLImportSheet({ onClose, onImport }: URLImportSheetProps) {
+export default function URLImportSheet({ onClose, onImport, artists, onAddArtist }: URLImportSheetProps) {
   const [stage, setStage] = useState<Stage>('input')
   const [url, setUrl] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<ExtractedEvent | null>(null)
+  /** 未登録アーティストのうち、新規登録する/しない のチェック状態 */
+  const [toRegister, setToRegister] = useState<Record<string, boolean>>({})
+
+  // ─── 未登録アーティスト検出 ─────────────────────────────────────
+  const unregisteredArtists = useMemo(() => {
+    if (!result?.artists) return []
+    // 登録済みの name / id（lowercase比較）
+    const registeredSet = new Set(
+      artists.flatMap(a => [a.name.toLowerCase(), a.id.toLowerCase()])
+    )
+    return result.artists.filter(name => !registeredSet.has(name.toLowerCase()))
+  }, [result, artists])
+
+  // 初期表示では未登録アーティスト全員をチェック済みに
+  const initializeCheckboxes = (names: string[]) => {
+    const init: Record<string, boolean> = {}
+    names.forEach(n => { init[n] = true })
+    setToRegister(init)
+  }
 
   const handleParse = async () => {
     if (!url.trim() || !/^https?:\/\//.test(url.trim())) {
@@ -59,7 +86,16 @@ export default function URLImportSheet({ onClose, onImport }: URLImportSheetProp
         return
       }
 
-      setResult(data.event as ExtractedEvent)
+      const event = data.event as ExtractedEvent
+      setResult(event)
+      // 未登録アーティストをチェック初期化
+      if (event.artists) {
+        const registeredSet = new Set(
+          artists.flatMap(a => [a.name.toLowerCase(), a.id.toLowerCase()])
+        )
+        const unregistered = event.artists.filter(n => !registeredSet.has(n.toLowerCase()))
+        initializeCheckboxes(unregistered)
+      }
       setStage('preview')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'ネットワークエラー')
@@ -70,6 +106,14 @@ export default function URLImportSheet({ onClose, onImport }: URLImportSheetProp
   const handleConfirm = () => {
     if (!result) return
 
+    // 未登録アーティストのうちチェックされたものを登録
+    unregisteredArtists.forEach(name => {
+      if (toRegister[name]) {
+        const id = name.toLowerCase().replace(/\s+/g, '-')
+        onAddArtist({ id, name })
+      }
+    })
+
     // ExtractedEvent → Partial<GrapeLive> に変換
     const liveType: LiveTypeGrape | undefined =
       ['ワンマン', '対バン', 'フェス', '配信', '舞台・公演', 'メディア出演', 'リリースイベント'].includes(
@@ -78,18 +122,38 @@ export default function URLImportSheet({ onClose, onImport }: URLImportSheetProp
         ? (result.liveType as LiveTypeGrape)
         : undefined
 
-    const prefill: Partial<GrapeLive> & { coverImageUrl?: string | null } = {
+    // ── チケットURL: 解析抽出 > 元URL（常に何か入れておく） ──
+    const ticketUrl = result.ticketUrl ?? result.sourceUrl
+
+    // ── 販売開始日が未来ならticketStatusを before-sale に ──
+    let ticketStatus: TicketStatus | undefined = undefined
+    if (result.saleStartDate) {
+      const timePart = result.saleStartTime ?? '00:00'
+      const saleStart = new Date(`${result.saleStartDate}T${timePart}:00`)
+      if (!Number.isNaN(saleStart.getTime()) && saleStart > new Date()) {
+        ticketStatus = 'before-sale'
+      }
+    }
+
+    const prefill: Partial<GrapeLive> = {
       title: result.title ?? '',
       date: result.date ?? '',
       openingTime: result.openingTime ?? undefined,
       startTime: result.startTime ?? '',
       endTime: result.endTime ?? undefined,
       venue: result.venue ?? '',
+      artist: result.artists?.[0] ?? undefined,
+      artists: result.artists && result.artists.length > 0 ? result.artists : undefined,
       liveType,
       attendanceStatus: 'candidate',
+      ticketStatus,
+      ticketUrl,
+      saleStartDate: result.saleStartDate ?? undefined,
+      saleStartTime: result.saleStartTime ?? undefined,
       price: result.price ?? undefined,
       memo: result.memo ?? undefined,
-      coverImageUrl: result.coverImageUrl,
+      coverImage: result.coverImage ?? undefined,
+      images: result.images && result.images.length > 0 ? result.images : undefined,
     }
 
     onImport(prefill)
@@ -251,18 +315,38 @@ export default function URLImportSheet({ onClose, onImport }: URLImportSheetProp
             </div>
 
             {/* カバー画像プレビュー */}
-            {result.coverImageUrl && (
+            {result.coverImage && (
               <div style={{
                 width: '100%', aspectRatio: '16 / 9',
                 borderRadius: 10, overflow: 'hidden',
                 background: 'var(--color-encore-bg-section)',
-                marginBottom: 14,
+                marginBottom: 10,
               }}>
                 <img
-                  src={result.coverImageUrl}
+                  src={result.coverImage}
                   alt="イベント画像"
                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
+              </div>
+            )}
+
+            {/* 追加画像（X複数投稿対応） */}
+            {result.images && result.images.length > 0 && (
+              <div style={{ display: 'flex', gap: 6, marginBottom: 14, overflowX: 'auto' }}>
+                {result.images.map((img, i) => (
+                  <div key={i} style={{
+                    flexShrink: 0,
+                    width: 72, height: 72,
+                    borderRadius: 8, overflow: 'hidden',
+                    background: 'var(--color-encore-bg-section)',
+                  }}>
+                    <img
+                      src={img}
+                      alt={`追加画像${i + 1}`}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    />
+                  </div>
+                ))}
               </div>
             )}
 
@@ -291,7 +375,82 @@ export default function URLImportSheet({ onClose, onImport }: URLImportSheetProp
               {result.price !== null && result.price !== undefined && (
                 <PreviewRow icon={Ticket} label="料金" value={`¥${result.price.toLocaleString()}`} />
               )}
+              {(result.saleStartDate || result.saleStartTime) && (
+                <PreviewRow
+                  icon={CalendarBlank}
+                  label="チケット販売開始"
+                  value={[result.saleStartDate, result.saleStartTime].filter(Boolean).join(' ') || null}
+                />
+              )}
+              {result.ticketUrl && (
+                <PreviewRow icon={LinkSimple} label="チケット購入" value={result.ticketUrl} />
+              )}
             </div>
+
+            {/* 未登録アーティスト登録セクション */}
+            {unregisteredArtists.length > 0 && (
+              <div style={{
+                background: 'rgba(192, 138, 74, 0.08)',
+                border: '1px solid rgba(192, 138, 74, 0.24)',
+                borderRadius: 10,
+                padding: '14px 16px',
+                marginBottom: 20,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <UserCirclePlus size={16} weight="regular" color="var(--color-encore-amber)" />
+                  <span style={{
+                    ...ty.section,
+                    color: 'var(--color-encore-green)',
+                    fontSize: 13,
+                  }}>
+                    未登録のアーティスト{unregisteredArtists.length}組
+                  </span>
+                </div>
+                <div style={{
+                  ...ty.bodySM,
+                  color: 'var(--color-encore-text-sub)',
+                  marginBottom: 12,
+                  lineHeight: 1.5,
+                }}>
+                  チェックを入れると、今後の推し活管理のためにアーティストとして一緒に登録します。
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {unregisteredArtists.map(name => (
+                    <label
+                      key={name}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10,
+                        padding: '8px 0',
+                        cursor: 'pointer',
+                        WebkitTapHighlightColor: 'transparent',
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={toRegister[name] ?? false}
+                        onChange={(e) => {
+                          setToRegister(prev => ({ ...prev, [name]: e.target.checked }))
+                        }}
+                        style={{
+                          width: 18, height: 18,
+                          accentColor: 'var(--color-encore-amber)',
+                          cursor: 'pointer',
+                        }}
+                      />
+                      <span style={{
+                        ...ty.body,
+                        color: 'var(--color-encore-green)',
+                        fontWeight: 700,
+                      }}>
+                        {name}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* 確認ボタン */}
             <button

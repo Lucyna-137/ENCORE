@@ -734,6 +734,8 @@ export default function CalendarPage() {
         {/* ── URLImportSheet (Premium only) ── */}
         {showUrlImport && (
           <URLImportSheet
+            artists={artists}
+            onAddArtist={addArtist}
             onClose={() => setShowUrlImport(false)}
             onImport={(prefill) => {
               setShowUrlImport(false)

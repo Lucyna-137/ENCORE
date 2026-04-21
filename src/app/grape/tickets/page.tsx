@@ -691,6 +691,8 @@ export default function TicketsPage() {
         {/* ── URLImportSheet (Premium only) ── */}
         {showUrlImport && (
           <URLImportSheet
+            artists={artists}
+            onAddArtist={addArtist}
             onClose={() => setShowUrlImport(false)}
             onImport={(prefill) => {
               setShowUrlImport(false)
