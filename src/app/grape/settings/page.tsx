@@ -11,7 +11,7 @@ import {
   FileText, ShieldCheck, Info, Star, ArrowSquareOut,
   MusicNote, UserCircle, PencilSimple, Trash, X,
   Check, UserCirclePlus, UploadSimple, Cake, CaretDown, CaretUp, Warning, Plus,
-  Lock, Crown, UsersThree, ChartLineUp, CloudCheck, CaretRight,
+  Lock, Crown, UsersThree, ChartLineUp, CloudCheck, CaretRight, Question,
 } from '@phosphor-icons/react'
 import PhoneFrame from '@/components/grape/PhoneFrame'
 import { useGrapeStore } from '@/lib/grape/useGrapeStore'
@@ -344,11 +344,17 @@ function PremiumInfoCard({ onShowPremium }: { onShowPremium: () => void }) {
 
 // ─── AppSummaryCard ───────────────────────────────────────────────────────────
 
-function AppSummaryCard({ livesCount, artistsCount }: { livesCount: number; artistsCount: number }) {
+function AppSummaryCard({
+  livesCount, artistsCount, onShowPlanInfo,
+}: {
+  livesCount: number
+  artistsCount: number
+  onShowPlanInfo: () => void
+}) {
   const stats = [
-    { icon: <MusicNote size={15} weight="regular" />, value: `${livesCount}本`, label: 'イベント' },
-    { icon: <UserCircle size={15} weight="regular" />, value: `${artistsCount}`, label: 'アーティスト' },
-    { icon: <Star size={15} weight="regular" />, value: 'Free', label: 'プラン' },
+    { icon: <MusicNote size={15} weight="regular" />, value: `${livesCount}本`, label: 'イベント', info: false },
+    { icon: <UserCircle size={15} weight="regular" />, value: `${artistsCount}`, label: 'アーティスト', info: false },
+    { icon: <Star size={15} weight="regular" />, value: 'Free', label: 'プラン', info: true },
   ]
   return (
     <div style={{
@@ -362,6 +368,7 @@ function AppSummaryCard({ livesCount, artistsCount }: { livesCount: number; arti
           flex: 1, padding: '14px 0 12px',
           display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
           borderRight: i < stats.length - 1 ? '1px solid var(--color-encore-border-light)' : 'none',
+          position: 'relative',
         }}>
           <div style={{ color: 'var(--color-encore-green)', display: 'flex', alignItems: 'center' }}>
             {s.icon}
@@ -371,9 +378,136 @@ function AppSummaryCard({ livesCount, artistsCount }: { livesCount: number; arti
             fontSize: 18, fontWeight: 700, lineHeight: 1,
             color: 'var(--color-encore-green)',
           }}>{s.value}</span>
-          <span style={{ ...ty.captionMuted, lineHeight: 1 }}>{s.label}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ ...ty.captionMuted, lineHeight: 1 }}>{s.label}</span>
+            {s.info && (
+              <button
+                onClick={onShowPlanInfo}
+                aria-label="プランの詳細"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <Question
+                  size={13}
+                  weight="regular"
+                  color="var(--color-encore-text-muted)"
+                />
+              </button>
+            )}
+          </div>
         </div>
       ))}
+    </div>
+  )
+}
+
+// ─── PlanInfoModal ────────────────────────────────────────────────────────────
+function PlanInfoModal({ onClose, onUpgrade }: { onClose: () => void; onUpgrade: () => void }) {
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'absolute', inset: 0,
+        background: 'rgba(26, 58, 45, 0.48)',
+        zIndex: 250,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 28,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: '100%',
+          maxWidth: 320,
+          background: 'var(--color-encore-bg)',
+          borderRadius: 14,
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {/* Header */}
+        <div style={{
+          padding: '20px 20px 6px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 10,
+        }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: '50%',
+            background: 'rgba(192, 138, 74, 0.12)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Star size={20} weight="fill" color="var(--color-encore-amber)" />
+          </div>
+          <div style={{
+            fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+            fontSize: 16, fontWeight: 700,
+            color: 'var(--color-encore-green)',
+          }}>
+            Freeプランについて
+          </div>
+        </div>
+
+        {/* Body */}
+        <div style={{
+          padding: '8px 20px 18px',
+          fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+          fontSize: 13, lineHeight: 1.6,
+          color: 'var(--color-encore-green)',
+          textAlign: 'center',
+        }}>
+          Freeプランでは、<b>アーティスト5組</b>まで登録できます。<br/>
+          6組以上を登録するには、Premiumプランへのアップグレードが必要です。
+        </div>
+
+        {/* Buttons */}
+        <div style={{
+          display: 'flex',
+          borderTop: '1px solid var(--color-encore-border-light)',
+        }}>
+          <button
+            onClick={onClose}
+            style={{
+              flex: 1,
+              padding: '13px 0',
+              background: 'none',
+              border: 'none',
+              borderRight: '1px solid var(--color-encore-border-light)',
+              fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+              fontSize: 14, fontWeight: 400,
+              color: 'var(--color-encore-text-sub)',
+              cursor: 'pointer',
+            }}
+          >
+            閉じる
+          </button>
+          <button
+            onClick={() => { onClose(); onUpgrade() }}
+            style={{
+              flex: 1,
+              padding: '13px 0',
+              background: 'none',
+              border: 'none',
+              fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+              fontSize: 14, fontWeight: 700,
+              color: 'var(--color-encore-amber)',
+              cursor: 'pointer',
+            }}
+          >
+            Premiumを見る
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
@@ -1456,6 +1590,7 @@ export default function SettingsPage() {
   const [isAdding,         setIsAdding]         = useState(false)
   const [deletingArtist,   setDeletingArtist]   = useState<GrapeArtist | null>(null)
   const [showPremiumSheet, setShowPremiumSheet] = useState(false)
+  const [showPlanInfo,     setShowPlanInfo]     = useState(false)
 
   // 保存済みトースト
   const [savedToast, setSavedToast] = useState(false)
@@ -1512,7 +1647,11 @@ export default function SettingsPage() {
         <div style={{ flex: 1, overflowY: 'auto', paddingTop: 28 }}>
 
           {/* サマリー */}
-          <AppSummaryCard livesCount={lives.length} artistsCount={artists.length} />
+          <AppSummaryCard
+            livesCount={lives.length}
+            artistsCount={artists.length}
+            onShowPlanInfo={() => setShowPlanInfo(true)}
+          />
 
           {/* アーティスト管理 */}
           <ArtistManageSection
@@ -1693,6 +1832,14 @@ export default function SettingsPage() {
         {/* ── Premium アップグレードシート ── */}
         {showPremiumSheet && (
           <PremiumUpgradeSheet onClose={() => setShowPremiumSheet(false)} />
+        )}
+
+        {/* ── プラン情報モーダル ── */}
+        {showPlanInfo && (
+          <PlanInfoModal
+            onClose={() => setShowPlanInfo(false)}
+            onUpgrade={() => setShowPremiumSheet(true)}
+          />
         )}
 
         {/* ── 保存完了トースト ── */}
