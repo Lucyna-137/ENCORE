@@ -42,7 +42,7 @@ export default function PremiumUpgradeSheet({ onClose }: { onClose: () => void }
     <div style={{
       position: 'absolute', inset: 0,
       background: PUR.bg,
-      zIndex: 200,
+      zIndex: 900,
       display: 'flex', flexDirection: 'column',
       overflow: 'hidden',
     }}>
