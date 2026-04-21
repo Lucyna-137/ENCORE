@@ -55,11 +55,25 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
     return result.artists.filter(name => !registeredSet.has(name.toLowerCase()))
   }, [result, artists])
 
-  // 初期表示では未登録アーティスト全員をチェック済みに
+  // 初期表示ではすべてチェック無し（ユーザが明示的に選択する）
   const initializeCheckboxes = (names: string[]) => {
     const init: Record<string, boolean> = {}
-    names.forEach(n => { init[n] = true })
+    names.forEach(n => { init[n] = false })
     setToRegister(init)
+  }
+
+  // すべて選択の状態
+  const allChecked = unregisteredArtists.length > 0
+    && unregisteredArtists.every(n => toRegister[n])
+  const someChecked = unregisteredArtists.some(n => toRegister[n])
+
+  const toggleAll = () => {
+    const newValue = !allChecked
+    setToRegister(prev => {
+      const next = { ...prev }
+      unregisteredArtists.forEach(n => { next[n] = newValue })
+      return next
+    })
   }
 
   const handleParse = async () => {
@@ -409,11 +423,45 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
                 <div style={{
                   ...ty.bodySM,
                   color: 'var(--color-encore-text-sub)',
-                  marginBottom: 12,
+                  marginBottom: 10,
                   lineHeight: 1.5,
                 }}>
                   チェックを入れると、今後の推し活管理のためにアーティストとして一緒に登録します。
                 </div>
+
+                {/* すべて選択 */}
+                <label style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  padding: '8px 0',
+                  cursor: 'pointer',
+                  borderBottom: '1px solid rgba(192, 138, 74, 0.24)',
+                  marginBottom: 2,
+                  WebkitTapHighlightColor: 'transparent',
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={allChecked}
+                    ref={(el) => {
+                      if (el) el.indeterminate = !allChecked && someChecked
+                    }}
+                    onChange={toggleAll}
+                    style={{
+                      width: 18, height: 18,
+                      accentColor: 'var(--color-encore-amber)',
+                      cursor: 'pointer',
+                    }}
+                  />
+                  <span style={{
+                    ...ty.bodySM,
+                    color: 'var(--color-encore-text-sub)',
+                    fontWeight: 700,
+                  }}>
+                    すべて選択
+                  </span>
+                </label>
+
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   {unregisteredArtists.map(name => (
                     <label
