@@ -46,6 +46,8 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
   const [toRegister, setToRegister] = useState<Record<string, boolean>>({})
   /** 画像リスト（先頭=カバー、残り=ギャラリー）。ユーザが×で削除可能 */
   const [editedImages, setEditedImages] = useState<string[]>([])
+  /** 閉じる確認ダイアログ */
+  const [showCloseConfirm, setShowCloseConfirm] = useState(false)
 
   // ─── 読み込み中の経過時間ベースのスピナーメッセージ ─────────────────
   const [loadingMessage, setLoadingMessage] = useState<string>('ページを読み込み中…')
@@ -220,7 +222,14 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
           <button
-            onClick={onClose}
+            onClick={() => {
+              // 解析結果がある場合は確認ダイアログ、それ以外は即閉じ
+              if (stage === 'preview' && result) {
+                setShowCloseConfirm(true)
+              } else {
+                onClose()
+              }
+            }}
             style={{
               width: 32, height: 32, borderRadius: 999,
               background: 'var(--color-encore-bg-section)',
@@ -690,6 +699,98 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
           </>
         )}
       </div>
+
+      {/* 閉じる確認ダイアログ（preview段階で解析結果がある時のみ） */}
+      {showCloseConfirm && (
+        <div
+          onClick={() => setShowCloseConfirm(false)}
+          style={{
+            position: 'absolute', inset: 0,
+            background: 'rgba(26, 58, 45, 0.48)',
+            zIndex: 400,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 28,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '100%',
+              maxWidth: 320,
+              background: 'var(--color-encore-bg)',
+              borderRadius: 14,
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <div style={{
+              padding: '20px 20px 8px',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+            }}>
+              <div style={{
+                width: 40, height: 40, borderRadius: '50%',
+                background: 'rgba(192, 57, 43, 0.12)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Warning size={20} weight="fill" color="var(--color-encore-error)" />
+              </div>
+              <div style={{
+                fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                fontSize: 16, fontWeight: 700,
+                color: 'var(--color-encore-green)',
+                textAlign: 'center',
+              }}>
+                取り込んだ情報を破棄しますか？
+              </div>
+            </div>
+            <div style={{
+              padding: '4px 20px 18px',
+              fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+              fontSize: 13, lineHeight: 1.6,
+              color: 'var(--color-encore-text-sub)',
+              textAlign: 'center',
+            }}>
+              解析結果はまだ保存されていません。<br />
+              閉じると最初からやり直しになります。
+            </div>
+            <div style={{
+              display: 'flex',
+              borderTop: '1px solid var(--color-encore-border-light)',
+            }}>
+              <button
+                onClick={() => setShowCloseConfirm(false)}
+                style={{
+                  flex: 1, padding: '13px 0',
+                  background: 'none', border: 'none',
+                  borderRight: '1px solid var(--color-encore-border-light)',
+                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                  fontSize: 14, fontWeight: 700,
+                  color: 'var(--color-encore-green)',
+                  cursor: 'pointer',
+                }}
+              >
+                続ける
+              </button>
+              <button
+                onClick={() => { setShowCloseConfirm(false); onClose() }}
+                style={{
+                  flex: 1, padding: '13px 0',
+                  background: 'none', border: 'none',
+                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                  fontSize: 14, fontWeight: 700,
+                  color: 'var(--color-encore-error)',
+                  cursor: 'pointer',
+                }}
+              >
+                破棄する
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
