@@ -20,10 +20,10 @@
  *       「LOVE」と「Love」は別表記として尊重する。
  *
  * ── 使用例 ───────────────────────────────────────────────
- *   normalizeSong('憂う門には福来たる')         → '憂う門には福来たる'
- *   normalizeSong('Ｃｉｔｙｌｉｇｈｔｓ')        → 'Citylights'
- *   normalizeSong('六畳 夢想')                  → '六畳夢想'
- *   normalizeSong('キミノ–ネイロ')              → 'キミノーネイロ'
+ *   normalizeSong('雨宿りサイダー')             → '雨宿りサイダー'
+ *   normalizeSong('Ｎｅｏｎ Ｄｒｉｖｅ')        → 'NeonDrive'
+ *   normalizeSong('十八時 の 特等席')          → '十八時の特等席'
+ *   normalizeSong('朝凪–ボイス')                → '朝凪ーボイス'
  *   normalizeSong('ありがとう') === normalizeSong('アリガトウ')  → false（別曲）
  *
  * @param title 原文の曲名
@@ -45,9 +45,9 @@ export function normalizeSong(title: string): string {
 //
 //   import { normalizeSong } from '@/lib/grape/normalizeSong'
 //
-//   console.assert(normalizeSong('憂う門には福来たる') === '憂う門には福来たる')
-//   console.assert(normalizeSong('Ｃｉｔｙｌｉｇｈｔｓ') === 'Citylights')
-//   console.assert(normalizeSong('  六畳　夢想  ') === '六畳夢想')
+//   console.assert(normalizeSong('雨宿りサイダー') === '雨宿りサイダー')
+//   console.assert(normalizeSong('Ｎｅｏｎ Ｄｒｉｖｅ') === 'NeonDrive')
+//   console.assert(normalizeSong('  十八時　の　特等席  ') === '十八時の特等席')
 //   console.assert(normalizeSong('キミノ–ネイロ') === 'キミノーネイロ')
 //   console.assert(normalizeSong('') === '')
 //   // ひらがな/カタカナは別扱い

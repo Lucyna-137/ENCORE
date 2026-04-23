@@ -1,7 +1,8 @@
 'use client'
 
 import React from 'react'
-import { Crown, X, UsersThree, ChartLineUp, Sparkle } from '@phosphor-icons/react'
+import { Crown, X, UsersThree, ChartLineUp, Sparkle, Check } from '@phosphor-icons/react'
+import { useIsPremium } from '@/lib/grape/premium'
 
 // ─── Premium 特典リスト ──────────────────────────────────────────────────────
 export const PREMIUM_FEATURES = [
@@ -36,6 +37,8 @@ const PUR = {
 }
 
 export default function PremiumUpgradeSheet({ onClose }: { onClose: () => void }) {
+  const isPremium = useIsPremium()
+
   return (
     /* フルカバー — スクロール可能なシート
        borderRadiusは親PhoneFrameの overflow:hidden による clipping に任せる */
@@ -85,16 +88,34 @@ export default function PremiumUpgradeSheet({ onClose }: { onClose: () => void }
       {/* ── スクロールコンテンツ ── */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px 20px 0' }}>
 
-        {/* クラウンアイコン */}
+        {/* クラウンアイコン（Premium 時は ACTIVE バッジ付き）*/}
         <div style={{
           display: 'flex', justifyContent: 'center', marginBottom: 16,
+          position: 'relative',
         }}>
           <div style={{
             width: 64, height: 64, borderRadius: 18,
             background: PUR.iconBg,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
+            position: 'relative',
           }}>
             <Crown size={32} weight="fill" color={PUR.gold} />
+            {isPremium && (
+              <div style={{
+                position: 'absolute',
+                bottom: -6, right: -10,
+                background: PUR.gold,
+                color: PUR.bg,
+                fontFamily: 'var(--font-google-sans), sans-serif',
+                fontSize: 9, fontWeight: 700,
+                letterSpacing: '0.14em',
+                padding: '2px 7px',
+                borderRadius: 999,
+                boxShadow: '0 4px 12px rgba(245,200,80,0.45)',
+              }}>
+                ACTIVE
+              </div>
+            )}
           </div>
         </div>
 
@@ -106,19 +127,26 @@ export default function PremiumUpgradeSheet({ onClose }: { onClose: () => void }
             color: PUR.title,
             marginBottom: 6,
           }}>
-            GRAPE Premium
+            {isPremium ? (
+              <>GRAPE Premium<br />ご利用中</>
+            ) : (
+              'GRAPE Premium'
+            )}
           </div>
           <div style={{
             fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
             fontSize: 13, fontWeight: 400, lineHeight: 1.65,
             color: PUR.sub,
           }}>
-            好きなアーティストと、もっと深く。<br />
-            制限なしで全機能にアクセスしよう。
+            {isPremium ? (
+              <>すべての機能が、ご利用いただけます。</>
+            ) : (
+              <>好きなアーティストと、もっと深く。<br />制限なしで全機能にアクセスしよう。</>
+            )}
           </div>
         </div>
 
-        {/* 機能リスト */}
+        {/* 機能リスト（Premium 時はチェック ✓ マーク） */}
         <div style={{
           background: PUR.card,
           borderRadius: 10, padding: '4px 16px',
@@ -138,7 +166,11 @@ export default function PremiumUpgradeSheet({ onClose }: { onClose: () => void }
                 background: PUR.iconBg,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <Icon size={16} weight="regular" color={PUR.gold} />
+                {isPremium ? (
+                  <Check size={17} weight="bold" color={PUR.gold} />
+                ) : (
+                  <Icon size={16} weight="regular" color={PUR.gold} />
+                )}
               </div>
               {/* テキスト */}
               <div style={{ flex: 1 }}>
@@ -159,62 +191,85 @@ export default function PremiumUpgradeSheet({ onClose }: { onClose: () => void }
           ))}
         </div>
 
-        {/* 価格カード */}
-        <div style={{
-          background: PUR.card,
-          borderRadius: 12, padding: '16px 18px',
-          marginBottom: 14,
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        }}>
-          <div>
+        {/* ── Premium: 感謝メッセージ ────────────── */}
+        {isPremium && (
+          <div style={{
+            textAlign: 'center',
+            padding: '16px 8px 8px',
+            marginBottom: 14,
+          }}>
             <div style={{
               fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-              fontSize: 13, fontWeight: 700,
-              color: PUR.title,
-              marginBottom: 3,
-            }}>買い切り</div>
-            <div style={{
-              fontFamily: 'var(--font-google-sans), sans-serif',
-              fontSize: 11, fontWeight: 400,
+              fontSize: 12, fontWeight: 400, lineHeight: 1.8,
               color: PUR.sub,
-            }}>リリース記念価格 · サブスクなし · 税込</div>
+            }}>
+              いつも GRAPE をご利用いただき、<br />
+              ありがとうございます。
+            </div>
           </div>
-          {/* 価格（打ち消し＋現在価格） */}
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-            <span style={{
-              fontFamily: 'var(--font-google-sans), sans-serif',
-              fontSize: 12, fontWeight: 400,
-              color: PUR.muted,
-              textDecoration: 'line-through',
-            }}>¥980</span>
-            <span style={{
-              fontFamily: 'var(--font-google-sans), sans-serif',
-              fontSize: 24, fontWeight: 700,
-              color: PUR.gold,
-            }}>¥480</span>
-          </div>
-        </div>
+        )}
 
-        {/* アップグレードボタン（準備中） */}
-        <button
-          disabled
-          style={{
-            width: '100%', padding: '15px 0', borderRadius: 12,
-            background: PUR.btnBg,
-            border: 'none', cursor: 'default',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            marginBottom: 14,
-          }}
-        >
-          <Crown size={15} weight="fill" color={PUR.gold} />
-          <span style={{
-            fontFamily: 'var(--font-google-sans), sans-serif',
-            fontSize: 14, fontWeight: 700,
-            color: PUR.gold,
-          }}>
-            アップグレード（準備中）
-          </span>
-        </button>
+        {/* ── Free: 価格カード + アップグレードボタン ───────────── */}
+        {!isPremium && (
+          <>
+            {/* 価格カード */}
+            <div style={{
+              background: PUR.card,
+              borderRadius: 12, padding: '16px 18px',
+              marginBottom: 14,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            }}>
+              <div>
+                <div style={{
+                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                  fontSize: 13, fontWeight: 700,
+                  color: PUR.title,
+                  marginBottom: 3,
+                }}>買い切り</div>
+                <div style={{
+                  fontFamily: 'var(--font-google-sans), sans-serif',
+                  fontSize: 11, fontWeight: 400,
+                  color: PUR.sub,
+                }}>リリース記念価格 · サブスクなし · 税込</div>
+              </div>
+              {/* 価格（打ち消し＋現在価格） */}
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+                <span style={{
+                  fontFamily: 'var(--font-google-sans), sans-serif',
+                  fontSize: 12, fontWeight: 400,
+                  color: PUR.muted,
+                  textDecoration: 'line-through',
+                }}>¥980</span>
+                <span style={{
+                  fontFamily: 'var(--font-google-sans), sans-serif',
+                  fontSize: 24, fontWeight: 700,
+                  color: PUR.gold,
+                }}>¥480</span>
+              </div>
+            </div>
+
+            {/* アップグレードボタン（準備中） */}
+            <button
+              disabled
+              style={{
+                width: '100%', padding: '15px 0', borderRadius: 12,
+                background: PUR.btnBg,
+                border: 'none', cursor: 'default',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                marginBottom: 14,
+              }}
+            >
+              <Crown size={15} weight="fill" color={PUR.gold} />
+              <span style={{
+                fontFamily: 'var(--font-google-sans), sans-serif',
+                fontSize: 14, fontWeight: 700,
+                color: PUR.gold,
+              }}>
+                アップグレード（準備中）
+              </span>
+            </button>
+          </>
+        )}
 
         <div style={{ paddingBottom: 32 }} />
 

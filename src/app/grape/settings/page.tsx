@@ -16,6 +16,7 @@ import {
 import PhoneFrame from '@/components/grape/PhoneFrame'
 import PremiumUpgradeSheet from '@/components/grape/PremiumUpgradeSheet'
 import { useGrapeStore } from '@/lib/grape/useGrapeStore'
+import { useIsPremium } from '@/lib/grape/premium'
 import type { GrapeArtist, ArtistMember } from '@/lib/grape/types'
 import { DOW_SUN_COLOR, DOW_SAT_COLOR } from '@/lib/grape/constants'
 import ColorPicker from '@/components/encore/ColorPicker'
@@ -282,7 +283,7 @@ function BackupNote() {
         color: 'var(--color-info-text)',
         lineHeight: 1.6,
       }}>
-        iCloudで自動的にバックアップされ、端末を変えても大切な記録を引き継ぎます。
+        iCloudで自動的にバックアップされ、お使いのiPhone/iPadで大切な記録を引き継げます。
       </span>
     </div>
   )
@@ -290,7 +291,12 @@ function BackupNote() {
 
 // ─── PremiumInfoCard ──────────────────────────────────────────────────────────
 
-function PremiumInfoCard({ onShowPremium }: { onShowPremium: () => void }) {
+function PremiumInfoCard({
+  isPremium, onShowPremium,
+}: {
+  isPremium: boolean
+  onShowPremium: () => void
+}) {
   const GOLD = '#F5C850'
   return (
     <button
@@ -306,11 +312,12 @@ function PremiumInfoCard({ onShowPremium }: { onShowPremium: () => void }) {
         textAlign: 'left',
       }}
     >
-      {/* クラウンアイコン */}
+      {/* クラウンアイコン（Premium 時は ACTIVE 小バッジ付き）*/}
       <div style={{
         width: 38, height: 38, borderRadius: 10, flexShrink: 0,
         background: 'rgba(245,200,80,0.15)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
+        position: 'relative',
       }}>
         <Crown size={19} weight="fill" color={GOLD} />
       </div>
@@ -322,8 +329,22 @@ function PremiumInfoCard({ onShowPremium }: { onShowPremium: () => void }) {
           fontSize: 17, fontWeight: 700,
           color: '#FFFFFF',
           marginBottom: 4,
+          display: 'flex', alignItems: 'center', gap: 8,
         }}>
           GRAPE Premium
+          {isPremium && (
+            <span style={{
+              fontFamily: 'var(--font-google-sans), sans-serif',
+              fontSize: 9, fontWeight: 700,
+              letterSpacing: '0.14em',
+              color: '#1C0F42',
+              background: GOLD,
+              padding: '2px 7px',
+              borderRadius: 999,
+            }}>
+              ACTIVE
+            </span>
+          )}
         </div>
         <div style={{
           fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
@@ -331,7 +352,10 @@ function PremiumInfoCard({ onShowPremium }: { onShowPremium: () => void }) {
           color: 'rgba(255,255,255,0.55)',
           lineHeight: 1.6,
         }}>
-          アーティスト無制限・詳細なレポートにアップグレード
+          {isPremium
+            ? 'すべての特典をご利用中'
+            : 'アーティスト無制限・詳細なレポートにアップグレード'
+          }
         </div>
       </div>
 
@@ -346,16 +370,25 @@ function PremiumInfoCard({ onShowPremium }: { onShowPremium: () => void }) {
 // ─── AppSummaryCard ───────────────────────────────────────────────────────────
 
 function AppSummaryCard({
-  livesCount, artistsCount, onShowPlanInfo,
+  livesCount, artistsCount, isPremium, onShowPlanInfo,
 }: {
   livesCount: number
   artistsCount: number
+  isPremium: boolean
   onShowPlanInfo: () => void
 }) {
   const stats = [
     { icon: <MusicNote size={15} weight="regular" />, value: `${livesCount}本`, label: 'イベント', info: false },
     { icon: <UserCircle size={15} weight="regular" />, value: `${artistsCount}`, label: 'アーティスト', info: false },
-    { icon: <Star size={15} weight="regular" />, value: 'Free', label: 'プラン', info: true },
+    // プラン欄: Premium 時は Crown アイコン、ラベル色・値色は Free と統一（サブ的な表示）
+    {
+      icon: isPremium
+        ? <Crown size={15} weight="regular" />
+        : <Star size={15} weight="regular" />,
+      value: isPremium ? 'Premium' : 'Free',
+      label: 'プラン',
+      info: true,
+    },
   ]
   return (
     <div style={{
@@ -409,6 +442,9 @@ function AppSummaryCard({
 }
 
 // ─── PlanInfoModal ────────────────────────────────────────────────────────────
+// Free ユーザ向けのコンパクトな「プランとは？」説明モーダル。
+// Premium ユーザは同じ情報を PremiumUpgradeSheet で見れるため、このモーダルは出さず
+// 直接 PremiumUpgradeSheet を開く（Settings 側で分岐）。
 function PlanInfoModal({ onClose, onUpgrade }: { onClose: () => void; onUpgrade: () => void }) {
   return (
     <div
@@ -1202,12 +1238,14 @@ function ArtistManageSection({
   onDelete,
   onAdd,
   atLimit,
+  isPremium,
 }: {
   artists: GrapeArtist[]
   onEdit: (artist: GrapeArtist) => void
   onDelete: (artist: GrapeArtist) => void
   onAdd: () => void
   atLimit: boolean
+  isPremium: boolean
 }) {
   const [expanded, setExpanded] = useState(false)
   const hiddenCount = Math.max(0, artists.length - ARTIST_VISIBLE_COUNT)
@@ -1217,15 +1255,18 @@ function ArtistManageSection({
       label="アーティスト"
       action={
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {/* N / 5 カウンター */}
+          {/* カウンター: Premium 時は「N 組」、Free 時は「N / 5」*/}
           <span style={{
             fontFamily: 'var(--font-google-sans), sans-serif',
             fontSize: 11, fontWeight: 400,
             color: atLimit ? 'var(--color-encore-amber)' : 'var(--color-encore-text-muted)',
           }}>
-            {artists.length} / {FREE_ARTIST_LIMIT}
+            {isPremium
+              ? `${artists.length} 組`
+              : `${artists.length} / ${FREE_ARTIST_LIMIT}`
+            }
           </span>
-          {/* 追加ボタン */}
+          {/* 追加ボタン（Premium は常に有効、Free は atLimit で Lock）*/}
           <button
             onClick={onAdd}
             style={{
@@ -1350,6 +1391,7 @@ export default function SettingsPage() {
 
   // ── アーティスト管理 ──────────────────────────────────────────────────────
   const { lives, artists, addArtist, updateArtist, deleteArtist, updateLives } = useGrapeStore()
+  const isPremium = useIsPremium()
   const [editingArtist,    setEditingArtist]    = useState<GrapeArtist | null>(null)
   const [isAdding,         setIsAdding]         = useState(false)
   const [deletingArtist,   setDeletingArtist]   = useState<GrapeArtist | null>(null)
@@ -1410,21 +1452,29 @@ export default function SettingsPage() {
         {/* ── スクロールコンテンツ ── */}
         <div style={{ flex: 1, overflowY: 'auto', paddingTop: 28 }}>
 
-          {/* サマリー */}
+          {/* サマリー（「?」タップ: Premium は直接 PremiumUpgradeSheet、Free は PlanInfoModal）*/}
           <AppSummaryCard
             livesCount={lives.length}
             artistsCount={artists.length}
-            onShowPlanInfo={() => setShowPlanInfo(true)}
+            isPremium={isPremium}
+            onShowPlanInfo={() => {
+              if (isPremium) {
+                setShowPremiumSheet(true)
+              } else {
+                setShowPlanInfo(true)
+              }
+            }}
           />
 
-          {/* アーティスト管理 */}
+          {/* アーティスト管理（Premium は無制限・atLimit 常に false）*/}
           <ArtistManageSection
             artists={artists}
             onEdit={setEditingArtist}
             onDelete={setDeletingArtist}
-            atLimit={artists.length >= FREE_ARTIST_LIMIT}
+            isPremium={isPremium}
+            atLimit={!isPremium && artists.length >= FREE_ARTIST_LIMIT}
             onAdd={() => {
-              if (artists.length >= FREE_ARTIST_LIMIT) {
+              if (!isPremium && artists.length >= FREE_ARTIST_LIMIT) {
                 setShowPremiumSheet(true)
               } else {
                 setIsAdding(true)
@@ -1529,7 +1579,7 @@ export default function SettingsPage() {
             }}>
               Premium
             </div>
-            <PremiumInfoCard onShowPremium={() => setShowPremiumSheet(true)} />
+            <PremiumInfoCard isPremium={isPremium} onShowPremium={() => setShowPremiumSheet(true)} />
           </div>
 
         </div>
@@ -1598,8 +1648,8 @@ export default function SettingsPage() {
           <PremiumUpgradeSheet onClose={() => setShowPremiumSheet(false)} />
         )}
 
-        {/* ── プラン情報モーダル ── */}
-        {showPlanInfo && (
+        {/* ── プラン情報モーダル（Free のみ。Premium は直接 PremiumUpgradeSheet へ）── */}
+        {showPlanInfo && !isPremium && (
           <PlanInfoModal
             onClose={() => setShowPlanInfo(false)}
             onUpgrade={() => setShowPremiumSheet(true)}

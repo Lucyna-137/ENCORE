@@ -397,6 +397,26 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   gap: 12px;
 }
 
+/* ─── SetlistEditorSheet · インライン編集入力 ─────────────────────────
+   通常時はテキスト表示のように見えるが、hover で編集可能性を示唆し、
+   focus でテキストフィールド（1px 罫線）に変化する。*/
+.grape-setlist-input {
+  transition: background 160ms ease, border-color 160ms ease;
+}
+.grape-setlist-input:hover:not(:focus) {
+  background: rgba(26, 58, 45, 0.04) !important;
+  cursor: text;
+}
+.grape-setlist-input:focus {
+  background: var(--color-encore-white) !important;
+  border-color: var(--color-encore-green) !important;
+}
+/* プレースホルダ表示中（空の曲）は常にテキストフィールド風に */
+.grape-setlist-input:placeholder-shown:not(:focus) {
+  background: var(--color-encore-bg-section) !important;
+  border-color: var(--color-encore-border-light) !important;
+}
+
 /* モバイル: document自体をスクロールさせず、phone frame内部だけスクロール。
    TabBar や sticky ヘッダが Phone frame と一緒にズレないようにする */
 @media (max-width: 899px) {

@@ -12,6 +12,7 @@ import type { GrapeLive, AttendanceStatus } from '@/lib/grape/types'
 import { ATTENDANCE_LABEL, TICKET_STATUS_LABEL, DOW_SUN_FIRST as DOW_JA } from '@/lib/grape/constants'
 import CyclingArtistImage from './CyclingArtistImage'
 import SetlistSection from './SetlistSection'
+import SetlistEditorSheet from './SetlistEditorSheet'
 
 /** 7択移行前の旧ステータス値 → 日本語フォールバック */
 const LEGACY_TICKET_LABEL: Record<string, string> = {
@@ -162,6 +163,26 @@ export default function EventPreviewScreen({
   const [showMenu, setShowMenu] = useState(false)
   const [showStatusSheet, setShowStatusSheet] = useState(false)
   const [memoExpanded, setMemoExpanded] = useState(false)
+  const [showSetlistEditor, setShowSetlistEditor] = useState(false)
+  const [setlistToast, setSetlistToast] = useState<{ message: string } | null>(null)
+  const [setlistToastVisible, setSetlistToastVisible] = useState(false)
+  const setlistToastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const showSetlistToast = (message: string) => {
+    if (setlistToastTimerRef.current) clearTimeout(setlistToastTimerRef.current)
+    setSetlistToast({ message })
+    requestAnimationFrame(() => setSetlistToastVisible(true))
+    setlistToastTimerRef.current = setTimeout(() => {
+      setSetlistToastVisible(false)
+      setTimeout(() => setSetlistToast(null), 320)
+    }, 2400)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (setlistToastTimerRef.current) clearTimeout(setlistToastTimerRef.current)
+    }
+  }, [])
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
   const [lbScale, setLbScale] = useState(1)
   const lbLastDist = useRef(0)
@@ -902,7 +923,10 @@ export default function EventPreviewScreen({
           {live && (
             <SetlistSection
               live={live}
-              onEditSetlist={onOpenSetlistEditor}
+              onEditSetlist={() => {
+                setShowSetlistEditor(true)
+                onOpenSetlistEditor?.(live)
+              }}
               onUpgradePremium={onUpgradePremium}
             />
           )}
@@ -1114,6 +1138,56 @@ export default function EventPreviewScreen({
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── セットリスト編集シート ─────────────────────────── */}
+      {live && (
+        <SetlistEditorSheet
+          live={live}
+          isOpen={showSetlistEditor}
+          onClose={() => setShowSetlistEditor(false)}
+          onSaved={() => showSetlistToast('セットリストを保存しました')}
+        />
+      )}
+
+      {/* ── セットリスト保存トースト（既存 UNDO トースト踏襲）── */}
+      {setlistToast && (
+        <div
+          style={{
+            position: 'absolute',
+            left: 12,
+            right: 12,
+            bottom: 24,
+            zIndex: 700,
+            transform: setlistToastVisible ? 'translateY(0)' : 'translateY(120%)',
+            transition: 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)',
+            pointerEvents: 'none',
+          }}
+        >
+          <div
+            style={{
+              background: 'var(--color-encore-green)',
+              borderRadius: 14,
+              padding: '13px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              boxShadow: '0 6px 24px rgba(0,0,0,0.22)',
+            }}
+          >
+            <span
+              style={{
+                fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                fontSize: 13,
+                fontWeight: 400,
+                color: 'var(--color-encore-white)',
+                flex: 1,
+              }}
+            >
+              {setlistToast.message}
+            </span>
+          </div>
         </div>
       )}
     </>

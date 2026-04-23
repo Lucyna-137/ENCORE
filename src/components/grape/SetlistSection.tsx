@@ -21,9 +21,9 @@
  */
 
 import React from 'react'
-import { MusicNotes, Lock, Plus, CaretRight } from '@phosphor-icons/react'
+import { MusicNotes, Lock, Plus, CaretRight, PencilSimple } from '@phosphor-icons/react'
 import * as ty from '@/components/encore/typographyStyles'
-import type { GrapeLive } from '@/lib/grape/types'
+import type { GrapeLive, SetlistItem } from '@/lib/grape/types'
 import { useIsPremium } from '@/lib/grape/premium'
 import { useSetlistStore } from '@/lib/grape/useSetlistStore'
 
@@ -63,9 +63,9 @@ export default function SetlistSection({
           onClick={onUpgradePremium}
           style={{
             display: 'flex', alignItems: 'center', gap: 12,
-            width: '100%', padding: '16px 14px',
+            width: '100%', padding: '14px 12px',
             borderRadius: 8,
-            background: 'var(--color-encore-bg-section)',
+            background: 'var(--color-encore-white)',
             border: '1px solid var(--color-encore-border-light)',
             cursor: 'pointer',
             WebkitTapHighlightColor: 'transparent',
@@ -101,9 +101,9 @@ export default function SetlistSection({
         <SectionHeader />
         <div style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
-          padding: '28px 20px',
+          padding: '24px 20px 20px',
           borderRadius: 8,
-          background: 'var(--color-encore-bg-section)',
+          background: 'var(--color-encore-white)',
           border: '1px dashed var(--color-encore-border)',
         }}>
           <MusicNotes size={28} weight="regular" color="var(--color-encore-text-muted)" />
@@ -137,13 +137,139 @@ export default function SetlistSection({
     )
   }
 
-  // ─── Premium × データあり: Day 2 以降で実装 ─────────────────────────
-  // TODO: プレビュー5行 + 「全N曲を見る ›」
-  return null
+  // ─── Premium × データあり: プレビュー + 編集導線 ───────────────────
+  const songItems = setlist!.items.filter(i => i.kind === 'song') as Extract<SetlistItem, { kind: 'song' }>[]
+  const totalSongs = songItems.length
+  const PREVIEW_COUNT = 5
+  const previewSongs = songItems.slice(0, PREVIEW_COUNT)
+  const hasMore = totalSongs > PREVIEW_COUNT
+  const approximate = !!setlist!.approximate
+
+  return (
+    <div style={sectionWrapStyle}>
+      <SectionHeader count={totalSongs} approximate={approximate} />
+
+      {/* ── プレビュー行（スパインガイド付き）───────────────────────── */}
+      <div style={{ position: 'relative', padding: '2px 0 8px' }}>
+        {/* 左端の縦スパイン */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            left: 2,
+            top: 4,
+            bottom: 8,
+            width: 1,
+            background: 'var(--color-encore-border)',
+          }}
+        />
+        {previewSongs.length === 0 ? (
+          // song が 0 件だが items に MC/divider だけあるケース
+          <div style={{ ...ty.bodySM, color: 'var(--color-encore-text-sub)', padding: '8px 12px' }}>
+            曲の記録がありません
+          </div>
+        ) : (
+          previewSongs.map((song, i) => (
+            <PreviewRow key={i} index={i + 1} title={song.title} originalArtist={song.originalArtist} />
+          ))
+        )}
+      </div>
+
+      {/* ── 開く / 編集する ボタン（セカンダリー・罫線囲み）────── */}
+      <button
+        onClick={() => onEditSetlist?.(live)}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '8px 16px',
+          borderRadius: 999,
+          background: 'transparent',
+          border: '1px solid var(--color-encore-green)',
+          cursor: 'pointer',
+          WebkitTapHighlightColor: 'transparent',
+          color: 'var(--color-encore-green)',
+          fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+          fontSize: 12,
+          fontWeight: 700,
+        }}
+      >
+        {hasMore ? (
+          <>全 {totalSongs} 曲を見る</>
+        ) : (
+          <><PencilSimple size={12} weight="regular" />編集する</>
+        )}
+        <CaretRight size={11} weight="bold" />
+      </button>
+    </div>
+  )
+}
+
+// ─── プレビュー行（番号 + 曲名、コンパクト）─────────────────────────
+function PreviewRow({
+  index,
+  title,
+  originalArtist,
+}: {
+  index: number
+  title: string
+  originalArtist?: string
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        padding: '6px 0 6px 0',
+        minHeight: 28,
+      }}
+    >
+      <div
+        style={{
+          width: 22,
+          flexShrink: 0,
+          textAlign: 'right',
+          fontFamily: 'var(--font-google-sans), sans-serif',
+          fontSize: 13,
+          fontWeight: 700,
+          color: 'var(--color-encore-green)',
+          fontVariantNumeric: 'tabular-nums',
+        }}
+      >
+        {index}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            ...ty.body,
+            fontSize: 13,
+            fontWeight: 700,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {title || <span style={{ color: 'var(--color-encore-text-muted)', fontWeight: 400 }}>（無題）</span>}
+        </div>
+        {originalArtist && (
+          <div
+            style={{
+              ...ty.caption,
+              color: 'var(--color-encore-text-sub)',
+              marginTop: 1,
+            }}
+          >
+            cover · {originalArtist}
+          </div>
+        )}
+      </div>
+    </div>
+  )
 }
 
 // ─── 見出し ──────────────────────────────────────────────────────────────
-function SectionHeader() {
+function SectionHeader({ count, approximate }: { count?: number; approximate?: boolean }) {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 8,
@@ -158,11 +284,46 @@ function SectionHeader() {
       }}>
         SETLIST
       </span>
+      {typeof count === 'number' && count > 0 && (
+        <span style={{
+          ...ty.caption,
+          color: 'var(--color-encore-text-sub)',
+          marginLeft: 'auto',
+          fontVariantNumeric: 'tabular-nums',
+        }}>
+          {count} 曲
+        </span>
+      )}
+      {approximate && (
+        <span style={{
+          fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+          fontSize: 10,
+          fontWeight: 700,
+          color: 'var(--color-encore-amber)',
+          padding: '1px 6px',
+          borderRadius: 999,
+          border: '1px solid rgba(192,138,74,0.35)',
+          background: 'rgba(192,138,74,0.08)',
+          marginLeft: typeof count === 'number' ? 0 : 'auto',
+          letterSpacing: '0.04em',
+        }}>
+          うろ覚え
+        </span>
+      )}
     </div>
   )
 }
 
 // ─── 共通スタイル ───────────────────────────────────────────────────────
+/**
+ * セクション全体のラップ:
+ *   - 薄い地色（bg-section）で EventPreviewScreen の他の InfoRow 群と視覚差別化
+ *   - 角丸 10 で Premium 機能らしい上品な囲い
+ */
 const sectionWrapStyle: React.CSSProperties = {
   marginTop: 24,
+  padding: '14px 14px 12px',
+  borderRadius: 10,
+  background: 'var(--color-encore-bg-section)',
+  position: 'relative',
 }

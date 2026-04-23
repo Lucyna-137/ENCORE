@@ -75,28 +75,28 @@ type Row =
   | { kind: 'divider'; label: string }
 
 const SETLIST_SOLO: Row[] = [
-  { kind: 'song', title: '憂う門には福来たる', art: ART.covers.indie },
-  { kind: 'song', title: 'キミノネイロ', art: ART.covers.ssw },
-  { kind: 'song', title: 'IF' },
-  { kind: 'mc', note: '久しぶりの下北沢…' },
-  { kind: 'song', title: 'シェルター' },
-  { kind: 'song', title: '六畳夢想', art: ART.covers.acoustic },
-  { kind: 'song', title: '繕い', art: ART.covers.ssw },
+  { kind: 'song', title: '雨宿りサイダー', art: ART.covers.indie },
+  { kind: 'song', title: '朝凪ボイス', art: ART.covers.ssw },
+  { kind: 'song', title: 'Eclipse Bay' },
+  { kind: 'mc', note: '久しぶりのここに帰ってきました…' },
+  { kind: 'song', title: '影絵の森' },
+  { kind: 'song', title: '十八時の特等席', art: ART.covers.acoustic },
+  { kind: 'song', title: '三拍子のラブレター', art: ART.covers.ssw },
   { kind: 'divider', label: 'ENCORE' },
-  { kind: 'song', title: 'Navy', art: ART.covers.indie, debut: true },
+  { kind: 'song', title: 'Satellite Diary', art: ART.covers.indie, debut: true },
 ]
 
 const SETLIST_TAIBAN: Row[] = [
   { kind: 'divider', label: '〜 somei 〜' },
-  { kind: 'song', title: 'キミノネイロ', artist: 'somei', art: ART.somei },
-  { kind: 'song', title: '六畳夢想', artist: 'somei', art: ART.somei },
-  { kind: 'song', title: '繕い', artist: 'somei', art: ART.somei },
+  { kind: 'song', title: '朝凪ボイス', artist: 'somei', art: ART.somei },
+  { kind: 'song', title: '十八時の特等席', artist: 'somei', art: ART.somei },
+  { kind: 'song', title: '三拍子のラブレター', artist: 'somei', art: ART.somei },
   { kind: 'divider', label: '〜 シユイ 〜' },
-  { kind: 'song', title: 'Citylights', artist: 'シユイ', art: ART.shiyui },
-  { kind: 'song', title: 'Bluebell', artist: 'シユイ', art: ART.shiyui },
-  { kind: 'song', title: 'IF', artist: 'シユイ', cover: 'RADWIMPS' },
+  { kind: 'song', title: 'Neon Drive', artist: 'シユイ', art: ART.shiyui },
+  { kind: 'song', title: '薄明ガーデン', artist: 'シユイ', art: ART.shiyui },
+  { kind: 'song', title: 'Eclipse Bay', artist: 'シユイ', cover: 'FRAGMENTS' },
   { kind: 'divider', label: '〜 優利香 〜' },
-  { kind: 'song', title: '憂う門には福来たる', artist: '優利香', art: ART.yurika },
+  { kind: 'song', title: '雨宿りサイダー', artist: '優利香', art: ART.yurika },
   { kind: 'song', title: '—', artist: '不明', unknown: true },
 ]
 
