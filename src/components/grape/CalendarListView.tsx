@@ -5,7 +5,7 @@ import * as ty from '@/components/encore/typographyStyles'
 import type { GrapeLive, GrapeArtist, LiveCardStatus } from '@/lib/grape/types'
 import { ATTENDANCE_TO_LIVE_STATUS, BANNER_BG_COLOR, BANNER_BORDER_COLOR, CURRENT_YEAR } from '@/lib/grape/constants'
 import LiveCard from '@/components/encore/LiveCard'
-import { Cake, BellRinging, X as XIcon } from '@phosphor-icons/react'
+import { Cake, BellRinging, X as XIcon, Warning } from '@phosphor-icons/react'
 import DismissableBanner from '@/components/grape/DismissableBanner'
 
 interface CalendarListViewProps {
@@ -48,6 +48,41 @@ function isGreyedOut(live: GrapeLive, today: string): boolean {
     live.attendanceStatus === 'attended' ||
     live.attendanceStatus === 'skipped'
   )
+}
+
+// ─── ヘルパー ──────────────────────────────────────────────────────────────
+/** YYYY-MM-DD → その週の月曜 YYYY-MM-DD */
+function getMondayOf(dateStr: string): string {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const dt = new Date(y, m - 1, d)
+  const dow = dt.getDay() // 0=Sun
+  const diff = dow === 0 ? -6 : 1 - dow
+  dt.setDate(dt.getDate() + diff)
+  const yy = dt.getFullYear()
+  const mm = String(dt.getMonth() + 1).padStart(2, '0')
+  const dd = String(dt.getDate()).padStart(2, '0')
+  return `${yy}-${mm}-${dd}`
+}
+function addDays(dateStr: string, days: number): string {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const dt = new Date(y, m - 1, d)
+  dt.setDate(dt.getDate() + days)
+  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`
+}
+function parseTimeMin(t: string | undefined): number | null {
+  if (!t) return null
+  const [h, m] = t.split(':').map(Number)
+  if (Number.isNaN(h) || Number.isNaN(m)) return null
+  return h * 60 + m
+}
+/** ライブ同士が同日で時間帯重複しているか */
+function livesOverlap(a: GrapeLive, b: GrapeLive): boolean {
+  if (a.date !== b.date) return false
+  const as = parseTimeMin(a.startTime) ?? 0
+  const ae = parseTimeMin(a.endTime) ?? as + 60
+  const bs = parseTimeMin(b.startTime) ?? 0
+  const be = parseTimeMin(b.endTime) ?? bs + 60
+  return as < be && ae > bs
 }
 
 // ─── HorizontalTabs版フィルター（ENCORE HorizontalTabs準拠） ─────────────────
@@ -466,7 +501,34 @@ const CalendarListView = forwardRef<CalendarListViewHandle, CalendarListViewProp
             <div style={{ padding: '8px 16px 24px' }}>
             {(() => {
               let lastMonth = ''
+              let lastWeek = ''
               let passedTodayRef = false
+
+              // 週ごとのサマリー事前計算
+              const weekSummaries = new Map<string, { count: number; totalPrice: number; hasPrice: boolean }>()
+              for (const l of filteredLives) {
+                const wk = getMondayOf(l.date)
+                const s = weekSummaries.get(wk) ?? { count: 0, totalPrice: 0, hasPrice: false }
+                s.count += 1
+                if (typeof l.price === 'number' && l.price > 0) {
+                  s.totalPrice += l.price
+                  s.hasPrice = true
+                }
+                weekSummaries.set(wk, s)
+              }
+              const thisWeekMonday = getMondayOf(today)
+
+              // ダブルブッキング判定（同日で時間帯重複）
+              const conflictIds = new Set<string>()
+              for (let i = 0; i < filteredLives.length; i++) {
+                for (let j = i + 1; j < filteredLives.length; j++) {
+                  if (filteredLives[i].date !== filteredLives[j].date) continue
+                  if (livesOverlap(filteredLives[i], filteredLives[j])) {
+                    conflictIds.add(filteredLives[i].id)
+                    conflictIds.add(filteredLives[j].id)
+                  }
+                }
+              }
 
               return filteredLives.map((live) => {
                 const isPast = isGreyedOut(live, today)
@@ -478,9 +540,23 @@ const CalendarListView = forwardRef<CalendarListViewHandle, CalendarListViewProp
                 const showMonthSep = monthKey !== lastMonth
                 lastMonth = monthKey
 
+                const weekKey = getMondayOf(live.date)
+                const showWeekSep = weekKey !== lastWeek
+                lastWeek = weekKey
+                const isCurrentWeek = weekKey === thisWeekMonday
+                const weekSummary = weekSummaries.get(weekKey)
+                const weekEnd = addDays(weekKey, 6)
+                const weekLabel = (() => {
+                  const [, wm1, wd1] = weekKey.split('-')
+                  const [, wm2, wd2] = weekEnd.split('-')
+                  return `${Number(wm1)}/${Number(wd1)} – ${Number(wm2)}/${Number(wd2)}`
+                })()
+
+                const hasConflict = conflictIds.has(live.id)
+
                 const liveStatus = ATTENDANCE_TO_LIVE_STATUS[live.attendanceStatus]
                 type LiveType = 'ワンマン' | '対バン' | 'フェス' | '配信'
-                const liveType = live.liveType as LiveType
+                const liveType = (live.liveType ?? 'ワンマン') as LiveType
 
                 return (
                   <div
@@ -500,6 +576,92 @@ const CalendarListView = forwardRef<CalendarListViewHandle, CalendarListViewProp
                       >
                         <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 40, fontWeight: 700, color: 'var(--color-encore-green)', lineHeight: 1 }}>{Number(m)}</span>
                         <span style={{ ...ty.captionMuted, fontSize: 14, letterSpacing: '0.04em', marginTop: 2 }}>{y}</span>
+                      </div>
+                    )}
+
+                    {/* 週区切りヘッダー */}
+                    {showWeekSep && weekSummary && (
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          padding: '8px 4px 14px',
+                        }}
+                      >
+                        <div style={{ flex: 1, height: 1, background: 'var(--color-encore-border-light)' }} />
+                        <div style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          padding: '4px 12px',
+                          borderRadius: 999,
+                          background: isCurrentWeek ? 'rgba(192,138,74,0.12)' : 'var(--color-encore-bg-section)',
+                          border: `1px solid ${isCurrentWeek ? 'rgba(192,138,74,0.28)' : 'var(--color-encore-border-light)'}`,
+                        }}>
+                          {isCurrentWeek && (
+                            <span style={{
+                              fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                              fontSize: 10, fontWeight: 700,
+                              color: 'var(--color-encore-amber)',
+                              letterSpacing: '0.08em',
+                            }}>
+                              今週
+                            </span>
+                          )}
+                          <span style={{
+                            fontFamily: 'var(--font-google-sans), sans-serif',
+                            fontSize: 11, fontWeight: 700,
+                            color: isCurrentWeek ? 'var(--color-encore-amber)' : 'var(--color-encore-text-sub)',
+                            fontVariantNumeric: 'tabular-nums',
+                          }}>
+                            {weekLabel}
+                          </span>
+                          <span style={{
+                            width: 1, height: 10,
+                            background: isCurrentWeek ? 'rgba(192,138,74,0.28)' : 'var(--color-encore-border)',
+                          }} />
+                          <span style={{
+                            fontFamily: 'var(--font-google-sans), sans-serif',
+                            fontSize: 11, fontWeight: 700,
+                            color: 'var(--color-encore-green)',
+                          }}>
+                            {weekSummary.count} 件
+                          </span>
+                          {weekSummary.hasPrice && (
+                            <span style={{
+                              fontFamily: 'var(--font-google-sans), sans-serif',
+                              fontSize: 11, fontWeight: 400,
+                              color: 'var(--color-encore-text-sub)',
+                            }}>
+                              ¥{weekSummary.totalPrice.toLocaleString('ja-JP')}
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ flex: 1, height: 1, background: 'var(--color-encore-border-light)' }} />
+                      </div>
+                    )}
+
+                    {/* ダブルブッキング警告 */}
+                    {hasConflict && (
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        marginBottom: 6,
+                        padding: '6px 10px',
+                        background: 'rgba(219, 96, 80, 0.08)',
+                        border: '1px solid rgba(219, 96, 80, 0.24)',
+                        borderRadius: 8,
+                      }}>
+                        <Warning size={12} weight="fill" color="var(--color-encore-error)" />
+                        <span style={{
+                          fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                          fontSize: 11, fontWeight: 700,
+                          color: 'var(--color-encore-error)',
+                        }}>
+                          同じ時間帯に別のイベント
+                        </span>
                       </div>
                     )}
 

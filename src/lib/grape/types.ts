@@ -71,3 +71,69 @@ export type ViewMode = '月' | '週' | '日' | 'リスト'
  * （CalendarListView が AttendanceStatus をマッピングして使用）
  */
 export type LiveCardStatus = '予定' | '抽選中' | '当選' | '落選' | '終了'
+
+// ─── Setlist（Premium 機能）─────────────────────────────────────────────
+//
+// ひとつの GrapeLive に対して 1 セットリストを紐付ける。
+// localStorage キー: `grape_setlists_v1`（GrapeLive 本体とは別ストレージ）
+// 参照: src/lib/grape/useSetlistStore.ts
+
+/** セットリスト内の 1 アイテム（曲 / MC / 区切り）の判別ユニオン */
+export type SetlistItem =
+  | SetlistSong
+  | SetlistMC
+  | SetlistDivider
+
+export interface SetlistSong {
+  kind: 'song'
+  /** 曲名（表示用、原文そのまま） */
+  title: string
+  /** 正規化済みキー（検索・重複判定用。normalizeSong() で自動生成） */
+  titleNormalized: string
+  /** カバー曲の場合、原曲のアーティスト名（任意） */
+  originalArtist?: string
+  /**
+   * 対バン時、この曲を演奏したアーティスト。
+   * 値は GrapeArtist.name と一致させるか、'不明' を使う。
+   * 単独公演では通常 undefined。
+   */
+  performedBy?: string
+  /** 楽曲アートワーク URL（iTunes Search API キャッシュ等） */
+  artworkUrl?: string
+  /** 初披露フラグ（手動、または過去履歴との比較で自動判定） */
+  debut?: boolean
+  /** OCR 取り込み時の信頼度が低いフラグ（UI で「要確認」バッジ表示） */
+  lowConfidence?: boolean
+  /** 曲ごとのメモ */
+  memo?: string
+}
+
+export interface SetlistMC {
+  kind: 'mc'
+  /** MC のメモ（任意、未設定時は UI が「MC」とだけ表示） */
+  note?: string
+}
+
+export interface SetlistDivider {
+  kind: 'divider'
+  /**
+   * 区切りラベル例:
+   *   'ENCORE' / 'DOUBLE ENCORE' / '〜 somei 〜'（対バン時のアーティスト切替）
+   */
+  label: string
+}
+
+/** 1 ライブに紐づくセットリスト */
+export interface Setlist {
+  /** 紐づく GrapeLive.id */
+  liveId: string
+  /** セットリストアイテム（演奏順） */
+  items: SetlistItem[]
+  /**
+   * うろ覚えで記録したか（UI で「うろ覚え」バッジ表示）
+   * デフォルト false
+   */
+  approximate?: boolean
+  /** 最終更新日時 (ISO 8601) */
+  updatedAt: string
+}

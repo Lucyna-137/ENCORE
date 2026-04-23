@@ -10,13 +10,19 @@ import CyclingArtistImage from './CyclingArtistImage'
 interface CalendarWeekViewProps {
   weekStart: Date
   lives: GrapeLive[]
+  /** 期限マーカー計算用の全ライブ（週跨ぎの期限日に対応） */
+  allLives?: GrapeLive[]
   artists?: GrapeArtist[]
-  onSlotTap: (date: string, hour: number) => void
+  /** タップ or ドラッグで空きスロットから新規作成。`endMin` 指定時は範囲確保モード（15分精度） */
+  onSlotTap: (date: string, startMin: number, endMin?: number) => void
   onEventTap: (live: GrapeLive) => void
   onEventDrop?: (liveId: string, newDate: string, newStartMin: number) => void
   onPrevWeek?: () => void
   onNextWeek?: () => void
-  highlightSlot?: { date: string; hour: number } | null
+  /** 分単位のハイライト範囲。`endMin` 指定あれば範囲 */
+  highlightSlot?: { date: string; startMin: number; endMin?: number } | null
+  /** チケット期限マーカーがタップされた時。関連イベントの詳細画面を開く想定 */
+  onUrgencyTap?: (live: GrapeLive) => void
 }
 
 // ─── Birthday tooltip（Week view 用） ────────────────────────────────────────
@@ -127,11 +133,13 @@ function getEventStyle(live: GrapeLive): React.CSSProperties {
 export default function CalendarWeekView({
   weekStart,
   lives,
+  allLives,
   artists,
   onSlotTap,
   onEventTap,
   onEventDrop,
   onPrevWeek,
+  onUrgencyTap,
   onNextWeek,
   highlightSlot,
 }: CalendarWeekViewProps) {
@@ -140,6 +148,13 @@ export default function CalendarWeekView({
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [dragOverDate, setDragOverDate] = useState<string | null>(null)
   const [activeBirthday, setActiveBirthday] = useState<WeekBirthdayTooltipData | null>(null)
+  // 空きスロットからの drag-to-create（列ごと）
+  const [createDrag, setCreateDrag] = useState<{ dateStr: string; startY: number; currentY: number } | null>(null)
+  const DRAG_TAP_THRESHOLD = 6
+  const yToMinSnap = (y: number) => {
+    const min = Math.round((y / HOUR_HEIGHT) * 60 / 15) * 15
+    return Math.max(0, Math.min(24 * 60, min))
+  }
 
   // 誕生日マップ: 'MM-DD' -> GrapeArtist[]
   const birthdayMap = useMemo(() => {
@@ -155,6 +170,35 @@ export default function CalendarWeekView({
     }
     return map
   }, [artists])
+
+  // ── チケット期限マーカー用（Month と同じロジック） ─────────────────────
+  type WeekUrgencyMark = { tone: 'danger' | 'warn' | 'info'; label: string; live: GrapeLive }
+  const urgencyByDate = useMemo(() => {
+    const map = new Map<string, WeekUrgencyMark[]>()
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const pushMark = (date: string, label: string, live: GrapeLive) => {
+      const [y, m, d] = date.split('-').map(Number)
+      const target = new Date(y, m - 1, d)
+      target.setHours(0, 0, 0, 0)
+      const diff = Math.round((target.getTime() - today.getTime()) / 86400000)
+      if (diff < 0 || diff > 14) return
+      const tone: WeekUrgencyMark['tone'] =
+        diff <= 2 ? 'danger'
+        : diff <= 5 ? 'warn'
+        : 'info'
+      const arr = map.get(date) ?? []
+      arr.push({ tone, label, live })
+      map.set(date, arr)
+    }
+    const source = allLives ?? lives
+    for (const l of source) {
+      if (l.ticketStatus === 'waiting'     && l.announcementDate) pushMark(l.announcementDate, `抽選発表: ${l.title}`, l)
+      if (l.ticketStatus === 'before-sale' && l.saleStartDate)    pushMark(l.saleStartDate,    `発売開始: ${l.title}`, l)
+      if (l.ticketStatus === 'payment-due' && l.ticketDeadline)   pushMark(l.ticketDeadline,   `入金期限: ${l.title}`, l)
+    }
+    return map
+  }, [lives, allLives])
 
   const handleBirthdayTap = (e: React.MouseEvent, bArtists: GrapeArtist[]) => {
     e.stopPropagation()
@@ -282,6 +326,20 @@ export default function CalendarWeekView({
           const isToday = dateStr === TODAY
           const [, dMm, dDd] = dateStr.split('-')
           const birthdayArtistsForDay = birthdayMap.get(`${dMm}-${dDd}`) ?? []
+          // チケット期限マーカー（Month と同じトーン）
+          const urgencyMarks = urgencyByDate.get(dateStr) ?? []
+          const urgencyTone: 'danger' | 'warn' | 'info' | null =
+            urgencyMarks.length === 0 ? null
+            : urgencyMarks.some(m => m.tone === 'danger') ? 'danger'
+            : urgencyMarks.some(m => m.tone === 'warn')   ? 'warn'
+            : 'info'
+          // トーンパレット（Month と同じ）
+          const urgencyPalette = (() => {
+            if (!urgencyTone) return null
+            if (urgencyTone === 'info') return { bg: 'rgba(219,96,80,0.10)', outline: 'none', textColor: null as string | null }
+            if (urgencyTone === 'warn') return { bg: 'rgba(219,96,80,0.14)', outline: '1.5px solid rgba(219,96,80,0.42)', textColor: 'var(--color-encore-error)' as string | null }
+            return { bg: 'var(--color-encore-error)', outline: 'none', textColor: 'var(--color-encore-white)' as string | null }
+          })()
           return (
             <div
               key={dateStr}
@@ -306,16 +364,23 @@ export default function CalendarWeekView({
                 {DOW[i]}
               </span>
               <div
+                onClick={urgencyTone ? (e) => { e.stopPropagation(); onUrgencyTap?.(urgencyMarks[0].live) } : undefined}
                 style={{
                   width: 30,
                   height: 30,
                   borderRadius: 8,
-                  background: isToday ? 'var(--color-encore-green)' : 'transparent',
-                  border: isToday ? 'none' : '2px solid transparent',
+                  background: urgencyPalette
+                    ? urgencyPalette.bg
+                    : (isToday ? 'var(--color-encore-green)' : 'transparent'),
+                  outline: urgencyPalette ? urgencyPalette.outline : 'none',
+                  border: isToday && !urgencyPalette ? 'none' : (urgencyPalette ? 'none' : '2px solid transparent'),
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   transition: 'background 0.18s',
+                  cursor: urgencyTone ? 'pointer' : undefined,
+                  animation: urgencyTone === 'danger' ? 'urgencyDateFlash 1.4s ease-in-out infinite' : 'none',
+                  WebkitTapHighlightColor: 'transparent',
                 }}
               >
                 <span
@@ -323,7 +388,8 @@ export default function CalendarWeekView({
                     ...ty.body,
                     fontWeight: 700,
                     fontSize: 15,
-                    color: isToday ? 'var(--color-encore-white)' : 'var(--color-encore-green)',
+                    color: urgencyPalette?.textColor
+                      ?? (isToday ? 'var(--color-encore-white)' : 'var(--color-encore-green)'),
                   }}
                 >
                   {date.getDate()}
@@ -471,14 +537,44 @@ export default function CalendarWeekView({
                     borderRight: colIdx < 6 ? '1px solid var(--color-encore-border-light)' : 'none',
                     background: isDragOver ? 'var(--color-grape-tint-04)' : 'transparent',
                     transition: 'background 0.15s',
+                    touchAction: createDrag?.dateStr === dateStr ? 'none' : 'pan-y',
                   }}
-                  onClick={(e) => {
+                  onPointerDown={(e) => {
                     if (draggingId) return
+                    if (e.button !== 0) return
+                    const target = e.target as HTMLElement
+                    if (target.closest('[data-event-block="true"]')) return
                     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
                     const y = e.clientY - rect.top
-                    const hour = Math.floor(y / HOUR_HEIGHT)
-                    onSlotTap(dateStr, hour)
+                    setCreateDrag({ dateStr, startY: y, currentY: y })
+                    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch {}
                   }}
+                  onPointerMove={(e) => {
+                    if (!createDrag || createDrag.dateStr !== dateStr) return
+                    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+                    const y = Math.max(0, Math.min(24 * HOUR_HEIGHT, e.clientY - rect.top))
+                    setCreateDrag(prev => prev ? { ...prev, currentY: y } : prev)
+                  }}
+                  onPointerUp={(e) => {
+                    if (!createDrag || createDrag.dateStr !== dateStr) return
+                    try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId) } catch {}
+                    const { startY, currentY } = createDrag
+                    setCreateDrag(null)
+                    const dy = Math.abs(currentY - startY)
+                    const minY = Math.min(startY, currentY)
+                    const maxY = Math.max(startY, currentY)
+                    const startMin = yToMinSnap(minY)
+                    if (dy < DRAG_TAP_THRESHOLD) {
+                      // タップ: 時刻ジャストへ丸めて1時間扱い
+                      const tapStartMin = Math.floor(startMin / 60) * 60
+                      onSlotTap(dateStr, tapStartMin)
+                    } else {
+                      const endMin = yToMinSnap(maxY)
+                      const safeEndMin = Math.min(24 * 60 - 1, Math.max(endMin, startMin + 30))
+                      onSlotTap(dateStr, startMin, safeEndMin)
+                    }
+                  }}
+                  onPointerCancel={() => setCreateDrag(null)}
                   onDragOver={(e) => {
                     e.preventDefault()
                     e.dataTransfer.dropEffect = 'move'
@@ -507,24 +603,76 @@ export default function CalendarWeekView({
                     setDraggingId(null)
                   }}
                 >
-                  {/* Slot highlight */}
-                  {highlightSlot?.date === dateStr && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: highlightSlot.hour * HOUR_HEIGHT + 1,
-                        left: 1,
-                        right: 1,
-                        height: HOUR_HEIGHT - 2,
-                        background: 'var(--color-grape-tint-10)',
-                        borderRadius: 4,
-                        border: '1.5px solid var(--color-encore-green)',
-                        pointerEvents: 'none',
-                        zIndex: 3,
-                        animation: 'slot-appear 0.18s cubic-bezier(0.34,1.56,0.64,1) both',
-                      }}
-                    />
-                  )}
+                  {/* Slot highlight（endMin指定時は範囲ハイライト・15分精度） */}
+                  {highlightSlot?.date === dateStr && (() => {
+                    const isRange = highlightSlot.endMin != null && highlightSlot.endMin > highlightSlot.startMin
+                    const effectiveEnd = isRange ? highlightSlot.endMin! : highlightSlot.startMin + 60
+                    const top = (highlightSlot.startMin / 60) * HOUR_HEIGHT
+                    const height = ((effectiveEnd - highlightSlot.startMin) / 60) * HOUR_HEIGHT
+                    return (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: top + 1,
+                          left: 1,
+                          right: 1,
+                          height: Math.max(height - 2, 18),
+                          background: 'var(--color-grape-tint-10)',
+                          borderRadius: 4,
+                          border: '1.5px solid var(--color-encore-green)',
+                          pointerEvents: 'none',
+                          zIndex: 3,
+                          // 範囲（drag-created）は非弾性。タップのみ従来のバウンド。
+                          animation: isRange ? 'none' : 'slot-appear 0.18s cubic-bezier(0.34,1.56,0.64,1) both',
+                        }}
+                      />
+                    )
+                  })()}
+                  {/* Drag-to-create ゴーストブロック（該当日のみ） */}
+                  {createDrag?.dateStr === dateStr && Math.abs(createDrag.currentY - createDrag.startY) >= DRAG_TAP_THRESHOLD && (() => {
+                    const minY = Math.min(createDrag.startY, createDrag.currentY)
+                    const maxY = Math.max(createDrag.startY, createDrag.currentY)
+                    const startMinSnap = yToMinSnap(minY)
+                    const endMinSnap   = Math.max(yToMinSnap(maxY), startMinSnap + 30)
+                    const top = (startMinSnap / 60) * HOUR_HEIGHT
+                    const height = ((endMinSnap - startMinSnap) / 60) * HOUR_HEIGHT
+                    const fmt = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
+                    return (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: top + 1,
+                          left: 1,
+                          right: 1,
+                          height: Math.max(height - 2, 18),
+                          background: 'rgba(26,58,45,0.14)',
+                          borderRadius: 6,
+                          border: '1.5px solid var(--color-encore-green)',
+                          pointerEvents: 'none',
+                          zIndex: 6,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '0 2px',
+                        }}
+                      >
+                        <span style={{
+                          fontFamily: 'var(--font-google-sans), sans-serif',
+                          fontSize: 10,
+                          fontWeight: 700,
+                          color: 'var(--color-encore-green)',
+                          background: 'rgba(255,255,255,0.9)',
+                          padding: '2px 6px',
+                          borderRadius: 999,
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}>
+                          {fmt(startMinSnap)}–{fmt(Math.min(endMinSnap, 24 * 60 - 1))}
+                        </span>
+                      </div>
+                    )
+                  })()}
                   {dayLives.map((live, liveIdx) => {
                     const blockStartMin = parseMinutes(live.openingTime ?? live.startTime)
                     const startMin = parseMinutes(live.startTime)
@@ -546,6 +694,7 @@ export default function CalendarWeekView({
                     return (
                       <div
                         key={live.id}
+                        data-event-block="true"
                         draggable
                         onDragStart={(e) => {
                           setDraggingId(live.id)

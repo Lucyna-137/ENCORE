@@ -12,7 +12,10 @@ import { Sparkle as SparkleIcon } from '@phosphor-icons/react'
 // ─── Props ────────────────────────────────────────────────────────────────────
 interface QuickEventSheetProps {
   date?: string
-  hour?: number
+  /** 開始時刻（分） */
+  startMin?: number
+  /** 終了時刻（分） */
+  endMin?: number
   live?: GrapeLive
   artists?: GrapeArtist[]
   onAddArtist?: (artist: GrapeArtist) => void
@@ -21,6 +24,14 @@ interface QuickEventSheetProps {
   openSection?: 'ticket'
   /** Freeユーザ向けのPremium訴求バナー表示用コールバック（新規作成時のみ有効） */
   onShowPremium?: () => void
+  /** 同日重複検出のための既存ライブ一覧（自分自身は除外される） */
+  allLives?: GrapeLive[]
+  /** 新規作成時の初期値として使われる、過去イベントからの推定値 */
+  smartDefaults?: {
+    liveType?: LiveTypeGrape
+  } | null
+  /** 会場入力欄フォーカス時に表示する直近会場サジェスト（重複排除済み） */
+  recentVenues?: string[]
 }
 
 // ─── ENCORE準拠: 下線スタイルのinput wrapper ─────────────────────────────────
@@ -95,12 +106,15 @@ function FlatInput({
   value,
   onChange,
   placeholder,
+  onFocusChange,
 }: {
   label: string
   type?: string
   value: string
   onChange: (v: string) => void
   placeholder?: string
+  /** 親にフォーカス状態を通知（サジェスト表示など） */
+  onFocusChange?: (focused: boolean) => void
 }) {
   const [focused, setFocused] = useState(false)
   return (
@@ -110,8 +124,8 @@ function FlatInput({
         style={flatInputStyle}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
+        onFocus={() => { setFocused(true); onFocusChange?.(true) }}
+        onBlur={() => { setFocused(false); onFocusChange?.(false) }}
         placeholder={placeholder}
       />
     </FieldWrap>
@@ -1349,7 +1363,7 @@ function ConfirmDiscardDialog({ onDiscard, onCancel }: { onDiscard: () => void; 
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
-export default function QuickEventSheet({ date, hour, live, artists: propArtists = [], onAddArtist: propOnAddArtist, onClose, onSave, openSection, onShowPremium }: QuickEventSheetProps) {
+export default function QuickEventSheet({ date, startMin, endMin, live, artists: propArtists = [], onAddArtist: propOnAddArtist, onClose, onSave, openSection, onShowPremium, allLives = [], smartDefaults, recentVenues = [] }: QuickEventSheetProps) {
   const [mounted, setMounted] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -1359,8 +1373,18 @@ export default function QuickEventSheet({ date, hour, live, artists: propArtists
   const scrollableRef = React.useRef<HTMLDivElement>(null)
   const ticketSectionRef = React.useRef<HTMLDivElement>(null)
 
-  const defaultStart = live?.startTime ?? (hour != null ? `${String(hour).padStart(2, '0')}:00` : '18:00')
-  const defaultEnd   = live?.endTime   ?? (hour != null ? `${String(Math.min(hour + 1, 23)).padStart(2, '0')}:00` : '20:00')
+  const fmtMinToHHMM = (m: number) => {
+    const clamped = Math.max(0, Math.min(23 * 60 + 59, m))
+    const hh = String(Math.floor(clamped / 60)).padStart(2, '0')
+    const mm = String(clamped % 60).padStart(2, '0')
+    return `${hh}:${mm}`
+  }
+  const defaultStart = live?.startTime ?? (startMin != null ? fmtMinToHHMM(startMin) : '18:00')
+  const defaultEnd   = live?.endTime   ?? (
+    endMin != null   ? fmtMinToHHMM(endMin)
+    : startMin != null ? fmtMinToHHMM(startMin + 60)
+    : '20:00'
+  )
 
   const [title, setTitle]         = useState(live?.title ?? '')
   const [artistIds, setArtistIds] = useState<string[]>(() => {
@@ -1374,8 +1398,13 @@ export default function QuickEventSheet({ date, hour, live, artists: propArtists
   const [openingTime, setOpeningTime] = useState(live?.openingTime ?? '')
   const [startTime, setStartTime]     = useState(defaultStart)
   const [endTime, setEndTime]         = useState(defaultEnd)
+  // スマートデフォルト: 新規作成 & 既存 live/prefill が無いときのみ適用
+  // 会場は自動入力しない（複数推し活では毎回変わるため、代わりにフォーカス時サジェスト）
+  const isCreating = !live
+  const sdLiveType = isCreating ? (smartDefaults?.liveType ?? null) : null
   const [venue, setVenue]         = useState(live?.venue ?? '')
-  const [liveType, setLiveType]   = useState<LiveTypeGrape | null>(live?.liveType ?? null)
+  const [liveType, setLiveType]   = useState<LiveTypeGrape | null>(live?.liveType ?? sdLiveType)
+  const [venueFocused, setVenueFocused] = useState(false)
   const [status, setStatus]       = useState<AttendanceStatus>(live?.attendanceStatus ?? 'candidate')
 
   const [price, setPrice]                       = useState<string>(live?.price != null ? String(live.price) : '')
@@ -1420,7 +1449,7 @@ export default function QuickEventSheet({ date, hour, live, artists: propArtists
     startTime:          defaultStart,
     endTime:            defaultEnd,
     venue:              live?.venue ?? '',
-    liveType:           live?.liveType ?? null,
+    liveType:           live?.liveType ?? sdLiveType,
     status:             (live?.attendanceStatus ?? 'candidate') as AttendanceStatus,
     ticketStatus:       live?.ticketStatus ?? '' as TicketStatus | '',
     salePhase:          live?.salePhase ?? '',
@@ -1469,6 +1498,94 @@ export default function QuickEventSheet({ date, hour, live, artists: propArtists
     } else {
       onClose()
     }
+  }
+
+  // ─── 下書き自動保存（新規作成時のみ） ────────────────────────────────
+  const DRAFT_KEY = 'grape-event-draft-v1'
+  const [restoredDraft, setRestoredDraft] = useState<Record<string, unknown> | null>(null)
+  const [draftRestoredBanner, setDraftRestoredBanner] = useState(false)
+
+  // マウント時: 新規作成なら下書きをチェック（復元確認を出す）
+  useEffect(() => {
+    if (isEditMode) return
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY)
+      if (!raw) return
+      const draft = JSON.parse(raw) as Record<string, unknown>
+      // substantive な下書きのみ表示（空に近いデータは無視）
+      const hasContent = !!(draft.title || draft.venue || draft.memo ||
+        (Array.isArray(draft.artistIds) && draft.artistIds.length > 0 && draft.artistIds[0]))
+      if (hasContent) setRestoredDraft(draft)
+      else localStorage.removeItem(DRAFT_KEY)
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // dirty になるたび debounce で下書き保存（新規作成時のみ）
+  useEffect(() => {
+    if (isEditMode) return
+    if (!isDirty) return
+    const t = setTimeout(() => {
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({
+          title, artistIds, liveDate, openingTime, startTime, endTime,
+          venue, liveType, status,
+          price, drink1Sep, ticketStatus, salePhase,
+          ticketDeadline, announcementDate, announcementTime,
+          saleStartDate, saleStartTime, ticketUrl,
+          memo, transportMemo, accommodationMemo,
+          coverImage, coverImagePosition, images, eventColor,
+          savedAt: Date.now(),
+        }))
+      } catch {}
+    }, 700)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    title, artistIds, liveDate, openingTime, startTime, endTime,
+    venue, liveType, status,
+    price, drink1Sep, ticketStatus, salePhase,
+    ticketDeadline, announcementDate, announcementTime,
+    saleStartDate, saleStartTime, ticketUrl,
+    memo, coverImage, isDirty, isEditMode,
+  ])
+
+  const applyDraft = (draft: Record<string, unknown>) => {
+    const s = (v: unknown) => (typeof v === 'string' ? v : '')
+    setTitle(s(draft.title))
+    if (Array.isArray(draft.artistIds)) setArtistIds(draft.artistIds as string[])
+    if (draft.liveDate) setLiveDate(s(draft.liveDate))
+    setOpeningTime(s(draft.openingTime))
+    if (draft.startTime) setStartTime(s(draft.startTime))
+    if (draft.endTime) setEndTime(s(draft.endTime))
+    setVenue(s(draft.venue))
+    if (draft.liveType) setLiveType(draft.liveType as LiveTypeGrape)
+    if (draft.status) setStatus(draft.status as AttendanceStatus)
+    setPrice(s(draft.price))
+    setDrink1Sep(!!draft.drink1Sep)
+    if (draft.ticketStatus !== undefined) setTicketStatus(draft.ticketStatus as TicketStatus | '')
+    setSalePhase(s(draft.salePhase))
+    setTicketDeadline(s(draft.ticketDeadline))
+    setAnnouncementDate(s(draft.announcementDate))
+    setAnnouncementTime(s(draft.announcementTime))
+    setSaleStartDate(s(draft.saleStartDate))
+    setSaleStartTime(s(draft.saleStartTime))
+    setTicketUrl(s(draft.ticketUrl))
+    setMemo(s(draft.memo))
+    setTransportMemo(s(draft.transportMemo))
+    setAccommodationMemo(s(draft.accommodationMemo))
+    if (draft.coverImage) setCoverImage(s(draft.coverImage))
+    if (draft.coverImagePosition) setCoverImagePosition(s(draft.coverImagePosition))
+    if (Array.isArray(draft.images)) setImages(draft.images as string[])
+    if (draft.eventColor !== undefined) setEventColor(draft.eventColor as ColorValue)
+    setRestoredDraft(null)
+    setDraftRestoredBanner(true)
+    setTimeout(() => setDraftRestoredBanner(false), 3000)
+  }
+
+  const discardDraft = () => {
+    try { localStorage.removeItem(DRAFT_KEY) } catch {}
+    setRestoredDraft(null)
   }
 
   useEffect(() => {
@@ -1522,6 +1639,8 @@ export default function QuickEventSheet({ date, hour, live, artists: propArtists
       images: images.length > 0 ? images : undefined,
       color: eventColor ?? undefined,
     }
+    // 保存成功したら下書きをクリア
+    try { localStorage.removeItem(DRAFT_KEY) } catch {}
     onSave?.(payload)
     onClose()
   }
@@ -1596,62 +1715,237 @@ export default function QuickEventSheet({ date, hour, live, artists: propArtists
           }}>
             {isEditMode ? 'イベントを編集' : 'イベントを追加'}
           </div>
+
+          {/* Row 3: ステータスチップ列（参戦ステータス + チケットバッジ） */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            marginTop: 10, flexWrap: 'wrap',
+          }}>
+            {/* 参戦ステータス4択（セグメント風） */}
+            {ATTENDANCE_STATUS_OPTIONS.map(opt => {
+              const active = status === opt.value
+              return (
+                <button
+                  key={opt.value}
+                  onClick={() => setStatus(opt.value)}
+                  style={{
+                    fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    padding: '5px 11px',
+                    borderRadius: 999,
+                    border: active ? 'none' : '1px solid var(--color-encore-border-light)',
+                    background: active ? 'var(--color-encore-green)' : 'transparent',
+                    color: active ? 'var(--color-encore-white)' : 'var(--color-encore-text-sub)',
+                    cursor: 'pointer',
+                    WebkitTapHighlightColor: 'transparent',
+                  }}
+                >
+                  {opt.label}
+                </button>
+              )
+            })}
+            {/* チケットステータスバッジ（設定済みのときのみ） */}
+            {ticketBadge && (
+              <button
+                onClick={() => {
+                  // チケットセクションへスクロール
+                  ticketSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  padding: '5px 10px',
+                  borderRadius: 999,
+                  border: '1px solid rgba(192, 138, 74, 0.32)',
+                  background: 'rgba(192, 138, 74, 0.12)',
+                  color: 'var(--color-encore-amber)',
+                  cursor: 'pointer',
+                  marginLeft: 'auto',
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+              >
+                <svg width="10" height="10" viewBox="0 0 256 256" fill="none">
+                  <path d="M96 72V184" stroke="currentColor" strokeWidth="20" strokeLinecap="round" />
+                  <path d="M224 152V104C224 95.16 216.84 88 208 88C199.16 88 192 80.84 192 72V64C192 55.16 184.84 48 176 48H32C23.16 48 16 55.16 16 64V72C16 80.84 8.84 88 0 88" stroke="currentColor" strokeWidth="0" fill="none" />
+                  <path d="M32 56H224C228.4 56 232 59.6 232 64V96C223.2 96 216 103.2 216 112V144C216 152.8 223.2 160 232 160V192C232 196.4 228.4 200 224 200H32C27.6 200 24 196.4 24 192V160C32.8 160 40 152.8 40 144V112C40 103.2 32.8 96 24 96V64C24 59.6 27.6 56 32 56Z" stroke="currentColor" strokeWidth="16" fill="none" strokeLinejoin="round" />
+                </svg>
+                {ticketBadge}
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Scrollable form */}
         <div ref={scrollableRef} style={{ flex: 1, overflowY: 'auto', padding: '20px 20px 8px', display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-          {/* Premium 訴求バナー（Freeユーザの新規作成時のみ表示） */}
-          {showUpsellBanner && (
-            <button
-              onClick={onShowPremium}
-              style={{
-                background: 'rgba(192, 138, 74, 0.10)',
-                border: '1px solid rgba(192, 138, 74, 0.28)',
-                borderRadius: 10,
-                padding: '10px 14px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                cursor: 'pointer',
-                width: '100%',
-                textAlign: 'left',
-                WebkitTapHighlightColor: 'transparent',
-              }}
-            >
+          {/* 下書き復元プロンプト（新規作成で前回保存されている場合） */}
+          {restoredDraft && (() => {
+            const savedAt = typeof restoredDraft.savedAt === 'number' ? new Date(restoredDraft.savedAt) : null
+            const when = savedAt
+              ? `${savedAt.getMonth() + 1}/${savedAt.getDate()} ${String(savedAt.getHours()).padStart(2, '0')}:${String(savedAt.getMinutes()).padStart(2, '0')}`
+              : ''
+            const preview = [restoredDraft.title, restoredDraft.venue].filter(Boolean).join(' · ')
+            return (
               <div style={{
-                width: 28, height: 28, borderRadius: 8,
-                background: 'rgba(192, 138, 74, 0.18)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0,
+                background: 'var(--color-encore-bg-section)',
+                border: '1px solid var(--color-encore-border-light)',
+                borderRadius: 10,
+                padding: '10px 12px',
+                display: 'flex', alignItems: 'center', gap: 10,
               }}>
-                <SparkleIcon size={14} weight="fill" color="var(--color-encore-amber)" />
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{
-                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 12, fontWeight: 700,
-                  color: 'var(--color-encore-green)',
-                  lineHeight: 1.4,
-                }}>
-                  URLから自動取り込みがPremiumで使えます
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{
+                    fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                    fontSize: 12, fontWeight: 700,
+                    color: 'var(--color-encore-green)',
+                    marginBottom: preview ? 2 : 0,
+                  }}>
+                    前回の下書きがあります{when ? ` · ${when}` : ''}
+                  </div>
+                  {preview && (
+                    <div style={{
+                      fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                      fontSize: 11, fontWeight: 400,
+                      color: 'var(--color-encore-text-sub)',
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    }}>
+                      {String(preview)}
+                    </div>
+                  )}
                 </div>
-                <div style={{
-                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 10, fontWeight: 400,
-                  color: 'var(--color-encore-text-sub)',
-                  marginTop: 1,
-                }}>
-                  公式サイトのURLから日時・会場・出演者を一括入力
-                </div>
+                <button
+                  onClick={discardDraft}
+                  style={{
+                    padding: '6px 12px', borderRadius: 999,
+                    background: 'transparent', border: 'none',
+                    cursor: 'pointer',
+                    fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                    fontSize: 12, fontWeight: 400,
+                    color: 'var(--color-encore-text-sub)',
+                    WebkitTapHighlightColor: 'transparent',
+                    flexShrink: 0,
+                  }}
+                >
+                  破棄
+                </button>
+                <button
+                  onClick={() => applyDraft(restoredDraft)}
+                  style={{
+                    padding: '6px 14px', borderRadius: 999,
+                    background: 'var(--color-encore-green)',
+                    color: 'var(--color-encore-white)',
+                    border: 'none', cursor: 'pointer',
+                    fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                    fontSize: 12, fontWeight: 700,
+                    WebkitTapHighlightColor: 'transparent',
+                    flexShrink: 0,
+                  }}
+                >
+                  復元
+                </button>
               </div>
-              <span style={{
-                fontFamily: 'var(--font-google-sans), sans-serif',
-                fontSize: 16, fontWeight: 400,
-                color: 'var(--color-encore-amber)',
-              }}>›</span>
-            </button>
+            )
+          })()}
+
+          {/* 復元完了トースト */}
+          {draftRestoredBanner && (
+            <div style={{
+              background: 'rgba(26,58,45,0.08)',
+              border: '1px solid rgba(26,58,45,0.18)',
+              borderRadius: 10,
+              padding: '8px 12px',
+              fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+              fontSize: 11, fontWeight: 700,
+              color: 'var(--color-encore-green)',
+              textAlign: 'center',
+            }}>
+              ✓ 下書きを復元しました
+            </div>
           )}
+
+          {/* 同日重複警告（日付 + 時間帯が他のライブと被っている場合） */}
+          {(() => {
+            if (!liveDate) return null
+            const parseMin = (t: string | undefined): number | null => {
+              if (!t) return null
+              const [h, m] = t.split(':').map(Number)
+              if (Number.isNaN(h) || Number.isNaN(m)) return null
+              return h * 60 + m
+            }
+            const newStart = parseMin(startTime)
+            const newEnd   = parseMin(endTime) ?? (newStart != null ? newStart + 60 : null)
+            if (newStart == null || newEnd == null) return null
+            const conflicts = allLives.filter(l => {
+              if (l.id === live?.id) return false // 自分自身は除外
+              if (l.date !== liveDate) return false
+              const s = parseMin(l.startTime) ?? 0
+              const e = parseMin(l.endTime) ?? s + 60
+              return s < newEnd && e > newStart
+            })
+            if (conflicts.length === 0) return null
+            return (
+              <div style={{
+                background: 'rgba(219, 96, 80, 0.08)',
+                border: '1px solid rgba(219, 96, 80, 0.28)',
+                borderRadius: 10,
+                padding: '10px 12px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 6,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <svg width="14" height="14" viewBox="0 0 256 256" fill="var(--color-encore-error)">
+                    <path d="M236.8 188.09 149.35 36.22a24.76 24.76 0 0 0-42.7 0L19.2 188.09a23.51 23.51 0 0 0 0 23.72A24.35 24.35 0 0 0 40.55 224h174.9a24.35 24.35 0 0 0 21.33-12.19 23.51 23.51 0 0 0 .02-23.72M120 104a8 8 0 0 1 16 0v40a8 8 0 0 1-16 0Zm8 88a12 12 0 1 1 12-12 12 12 0 0 1-12 12" />
+                  </svg>
+                  <span style={{
+                    fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                    fontSize: 12, fontWeight: 700,
+                    color: 'var(--color-encore-error)',
+                    flex: 1, minWidth: 0,
+                  }}>
+                    同じ時間帯に {conflicts.length} 件のイベント
+                  </span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 3, paddingLeft: 22 }}>
+                  {conflicts.slice(0, 3).map(l => (
+                    <div key={l.id} style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                      <span style={{
+                        fontFamily: 'var(--font-google-sans), sans-serif',
+                        fontSize: 11, fontWeight: 700,
+                        color: 'var(--color-encore-error)',
+                        fontVariantNumeric: 'tabular-nums',
+                        flexShrink: 0,
+                      }}>
+                        {l.startTime}{l.endTime ? `〜${l.endTime}` : ''}
+                      </span>
+                      <span style={{
+                        fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                        fontSize: 11, fontWeight: 400,
+                        color: 'var(--color-encore-text-sub)',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}>
+                        {l.title}
+                      </span>
+                    </div>
+                  ))}
+                  {conflicts.length > 3 && (
+                    <span style={{
+                      fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                      fontSize: 11, fontWeight: 400,
+                      color: 'var(--color-encore-text-muted)',
+                    }}>
+                      …他 {conflicts.length - 3} 件
+                    </span>
+                  )}
+                </div>
+              </div>
+            )
+          })()}
 
           {/* イベント名 */}
           <BigTitleInput value={title} onChange={setTitle} />
@@ -1685,7 +1979,62 @@ export default function QuickEventSheet({ date, hour, live, artists: propArtists
           />
 
           {/* 会場 */}
-          <FlatInput label="会場" value={venue} onChange={setVenue} placeholder="会場名を入力" />
+          <div>
+            <FlatInput
+              label="会場"
+              value={venue}
+              onChange={setVenue}
+              placeholder="会場名を入力"
+              onFocusChange={setVenueFocused}
+            />
+            {/* 会場サジェスト（直近の会場・入力中テキストでフィルタ） */}
+            {(() => {
+              if (!venueFocused) return null
+              if (recentVenues.length === 0) return null
+              const filtered = venue.trim().length === 0
+                ? recentVenues
+                : recentVenues.filter(v => v.toLowerCase().includes(venue.trim().toLowerCase()) && v !== venue)
+              if (filtered.length === 0) return null
+              return (
+                <div style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: 6,
+                  marginTop: 8,
+                }}>
+                  {filtered.slice(0, 5).map(v => (
+                    <button
+                      key={v}
+                      // onMouseDown でフォーカスが外れる前に処理（onClick だと blur が先に走って閉じる）
+                      onMouseDown={(e) => {
+                        e.preventDefault()
+                        setVenue(v)
+                      }}
+                      onTouchStart={(e) => {
+                        e.preventDefault()
+                        setVenue(v)
+                      }}
+                      style={{
+                        padding: '5px 12px', borderRadius: 999, border: 'none',
+                        background: 'var(--color-encore-bg-section)',
+                        color: 'var(--color-encore-green)',
+                        fontSize: 12, fontWeight: 400,
+                        cursor: 'pointer',
+                        fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                        WebkitTapHighlightColor: 'transparent',
+                        maxWidth: 240,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {v}
+                    </button>
+                  ))}
+                </div>
+              )
+            })()}
+          </div>
 
           {/* 種別 */}
           <div>
@@ -1693,13 +2042,7 @@ export default function QuickEventSheet({ date, hour, live, artists: propArtists
             <LiveTypeToggle value={liveType} onChange={setLiveType} />
           </div>
 
-          {/* 参戦ステータス */}
-          <EncoreSelect<AttendanceStatus>
-            label="参戦ステータス"
-            value={status}
-            onChange={setStatus}
-            options={ATTENDANCE_STATUS_OPTIONS}
-          />
+          {/* 参戦ステータスはヘッダのチップで操作（重複排除） */}
 
           {/* イベントの色 */}
           <div>
@@ -1755,7 +2098,7 @@ export default function QuickEventSheet({ date, hour, live, artists: propArtists
 
           {/* チケット */}
           <div ref={ticketSectionRef}>
-            <FormSection icon={<TicketIcon />} label="チケット" badge={ticketBadge} defaultOpen={openSection === 'ticket'}>
+            <FormSection icon={<TicketIcon />} label="チケット" badge={ticketBadge} defaultOpen={openSection === 'ticket' || !!ticketStatus}>
             {/* 販売フェーズ */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <FlatInput label="販売フェーズ" value={salePhase} onChange={setSalePhase} placeholder="例: FC先行 / 一般発売" />
@@ -1891,6 +2234,59 @@ export default function QuickEventSheet({ date, hour, live, artists: propArtists
             <ImageUploadGrid images={images} onChange={setImages} />
           </FormSection>
 
+          {/* Premium 訴求バナー（Freeユーザの新規作成時のみ・最下部） */}
+          {showUpsellBanner && (
+            <button
+              onClick={onShowPremium}
+              style={{
+                background: 'rgba(192, 138, 74, 0.10)',
+                border: '1px solid rgba(192, 138, 74, 0.28)',
+                borderRadius: 10,
+                padding: '10px 14px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                cursor: 'pointer',
+                width: '100%',
+                textAlign: 'left',
+                marginTop: 4,
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              <div style={{
+                width: 28, height: 28, borderRadius: 8,
+                background: 'rgba(192, 138, 74, 0.18)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+              }}>
+                <SparkleIcon size={14} weight="fill" color="var(--color-encore-amber)" />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{
+                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                  fontSize: 12, fontWeight: 700,
+                  color: 'var(--color-encore-green)',
+                  lineHeight: 1.4,
+                }}>
+                  URLから自動取り込みがPremiumで使えます
+                </div>
+                <div style={{
+                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                  fontSize: 10, fontWeight: 400,
+                  color: 'var(--color-encore-text-sub)',
+                  marginTop: 1,
+                }}>
+                  公式サイトのURLから日時・会場・出演者を一括入力
+                </div>
+              </div>
+              <span style={{
+                fontFamily: 'var(--font-google-sans), sans-serif',
+                fontSize: 16, fontWeight: 400,
+                color: 'var(--color-encore-amber)',
+              }}>›</span>
+            </button>
+          )}
+
           <div style={{ height: 36 }} />
         </div>
       </div>
@@ -1948,7 +2344,11 @@ export default function QuickEventSheet({ date, hour, live, artists: propArtists
       {/* 編集内容破棄確認ダイアログ */}
       {showConfirm && (
         <ConfirmDiscardDialog
-          onDiscard={onClose}
+          onDiscard={() => {
+            // 破棄 = 下書きもクリア（ユーザーが明示的に捨てる意思表示）
+            try { localStorage.removeItem(DRAFT_KEY) } catch {}
+            onClose()
+          }}
           onCancel={() => setShowConfirm(false)}
         />
       )}

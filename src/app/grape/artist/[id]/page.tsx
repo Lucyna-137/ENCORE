@@ -11,7 +11,6 @@ import * as ty from '@/components/encore/typographyStyles'
 import { useGrapeStore } from '@/lib/grape/useGrapeStore'
 import type { GrapeLive, GrapeArtist } from '@/lib/grape/types'
 import EventPreviewScreen from '@/components/grape/EventPreviewScreen'
-import { StatusBar } from '@/components/encore/NavHeader'
 import { ATTENDANCE_LABEL, CURRENT_YEAR, CURRENT_MONTH, TODAY, LIVE_TYPE_COLOR, DOW_SUN_COLOR, DOW_SAT_COLOR } from '@/lib/grape/constants'
 import ColorPicker from '@/components/encore/ColorPicker'
 import PhoneFrame from '@/components/grape/PhoneFrame'
@@ -790,7 +789,7 @@ function ArtistMenuPopover({ onEdit, onDelete, onClose }: { onEdit: () => void; 
         onClick={e => e.stopPropagation()}
         style={{
           position: 'absolute',
-          top: 62,   // StatusBar(~44) + sticky wrapper top(0) + button top(14) + button height(34) - overlap
+          top: 100,   // sticky wrapper top(0) + button top(52) + button height(34) + gap(14)
           right: 10,
           zIndex: 51,
           width: 200,
@@ -994,11 +993,13 @@ export default function ArtistDetailPage() {
     )
   }
 
-  const HERO_H = 230
+  // この画面のみ正方形ヒーロー。PhoneFrame 幅 393 に合わせる。
+  const HERO_H = 393
 
   return (
     <PhoneFrame>
-        <StatusBar />
+        {/* StatusBar は Hero 画像の上にオーバーレイするため通常表示はしない
+            （画像が最上部まで到達するインスタ/MusicApp 風レイアウト） */}
 
         {/* ── 全体スクロールコンテナ ───────────────────────────── */}
         <div
@@ -1007,13 +1008,42 @@ export default function ArtistDetailPage() {
           onTouchEnd={handleTouchEnd}
         >
 
-          {/* 戻るボタン / ...ボタン: height:0 の sticky wrapper で常に固定 */}
+          {/* ステータスバー + 戻るボタン / ...ボタン: height:0 の sticky wrapper で常に固定 */}
           <div style={{ position: 'sticky', top: 0, height: 0, zIndex: 30, pointerEvents: 'none' }}>
+            {/* 透明ステータスバー（画像上に白文字でオーバーレイ） */}
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0,
+              height: 44,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '0 24px',
+              color: '#fff',
+              textShadow: '0 1px 3px rgba(0,0,0,0.45)',
+              fontFamily: 'var(--font-google-sans), sans-serif',
+              fontSize: 15, fontWeight: 700,
+              letterSpacing: '-0.03em',
+              pointerEvents: 'none',
+            }}>
+              <span>19:17</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor">
+                  <rect x="0" y="6" width="3" height="5" rx="0.5"/>
+                  <rect x="4.5" y="4" width="3" height="7" rx="0.5"/>
+                  <rect x="9" y="1.5" width="3" height="9.5" rx="0.5"/>
+                  <rect x="13.5" y="0" width="3" height="11" rx="0.5" opacity="0.5"/>
+                </svg>
+                <svg width="25" height="12" viewBox="0 0 25 12" fill="currentColor">
+                  <rect x="0.5" y="0.5" width="21" height="11" rx="2.5" fill="none" stroke="currentColor" strokeWidth="1"/>
+                  <rect x="2" y="2" width="16" height="8" rx="1.5"/>
+                  <rect x="22.5" y="3.5" width="2" height="5" rx="1" opacity="0.45"/>
+                </svg>
+              </span>
+            </div>
+
             {/* 戻るボタン（左） */}
             <button
               onClick={() => router.back()}
               style={{
-                position: 'absolute', top: 14, left: 16,
+                position: 'absolute', top: 52, left: 16,
                 width: 34, height: 34, borderRadius: '50%',
                 background: 'rgba(0,0,0,0.36)',
                 border: 'none', cursor: 'pointer',
@@ -1029,7 +1059,7 @@ export default function ArtistDetailPage() {
             <button
               onClick={() => setShowMenu(true)}
               style={{
-                position: 'absolute', top: 14, right: 16,
+                position: 'absolute', top: 52, right: 16,
                 width: 34, height: 34, borderRadius: '50%',
                 background: 'rgba(0,0,0,0.36)',
                 border: 'none', cursor: 'pointer',
@@ -1059,10 +1089,10 @@ export default function ArtistDetailPage() {
               }} />
             )}
 
-            {/* Top scrim */}
+            {/* Top scrim（ステータスバー + コントロールボタン可読性のため強めに） */}
             <div style={{
-              position: 'absolute', top: 0, left: 0, right: 0, height: 100,
-              background: 'linear-gradient(to bottom, rgba(0,0,0,0.55), transparent)',
+              position: 'absolute', top: 0, left: 0, right: 0, height: 130,
+              background: 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.25) 60%, transparent 100%)',
               pointerEvents: 'none',
             }} />
 

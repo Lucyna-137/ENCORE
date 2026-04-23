@@ -192,6 +192,8 @@ export default function CalendarPage() {
     try {
       const v = localStorage.getItem('grape-calendar-view') as ViewMode | null
       if (v && ['月', '週', '日', 'リスト'].includes(v)) setViewMode(v)
+      // 期限マーカー比較用の仮 state をクリーンアップ
+      localStorage.removeItem('grape-urgency-style')
     } catch {}
   }, [])
   const [year, setYear] = useState(CURRENT_YEAR)
@@ -200,7 +202,8 @@ export default function CalendarPage() {
   const [sheetState, setSheetState] = useState<SheetState>('none')
   const showQuickEvent = sheetState === 'full'
   const showMiniSheet = sheetState === 'mini'
-  const [slotHour, setSlotHour] = useState<number | undefined>(undefined)
+  const [slotStartMin, setSlotStartMin] = useState<number | undefined>(undefined)
+  const [slotEndMin, setSlotEndMin] = useState<number | undefined>(undefined)
   const [slotDate, setSlotDate] = useState<string>(TODAY)
   const [editingLive, setEditingLive] = useState<GrapeLive | null>(null)
   const [editOpenSection, setEditOpenSection] = useState<'ticket' | undefined>(undefined)
@@ -229,6 +232,38 @@ export default function CalendarPage() {
     () => lives.map(l => ({ ...l, color: resolveEventColor(l, artists) })),
     [lives, artists],
   )
+
+  // スマートデフォルト: 新規作成時の初期値として使える「直近のライブ」の種別
+  const smartDefaults = useMemo(() => {
+    if (lives.length === 0) return null
+    const sorted = [...lives].sort((a, b) => {
+      const k = b.date.localeCompare(a.date)
+      if (k !== 0) return k
+      return (b.startTime ?? '').localeCompare(a.startTime ?? '')
+    })
+    return {
+      liveType: sorted[0].liveType || undefined,
+    }
+  }, [lives])
+
+  // 会場サジェスト: 直近の順に重複排除した会場名を最大5件
+  const recentVenues = useMemo(() => {
+    const seen = new Set<string>()
+    const out: string[] = []
+    const sorted = [...lives].sort((a, b) => {
+      const k = b.date.localeCompare(a.date)
+      if (k !== 0) return k
+      return (b.startTime ?? '').localeCompare(a.startTime ?? '')
+    })
+    for (const l of sorted) {
+      const v = l.venue?.trim()
+      if (!v || seen.has(v)) continue
+      seen.add(v)
+      out.push(v)
+      if (out.length >= 5) break
+    }
+    return out
+  }, [lives])
 
   // 翌日の「行く」ライブ
   const TOMORROW = getTomorrow(TODAY)
@@ -374,7 +409,7 @@ export default function CalendarPage() {
   const handleDuplicateLive = (live: GrapeLive) => {
     setPreviewLive(null)
     setEditingLive({ ...live, id: Date.now().toString() })
-    setSlotHour(undefined)
+    setSlotStartMin(undefined)
     setSheetState('full')
   }
 
@@ -571,6 +606,7 @@ export default function CalendarPage() {
               year={year}
               month={month}
               lives={monthLives}
+              allLives={resolvedLives}
               artists={artists}
               onDaySelect={(date) => {
                 setDayDate(date)
@@ -580,16 +616,19 @@ export default function CalendarPage() {
               onPrevMonth={() => withAnim('right', handlePrevMonth)}
               onNextMonth={() => withAnim('left', handleNextMonth)}
               onEventDrop={handleEventDrop}
+              onUrgencyTap={(live) => setPreviewLive(live)}
             />
           )}
           {viewMode === '週' && (
             <CalendarWeekView
               weekStart={weekStart}
               lives={weekLives}
+              allLives={resolvedLives}
               artists={artists}
-              onSlotTap={(date, hour) => {
+              onSlotTap={(date, startMin, endMin) => {
                 setSlotDate(date)
-                setSlotHour(hour)
+                setSlotStartMin(startMin)
+                setSlotEndMin(endMin)
                 setEditingLive(null)
                 setSheetState('mini')
               }}
@@ -599,7 +638,8 @@ export default function CalendarPage() {
               onEventDrop={handleEventDrop}
               onPrevWeek={() => withAnim('right', handlePrevWeek)}
               onNextWeek={() => withAnim('left', handleNextWeek)}
-              highlightSlot={sheetState !== 'none' && slotDate ? { date: slotDate, hour: slotHour ?? 0 } : null}
+              onUrgencyTap={(live) => setPreviewLive(live)}
+              highlightSlot={sheetState !== 'none' && slotDate ? { date: slotDate, startMin: slotStartMin ?? 0, endMin: slotEndMin } : null}
             />
           )}
           {viewMode === '日' && (
@@ -609,9 +649,10 @@ export default function CalendarPage() {
               artists={artists}
               onPrevDay={() => withAnim('right', handlePrevDay)}
               onNextDay={() => withAnim('left', handleNextDay)}
-              onSlotTap={(date, hour) => {
+              onSlotTap={(date, startMin, endMin) => {
                 setSlotDate(date)
-                setSlotHour(hour)
+                setSlotStartMin(startMin)
+                setSlotEndMin(endMin)
                 setEditingLive(null)
                 setSheetState('mini')
               }}
@@ -619,7 +660,10 @@ export default function CalendarPage() {
                 setPreviewLive(live)
               }}
               onEventDrop={handleEventDrop}
-              highlightHour={sheetState !== 'none' && dayDate === slotDate ? slotHour ?? null : null}
+              onUrgencyTap={(live) => setPreviewLive(live)}
+              allLives={resolvedLives}
+              highlightStartMin={sheetState !== 'none' && dayDate === slotDate ? slotStartMin ?? null : null}
+              highlightEndMin={sheetState !== 'none' && dayDate === slotDate ? slotEndMin ?? null : null}
             />
           )}
           {viewMode === 'リスト' && (
@@ -633,7 +677,7 @@ export default function CalendarPage() {
               }}
               onAddTap={() => {
                 setEditingLive(null)
-                setSlotHour(undefined)
+                setSlotStartMin(undefined)
                 setSheetState('full')
               }}
               todayBirthdays={todayBirthdays}
@@ -650,8 +694,10 @@ export default function CalendarPage() {
           {showMiniSheet && (
             <MiniEventSheet
               date={slotDate}
-              hour={slotHour ?? 18}
-              onCancel={() => { setSheetState('none'); setSlotHour(undefined) }}
+              startMin={slotStartMin ?? 18 * 60}
+              endMin={slotEndMin}
+              sameDayLives={resolvedLives.filter(l => l.date === slotDate)}
+              onCancel={() => { setSheetState('none'); setSlotStartMin(undefined); setSlotEndMin(undefined) }}
               onExpand={() => { setEditingLive(null); setSheetState('full') }}
             />
           )}
@@ -661,7 +707,7 @@ export default function CalendarPage() {
           {sheetState === 'none' && !previewLive && (
             <button
               onClick={() => {
-                setEditingLive(null); setSlotHour(undefined); setPrefillLive(null)
+                setEditingLive(null); setSlotStartMin(undefined); setPrefillLive(null)
                 if (isPremium) {
                   setShowAddSheet(true)
                 } else {
@@ -694,13 +740,17 @@ export default function CalendarPage() {
         {showQuickEvent && (
           <QuickEventSheet
             date={editingLive?.date ?? prefillLive?.date ?? slotDate ?? TODAY}
-            hour={slotHour}
+            startMin={slotStartMin}
+            endMin={slotEndMin}
+            allLives={resolvedLives}
+            smartDefaults={smartDefaults}
+            recentVenues={recentVenues}
             live={editingLive ?? (prefillLive as GrapeLive | undefined)}
             artists={artists}
             onAddArtist={addArtist}
             openSection={editOpenSection}
             onShowPremium={() => setShowPremiumSheet(true)}
-            onClose={() => { setSheetState('none'); setEditingLive(null); setSlotHour(undefined); setEditOpenSection(undefined); setPrefillLive(null) }}
+            onClose={() => { setSheetState('none'); setEditingLive(null); setSlotStartMin(undefined); setSlotEndMin(undefined); setEditOpenSection(undefined); setPrefillLive(null) }}
             onSave={(payload) => {
               let savedLive: GrapeLive
               if (editingLive) {
@@ -710,7 +760,7 @@ export default function CalendarPage() {
                 savedLive = { id: `live-${Date.now()}`, ...payload } as GrapeLive
                 addLive(savedLive)
               }
-              setSheetState('none'); setEditingLive(null); setSlotHour(undefined); setPrefillLive(null)
+              setSheetState('none'); setEditingLive(null); setSlotStartMin(undefined); setSlotEndMin(undefined); setPrefillLive(null)
               setPreviewLive(savedLive)
             }}
           />
@@ -753,12 +803,14 @@ export default function CalendarPage() {
         {/* ── EventPreviewScreen — フォンフレーム直下に配置してViewToggleを覆う ── */}
         <EventPreviewScreen
           live={previewLive}
+          allLives={resolvedLives}
+          onNavigate={(live) => setPreviewLive(live)}
           onClose={() => setPreviewLive(null)}
           onEdit={(live, section) => {
             setPreviewLive(null)
             setEditingLive(live)
             setEditOpenSection(section)
-            setSlotHour(undefined)
+            setSlotStartMin(undefined)
             setSheetState('full')
           }}
           onDelete={handleDeleteLive}

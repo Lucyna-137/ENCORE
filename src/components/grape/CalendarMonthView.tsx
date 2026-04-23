@@ -11,12 +11,16 @@ interface CalendarMonthViewProps {
   year: number
   month: number
   lives: GrapeLive[]
+  /** 期限マーカー計算用の全ライブ（月跨ぎの期限日に対応） */
+  allLives?: GrapeLive[]
   artists?: GrapeArtist[]
   onDaySelect: (date: string) => void
   selectedDate: string | null
   onPrevMonth?: () => void
   onNextMonth?: () => void
   onEventDrop?: (liveId: string, newDate: string, newHour: number) => void
+  /** チケット期限マーカーがタップされた時。関連イベントの詳細画面を開く想定 */
+  onUrgencyTap?: (live: GrapeLive) => void
 }
 
 // ─── Birthday tooltip ────────────────────────────────────────────────────────
@@ -118,16 +122,26 @@ export default function CalendarMonthView({
   year,
   month,
   lives,
+  allLives,
   artists,
   onDaySelect,
   selectedDate,
   onPrevMonth,
   onNextMonth,
   onEventDrop,
+  onUrgencyTap,
 }: CalendarMonthViewProps) {
   const [draggingId, setDraggingId] = React.useState<string | null>(null)
   const [dragOverDate, setDragOverDate] = React.useState<string | null>(null)
   const [activeBirthday, setActiveBirthday] = useState<BirthdayTooltipData | null>(null)
+  const [activeUrgency, setActiveUrgency] = useState<{
+    dateStr: string
+    top: number
+    left: number
+    arrow: 'up' | 'down'
+    arrowX: number
+    labels: string[]
+  } | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   // 誕生日マップ: 'MM-DD' -> GrapeArtist[]
@@ -144,6 +158,48 @@ export default function CalendarMonthView({
     }
     return map
   }, [artists])
+
+  /** 期限マーカーのホバー時: ツールチップ位置を計算して activeUrgency にセット
+   *  ポジション基準（座標空間）: containerRef
+   *  可視範囲クランプ基準: 最寄りの `.grape-phone-frame`（デスクトッププレビュー時の
+   *  見切れ対策）。見つからなければ containerRef 自体を使う。 */
+  const showUrgencyTooltip = (
+    target: HTMLElement,
+    dateStr: string,
+    labels: string[],
+  ) => {
+    const container = containerRef.current
+    if (!container) return
+    const cRect = container.getBoundingClientRect()
+    const frameEl =
+      (container.closest('.grape-phone-frame') as HTMLElement | null) ?? container
+    const fRect = frameEl.getBoundingClientRect()
+    const tRect = target.getBoundingClientRect()
+    const TOOLTIP_W = 220
+    const TOOLTIP_H = 20 + labels.length * 18
+    // container 座標でのターゲット中心
+    const targetCenterX = tRect.left - cRect.left + tRect.width / 2
+    // 可視範囲（PhoneFrame）を container 座標に変換
+    const visibleLeft = fRect.left - cRect.left + 6
+    const visibleRight = fRect.right - cRect.left - 6
+    const visibleTop = fRect.top - cRect.top + 6
+    const visibleBottom = fRect.bottom - cRect.top - 6
+    // 左右クランプ
+    let left = targetCenterX - TOOLTIP_W / 2
+    if (left < visibleLeft) left = visibleLeft
+    if (left + TOOLTIP_W > visibleRight) left = visibleRight - TOOLTIP_W
+    // 矢印の X 位置（ツールチップ起点）
+    const arrowX = Math.max(10, Math.min(TOOLTIP_W - 10, targetCenterX - left))
+    // 上下クランプ
+    let top = tRect.bottom - cRect.top + 8
+    let arrow: 'up' | 'down' = 'up'
+    if (top + TOOLTIP_H > visibleBottom) {
+      top = tRect.top - cRect.top - TOOLTIP_H - 8
+      arrow = 'down'
+    }
+    if (top < visibleTop) top = visibleTop
+    setActiveUrgency({ dateStr, top, left, arrow, arrowX, labels })
+  }
 
   const handleBirthdayTap = (e: React.MouseEvent, dateStr: string, bArtists: GrapeArtist[]) => {
     e.stopPropagation()
@@ -172,6 +228,37 @@ export default function CalendarMonthView({
     }
     return map
   }, [lives])
+
+  // ── チケット期限/抽選発表/発売開始 のマーカー用マップ ───────────────────
+  // dateStr → [{tone, label, live}] （14日以内）
+  type UrgencyMark = { tone: 'danger' | 'warn' | 'info'; label: string; live: GrapeLive }
+  const urgencyByDate = useMemo(() => {
+    const map = new Map<string, UrgencyMark[]>()
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const pushMark = (date: string, label: string, live: GrapeLive) => {
+      const [y, m, d] = date.split('-').map(Number)
+      const target = new Date(y, m - 1, d)
+      target.setHours(0, 0, 0, 0)
+      const diff = Math.round((target.getTime() - today.getTime()) / 86400000)
+      if (diff < 0 || diff > 14) return
+      const tone: UrgencyMark['tone'] =
+        diff <= 2 ? 'danger'
+        : diff <= 5 ? 'warn'
+        : 'info'
+      const arr = map.get(date) ?? []
+      arr.push({ tone, label, live })
+      map.set(date, arr)
+    }
+    // allLives があれば期限は全ライブから検索（月跨ぎ対応）、なければ当月 lives から
+    const source = allLives ?? lives
+    for (const l of source) {
+      if (l.ticketStatus === 'waiting'     && l.announcementDate) pushMark(l.announcementDate, `抽選発表: ${l.title}`, l)
+      if (l.ticketStatus === 'before-sale' && l.saleStartDate)    pushMark(l.saleStartDate,    `発売開始: ${l.title}`, l)
+      if (l.ticketStatus === 'payment-due' && l.ticketDeadline)   pushMark(l.ticketDeadline,   `入金期限: ${l.title}`, l)
+    }
+    return map
+  }, [lives, allLives])
 
   // Calendar grid
   const { weeks } = useMemo(() => {
@@ -321,6 +408,14 @@ export default function CalendarMonthView({
           const [, cellMm, cellDd] = dateStr.split('-')
           const birthdayArtistsForCell = birthdayMap.get(`${cellMm}-${cellDd}`) ?? []
 
+          // チケット期限マーカー（最も厳しいトーンを採用）
+          const urgencyMarks = urgencyByDate.get(dateStr) ?? []
+          const urgencyTone: 'danger' | 'warn' | 'info' | null =
+            urgencyMarks.length === 0 ? null
+            : urgencyMarks.some(m => m.tone === 'danger') ? 'danger'
+            : urgencyMarks.some(m => m.tone === 'warn')   ? 'warn'
+            : 'info'
+
           return (
             <div
               key={dateStr}
@@ -379,39 +474,91 @@ export default function CalendarMonthView({
                 </button>
               )}
 
-              {/* Date number */}
-              <div
-                style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: 7,
-                  background: isToday ? 'var(--color-encore-green)' : 'transparent',
-                  border: isToday ? 'none' : 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                  outline: isSelected && !isToday ? '2px solid var(--color-encore-green)' : 'none',
-                }}
-              >
-                <span
-                  style={{
-                    ...ty.body,
-                    fontWeight: 700,
-                    fontSize: 15,
-                    color: isToday
-                      ? 'var(--color-encore-white)'
-                      : dow === 0
-                      ? 'var(--color-encore-error)'
-                      : dow === 6
-                      ? 'var(--color-encore-green-muted)'
-                      : 'var(--color-encore-green)',
-                    lineHeight: 1,
-                  }}
-                >
-                  {cell.day}
-                </span>
-              </div>
+              {/* 期限マーカーは Date number ブロック内で描画（案 B 採用） */}
+
+              {/* Date number（期限マーカーを日付に塗り込む = 案 B 採用） */}
+              {(() => {
+                const isUrgent = !!urgencyTone
+                // トーン別パレット
+                //   info  : 罫線なし・薄い赤系 tint を塗る
+                //   warn  : 薄い tint + 細い罫線
+                //   danger: 濃い赤 + 白文字 + 明滅
+                const urgencyPalette = (() => {
+                  if (!urgencyTone) return null
+                  if (urgencyTone === 'info') return {
+                    bg: 'rgba(219,96,80,0.10)',
+                    outline: 'none',
+                    textColor: null, // null = 通常色を維持
+                  }
+                  if (urgencyTone === 'warn') return {
+                    bg: 'rgba(219,96,80,0.14)',
+                    outline: '1.5px solid rgba(219,96,80,0.42)',
+                    textColor: 'var(--color-encore-error)',
+                  }
+                  // danger
+                  return {
+                    bg: 'var(--color-encore-error)',
+                    outline: 'none',
+                    textColor: 'var(--color-encore-white)',
+                  }
+                })()
+
+                const bgColor = urgencyPalette
+                  ? urgencyPalette.bg
+                  : (isToday ? 'var(--color-encore-green)' : 'transparent')
+                const outline = urgencyPalette
+                  ? urgencyPalette.outline
+                  : (isSelected && !isToday ? '2px solid var(--color-encore-green)' : 'none')
+                const textColor =
+                  urgencyPalette?.textColor ?? (
+                    isToday ? 'var(--color-encore-white)'
+                    : dow === 0 ? 'var(--color-encore-error)'
+                    : dow === 6 ? 'var(--color-encore-green-muted)'
+                    : 'var(--color-encore-green)'
+                  )
+                const animation = urgencyTone === 'danger'
+                  ? 'urgencyDateFlash 1.4s ease-in-out infinite'
+                  : 'none'
+                const handleUrgencyTap = isUrgent
+                  ? (e: React.MouseEvent) => { e.stopPropagation(); onUrgencyTap?.(urgencyMarks[0].live) }
+                  : undefined
+                const urgencyLabels = isUrgent ? urgencyMarks.map(m => m.label) : []
+
+                return (
+                  <div
+                    onClick={handleUrgencyTap}
+                    onMouseEnter={isUrgent ? (e) => showUrgencyTooltip(e.currentTarget, dateStr, urgencyLabels) : undefined}
+                    onMouseLeave={isUrgent ? () => setActiveUrgency(null) : undefined}
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: 7,
+                      background: bgColor,
+                      border: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      outline,
+                      cursor: isUrgent ? 'pointer' : undefined,
+                      animation,
+                      WebkitTapHighlightColor: 'transparent',
+                    }}
+                  >
+                    <span
+                      style={{
+                        ...ty.body,
+                        fontWeight: 700,
+                        fontSize: 15,
+                        color: textColor,
+                        lineHeight: 1,
+                      }}
+                    >
+                      {cell.day}
+                    </span>
+                  </div>
+                )
+              })()}
 
               {/* Cover image thumbnail + overflow */}
               {primaryLive && (
@@ -520,6 +667,59 @@ export default function CalendarMonthView({
           data={activeBirthday}
           onClose={() => setActiveBirthday(null)}
         />
+      )}
+
+      {/* 期限マーカーのツールチップ（ホバー時・エッジセーフ） */}
+      {activeUrgency && (
+        <div
+          style={{
+            position: 'absolute',
+            top: activeUrgency.top,
+            left: activeUrgency.left,
+            width: 220,
+            background: 'var(--color-encore-bg)',
+            borderRadius: 10,
+            boxShadow: '0 6px 22px rgba(0,0,0,0.18)',
+            border: '1px solid var(--color-encore-border-light)',
+            padding: '10px 12px',
+            zIndex: 70,
+            pointerEvents: 'none',
+            animation: 'stackTooltipIn 0.16s ease-out both',
+          }}
+        >
+          {/* 矢印 */}
+          <div
+            style={{
+              position: 'absolute',
+              left: activeUrgency.arrowX - 6,
+              [activeUrgency.arrow === 'up' ? 'top' : 'bottom']: -6,
+              width: 0, height: 0,
+              borderLeft: '6px solid transparent',
+              borderRight: '6px solid transparent',
+              ...(activeUrgency.arrow === 'up'
+                ? { borderBottom: '6px solid var(--color-encore-bg)' }
+                : { borderTop: '6px solid var(--color-encore-bg)' }),
+              filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.06))',
+            }}
+          />
+          {activeUrgency.labels.map((label, i) => (
+            <div
+              key={i}
+              style={{
+                fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
+                fontSize: 12, fontWeight: 700,
+                color: 'var(--color-encore-green)',
+                lineHeight: 1.35,
+                marginTop: i > 0 ? 4 : 0,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {label}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   )

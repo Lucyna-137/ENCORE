@@ -9,7 +9,7 @@ import { LIVE_TYPE_COLOR } from '@/lib/grape/constants'
 import { CalendarBlank, Ticket, ChartBar, GearSix, CaretLeft, CaretRight } from '@phosphor-icons/react'
 import ArtistCard from '@/components/encore/ArtistCard'
 import PhoneFrame from '@/components/grape/PhoneFrame'
-import PieChart from '@/components/encore/PieChart'
+import ArtistStackChart from '@/components/encore/ArtistStackChart'
 
 // ─── 定数 ─────────────────────────────────────────────────────────────────────
 
@@ -721,7 +721,8 @@ export default function ReportPage() {
 
               {/* アーティスト別参戦数 */}
               <SectionLabel label="Artists" />
-              <PieChart data={pieData} totalLabel="TOTAL LIVES" unit="本" />
+              <ArtistStackChart data={pieData} totalLabel="TOTAL EVENTS" />
+              <div style={{ height: 12 }} />
               <ArtistRankingList data={artistStats} artists={artists} period={period} />
 
               {/* ライブ種別比率 */}

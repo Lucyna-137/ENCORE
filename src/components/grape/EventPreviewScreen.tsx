@@ -5,11 +5,13 @@ import {
   X, PencilSimple, DotsThree,
   CalendarBlank, Clock, MapPin, Ticket, Note,
   Copy, Trash, CaretLeft, CaretRight, Images, CaretDown,
+  CurrencyJpy, Armchair, Warning,
 } from '@phosphor-icons/react'
 import * as ty from '@/components/encore/typographyStyles'
 import type { GrapeLive, AttendanceStatus } from '@/lib/grape/types'
 import { ATTENDANCE_LABEL, TICKET_STATUS_LABEL, DOW_SUN_FIRST as DOW_JA } from '@/lib/grape/constants'
 import CyclingArtistImage from './CyclingArtistImage'
+import SetlistSection from './SetlistSection'
 
 /** 7択移行前の旧ステータス値 → 日本語フォールバック */
 const LEGACY_TICKET_LABEL: Record<string, string> = {
@@ -40,6 +42,47 @@ function formatDate(dateStr: string): string {
   const [y, m, d] = dateStr.split('-').map(Number)
   const dow = DOW_JA[new Date(y, m - 1, d).getDay()]
   return `${y}年${m}月${d}日（${dow}）`
+}
+
+/** 今日からの日数差（YYYY-MM-DD → 日数）。マイナスは過去。 */
+function daysFromToday(dateStr: string): number {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const target = new Date(y, m - 1, d)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  target.setHours(0, 0, 0, 0)
+  return Math.round((target.getTime() - today.getTime()) / 86400000)
+}
+
+/** 差分を「今日 / 明日 / 明後日 / あとN日 / N日経過」の形に */
+function formatDaysLabel(diff: number): string {
+  if (diff === 0) return '今日'
+  if (diff === 1) return '明日'
+  if (diff === 2) return '明後日'
+  if (diff > 0)  return `あと${diff}日`
+  return `${-diff}日経過`
+}
+
+/** GrapeLive から最優先の「期限イベント」を1つ抽出 */
+function pickUrgency(live: GrapeLive | null): { label: string; date: string; diff: number; tone: 'danger' | 'warn' | 'info' } | null {
+  if (!live) return null
+  const candidates: { label: string; date: string }[] = []
+  if (live.ticketStatus === 'waiting'      && live.announcementDate) candidates.push({ label: '抽選結果発表', date: live.announcementDate })
+  if (live.ticketStatus === 'before-sale'  && live.saleStartDate)    candidates.push({ label: '発売開始',     date: live.saleStartDate   })
+  if (live.ticketStatus === 'payment-due'  && live.ticketDeadline)   candidates.push({ label: '入金期限',     date: live.ticketDeadline  })
+  if (!candidates.length) return null
+  // 絶対値で最も近い日付を採用
+  const best = candidates
+    .map(c => ({ ...c, diff: daysFromToday(c.date) }))
+    .sort((a, b) => Math.abs(a.diff) - Math.abs(b.diff))[0]
+  // 14日より先は表示しない（過去の期限 or 近日のみ）
+  if (best.diff > 14) return null
+  const tone: 'danger' | 'warn' | 'info' =
+    best.diff < 0 ? 'danger'
+    : best.diff <= 2 ? 'danger'
+    : best.diff <= 5 ? 'warn'
+    : 'info'
+  return { ...best, tone }
 }
 
 // ─── InfoRow ────────────────────────────────────────────────────────────────
@@ -88,6 +131,17 @@ interface EventPreviewScreenProps {
   onDelete?: (id: string) => void
   onDuplicate?: (live: GrapeLive) => void
   onStatusChange?: (id: string, status: AttendanceStatus) => void
+  /** 左右スワイプで前後イベントへ移動するための全ライブ配列（日時順） */
+  allLives?: GrapeLive[]
+  /** 前後ナビゲーション時に呼ばれる */
+  onNavigate?: (live: GrapeLive) => void
+  /**
+   * セットリスト編集画面を開く（Premium 時）
+   * Day 2 で SetlistEditorSheet を実装するまでは親側で未設定でも OK。
+   */
+  onOpenSetlistEditor?: (live: GrapeLive) => void
+  /** Free ユーザ向け Premium 訴求（PremiumUpgradeSheet を開く等） */
+  onUpgradePremium?: () => void
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -99,6 +153,10 @@ export default function EventPreviewScreen({
   onDelete,
   onDuplicate,
   onStatusChange,
+  allLives,
+  onNavigate,
+  onOpenSetlistEditor,
+  onUpgradePremium,
 }: EventPreviewScreenProps) {
   const [mounted, setMounted] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
@@ -110,43 +168,104 @@ export default function EventPreviewScreen({
   const menuRef = useRef<HTMLDivElement>(null)
   const isOpen = live !== null
 
-  // ── drag-to-dismiss ────────────────────────────────────────────────────────
+  // ── drag-to-dismiss + swipe-to-navigate ───────────────────────────────────
   const [dragY, setDragY] = useState(0)
+  const [dragX, setDragX] = useState(0)
+  const [navTransition, setNavTransition] = useState<'left' | 'right' | null>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const touchStartX = useRef(0)
   const touchStartY = useRef(0)
   const touchStartTime = useRef(0)
   const activeDrag = useRef(false)
-  const COVER_H = 252
+  const gestureMode = useRef<'vertical' | 'horizontal' | null>(null)
+  const COVER_H = 240
   const DISMISS_PX = 100
   const DISMISS_VEL = 0.35 // px/ms
+  const SWIPE_THRESHOLD = 60 // px
+  const GESTURE_DECIDE_PX = 10 // 方向判定閾値
+
+  // 前後イベントを計算（日付 + 開演時刻でソート）
+  const { prevLive, nextLive } = (() => {
+    if (!live || !allLives || allLives.length < 2) return { prevLive: null, nextLive: null }
+    const sorted = [...allLives].sort((a, b) => {
+      const k = a.date.localeCompare(b.date)
+      if (k !== 0) return k
+      return (a.startTime ?? '').localeCompare(b.startTime ?? '')
+    })
+    const idx = sorted.findIndex(l => l.id === live.id)
+    if (idx === -1) return { prevLive: null, nextLive: null }
+    return {
+      prevLive: idx > 0 ? sorted[idx - 1] : null,
+      nextLive: idx < sorted.length - 1 ? sorted[idx + 1] : null,
+    }
+  })()
 
   const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
     touchStartY.current = e.touches[0].clientY
     touchStartTime.current = Date.now()
     activeDrag.current = false
+    gestureMode.current = null
     const panelEl = panelRef.current
     if (!panelEl) return
     const relY = e.touches[0].clientY - panelEl.getBoundingClientRect().top
+    // カバー領域上 or スクロール最上段からのみジェスチャーを受け付ける
     activeDrag.current = relY < COVER_H || (scrollRef.current?.scrollTop ?? 1) === 0
   }
 
   const onTouchMove = (e: React.TouchEvent) => {
     if (!activeDrag.current) return
+    const dx = e.touches[0].clientX - touchStartX.current
     const dy = e.touches[0].clientY - touchStartY.current
-    if (dy > 0) setDragY(dy)
+    // ジェスチャー方向を決定
+    if (gestureMode.current === null) {
+      if (Math.abs(dx) > GESTURE_DECIDE_PX && Math.abs(dx) > Math.abs(dy)) {
+        gestureMode.current = 'horizontal'
+      } else if (Math.abs(dy) > GESTURE_DECIDE_PX) {
+        gestureMode.current = 'vertical'
+      }
+    }
+    if (gestureMode.current === 'vertical') {
+      if (dy > 0) setDragY(dy)
+    } else if (gestureMode.current === 'horizontal') {
+      // 前後イベントが無い方向には少しだけ引っ張れる（ラバーバンド）
+      if ((dx < 0 && !nextLive) || (dx > 0 && !prevLive)) {
+        setDragX(dx * 0.35)
+      } else {
+        setDragX(dx)
+      }
+    }
   }
 
   const onTouchEnd = () => {
-    if (!activeDrag.current || dragY === 0) { activeDrag.current = false; return }
-    const velocity = dragY / Math.max(Date.now() - touchStartTime.current, 1)
-    activeDrag.current = false
-    if (dragY > DISMISS_PX || velocity > DISMISS_VEL) {
-      setDragY(0)
-      onClose()
-    } else {
-      setDragY(0)
+    if (!activeDrag.current) { activeDrag.current = false; return }
+    const elapsed = Math.max(Date.now() - touchStartTime.current, 1)
+    if (gestureMode.current === 'vertical' && dragY > 0) {
+      const velocity = dragY / elapsed
+      if (dragY > DISMISS_PX || velocity > DISMISS_VEL) {
+        setDragY(0)
+        onClose()
+      } else {
+        setDragY(0)
+      }
+    } else if (gestureMode.current === 'horizontal' && Math.abs(dragX) > 0) {
+      const velocity = Math.abs(dragX) / elapsed
+      const shouldNav = Math.abs(dragX) > SWIPE_THRESHOLD || velocity > DISMISS_VEL
+      if (shouldNav && dragX < 0 && nextLive) {
+        // 左へスワイプ = 次のイベントへ
+        setNavTransition('left')
+        setTimeout(() => { onNavigate?.(nextLive); setDragX(0); setNavTransition(null) }, 180)
+      } else if (shouldNav && dragX > 0 && prevLive) {
+        // 右へスワイプ = 前のイベントへ
+        setNavTransition('right')
+        setTimeout(() => { onNavigate?.(prevLive); setDragX(0); setNavTransition(null) }, 180)
+      } else {
+        setDragX(0)
+      }
     }
+    activeDrag.current = false
+    gestureMode.current = null
   }
   // ──────────────────────────────────────────────────────────────────────────
 
@@ -158,8 +277,14 @@ export default function EventPreviewScreen({
       setMounted(false)
       setShowMenu(false)
       setDragY(0)
+      setDragX(0)
     }
   }, [isOpen])
+
+  // イベント切り替え時にスクロールを最上部へ戻す
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0
+  }, [live?.id])
 
   // メニュー外クリックで閉じる
   useEffect(() => {
@@ -227,8 +352,17 @@ export default function EventPreviewScreen({
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
-          transform: dragY > 0 ? `translateY(${dragY}px)` : isOpen && mounted ? 'translateY(0)' : 'translateY(105%)',
-          transition: dragY > 0 ? 'none' : 'transform 0.38s cubic-bezier(0.32, 0.72, 0, 1)',
+          // ジェスチャーに応じて translate を合成（縦ドラッグ・横スワイプ・ナビ遷移）
+          transform: (() => {
+            if (navTransition === 'left')  return 'translateX(-100%)'
+            if (navTransition === 'right') return 'translateX(100%)'
+            if (dragX !== 0) return `translateX(${dragX}px)`
+            if (dragY > 0)   return `translateY(${dragY}px)`
+            return isOpen && mounted ? 'translate(0,0)' : 'translateY(105%)'
+          })(),
+          transition: (dragY > 0 || dragX !== 0) && navTransition === null
+            ? 'none'
+            : 'transform 0.28s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
       >
         {/* ── カバーアート ──────────────────────────────────────── */}
@@ -287,6 +421,54 @@ export default function EventPreviewScreen({
                 </div>
               ) : null}
             </div>
+          )}
+
+          {/* ── 左右スワイプナビ用ヒント（前後イベントがあるとき） ── */}
+          {prevLive && (
+            <button
+              onClick={() => onNavigate?.(prevLive)}
+              title={`前へ: ${prevLive.title}`}
+              style={{
+                position: 'absolute',
+                left: 8, top: '50%',
+                transform: 'translateY(-50%)',
+                width: 32, height: 32, borderRadius: '50%',
+                background: 'rgba(0,0,0,0.14)',
+                border: 'none',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer',
+                backdropFilter: 'blur(2px)',
+                WebkitBackdropFilter: 'blur(2px)',
+                WebkitTapHighlightColor: 'transparent',
+                zIndex: 2,
+                opacity: 0.7,
+              }}
+            >
+              <CaretLeft size={14} weight="bold" color="#fff" />
+            </button>
+          )}
+          {nextLive && (
+            <button
+              onClick={() => onNavigate?.(nextLive)}
+              title={`次へ: ${nextLive.title}`}
+              style={{
+                position: 'absolute',
+                right: 8, top: '50%',
+                transform: 'translateY(-50%)',
+                width: 32, height: 32, borderRadius: '50%',
+                background: 'rgba(0,0,0,0.14)',
+                border: 'none',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer',
+                backdropFilter: 'blur(2px)',
+                WebkitBackdropFilter: 'blur(2px)',
+                WebkitTapHighlightColor: 'transparent',
+                zIndex: 2,
+                opacity: 0.7,
+              }}
+            >
+              <CaretRight size={14} weight="bold" color="#fff" />
+            </button>
           )}
 
           {/* ── ヘッダーボタン群 ─────────────────────────────── */}
@@ -401,7 +583,7 @@ export default function EventPreviewScreen({
                   {live.liveType}
                 </span>
               )}
-              {/* 参戦ステータスバッジ（タップ可能） */}
+              {/* 参戦ステータスバッジ（タップ可能 / 編集画面と同じプライマリーグリーン） */}
               <button
                 onClick={(e) => { e.stopPropagation(); setShowStatusSheet(true) }}
                 style={{
@@ -409,16 +591,16 @@ export default function EventPreviewScreen({
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
                   fontSize: 12, fontWeight: 700,
                   padding: '5px 10px 5px 13px', borderRadius: 999,
-                  background: 'rgba(0,0,0,0.38)',
-                  color: '#fff',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  backdropFilter: 'blur(4px)',
+                  background: 'var(--color-encore-green)',
+                  color: 'var(--color-encore-white)',
+                  border: 'none',
+                  boxShadow: '0 1px 6px rgba(0,0,0,0.22)',
                   cursor: 'pointer',
                   WebkitTapHighlightColor: 'transparent',
                 }}
               >
                 {ATTENDANCE_LABEL[live.attendanceStatus]}
-                <CaretDown size={9} weight="bold" color="#fff" />
+                <CaretDown size={9} weight="bold" color="var(--color-encore-white)" />
               </button>
             </div>
           )}
@@ -426,6 +608,47 @@ export default function EventPreviewScreen({
 
         {/* ── イベント情報領域（スクロール可） ─────────────────── */}
         <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '18px 20px 48px' }}>
+          {/* ── Urgency Banner（チケット期限カウントダウン） ── */}
+          {(() => {
+            const u = pickUrgency(live)
+            if (!u) return null
+            const palette = {
+              danger: { bg: 'rgba(219, 96, 80, 0.10)', border: 'rgba(219, 96, 80, 0.28)', fg: 'var(--color-encore-error)' },
+              warn:   { bg: 'rgba(192, 138, 74, 0.10)', border: 'rgba(192, 138, 74, 0.28)', fg: 'var(--color-encore-amber)' },
+              info:   { bg: 'var(--color-encore-bg-section)',    border: 'var(--color-encore-border-light)', fg: 'var(--color-encore-green)' },
+            }[u.tone]
+            return (
+              <button
+                onClick={() => live && onEdit(live, 'ticket')}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  width: '100%', marginBottom: 14,
+                  padding: '10px 14px',
+                  background: palette.bg,
+                  border: `1px solid ${palette.border}`,
+                  borderRadius: 10,
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  WebkitTapHighlightColor: 'transparent',
+                }}
+              >
+                <Warning size={16} weight="fill" color={palette.fg} style={{ flexShrink: 0 }} />
+                <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+                  <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 12, fontWeight: 700, color: palette.fg }}>
+                    {u.label}
+                  </span>
+                  <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 13, fontWeight: 700, color: palette.fg }}>
+                    {formatDaysLabel(u.diff)}
+                  </span>
+                  <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 11, fontWeight: 400, color: palette.fg, opacity: 0.72 }}>
+                    {u.date}
+                  </span>
+                </div>
+                <CaretRight size={12} weight="bold" color={palette.fg} style={{ flexShrink: 0, opacity: 0.7 }} />
+              </button>
+            )
+          })()}
+
           {/* タイトル */}
           <div
             style={{
@@ -438,15 +661,53 @@ export default function EventPreviewScreen({
             {live?.title}
           </div>
 
-          {/* アーティスト名 */}
-          <div
-            style={{
-              ...ty.sub, fontSize: 13,
-              marginBottom: 20,
-            }}
-          >
-            {live?.artists ? live.artists.join(' , ') : live?.artist}
-          </div>
+          {/* アーティスト（複数の場合はアバターリスト / 単体はテキスト） */}
+          {live && (() => {
+            const names = live.artists && live.artists.length > 0 ? live.artists : [live.artist]
+            const images = live.artistImages ?? (live.artistImage ? [live.artistImage] : [])
+            const isMulti = names.length >= 2
+            if (isMulti) {
+              return (
+                <div style={{ marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {names.map((n, i) => (
+                    <div key={`${n}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      {images[i] ? (
+                        <div
+                          style={{
+                            width: 24, height: 24,
+                            clipPath: `path("${squirclePath(24)}")`,
+                            overflow: 'hidden',
+                            flexShrink: 0,
+                            background: 'var(--color-encore-bg-section)',
+                          }}
+                        >
+                          <img src={images[i]} alt={n} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            width: 24, height: 24,
+                            clipPath: `path("${squirclePath(24)}")`,
+                            background: 'var(--color-encore-bg-section)',
+                            flexShrink: 0,
+                          }}
+                        />
+                      )}
+                      <span style={{ ...ty.body, fontSize: 13, color: 'var(--color-encore-green)' }}>
+                        {n}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )
+            }
+            // 単体アーティストは従来通りテキストのみ（カバーに画像があるため）
+            return (
+              <div style={{ ...ty.sub, fontSize: 13, marginBottom: 20 }}>
+                {names[0]}
+              </div>
+            )
+          })()}
 
           {/* 情報行 */}
           <div>
@@ -536,6 +797,29 @@ export default function EventPreviewScreen({
               </InfoRow>
             ) : null}
 
+            {/* 価格 */}
+            {typeof live?.price === 'number' && live.price > 0 && (
+              <InfoRow icon={<CurrencyJpy size={16} weight="regular" />}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+                  <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)' }}>
+                    ¥{live.price.toLocaleString('ja-JP')}
+                  </span>
+                  {live.drink1Separate && (
+                    <span style={{ ...ty.captionMuted }}>
+                      + 1Drink 別途
+                    </span>
+                  )}
+                </div>
+              </InfoRow>
+            )}
+
+            {/* 座席情報 */}
+            {live?.seatInfo && (
+              <InfoRow icon={<Armchair size={16} weight="regular" />}>
+                <span>{live.seatInfo}</span>
+              </InfoRow>
+            )}
+
             {/* メモ */}
             {live?.memo && (() => {
               const MEMO_THRESHOLD = 100
@@ -612,6 +896,15 @@ export default function EventPreviewScreen({
                 ))}
               </div>
             </div>
+          )}
+
+          {/* セットリストセクション（Premium 機能）*/}
+          {live && (
+            <SetlistSection
+              live={live}
+              onEditSetlist={onOpenSetlistEditor}
+              onUpgradePremium={onUpgradePremium}
+            />
           )}
 
           {/* 編集ボタン（フッター側） */}
