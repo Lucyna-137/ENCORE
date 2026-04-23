@@ -3,7 +3,7 @@
 import React, { useMemo, useState, useRef } from 'react'
 import * as ty from '@/components/encore/typographyStyles'
 import type { GrapeLive, GrapeArtist } from '@/lib/grape/types'
-import { TODAY, DOW_SUN_FIRST as DOW_LABELS } from '@/lib/grape/constants'
+import { TODAY, DOW_SUN_FIRST as DOW_LABELS, DOW_SUN_COLOR, DOW_SAT_COLOR } from '@/lib/grape/constants'
 import AttendanceStatusMarker from './AttendanceStatusMarker'
 import { CaretLeft, CaretRight } from '@phosphor-icons/react'
 
@@ -357,12 +357,13 @@ export default function CalendarMonthView({
               ...ty.caption,
               fontWeight: 700,
               fontSize: 12,
+              // 日: 赤 / 月〜金: 共通ミュート / 土: ブルー（DOW_SAT_COLOR 定数）
               color:
                 i === 0
-                  ? 'var(--color-encore-error)'
+                  ? DOW_SUN_COLOR
                   : i === 6
-                  ? 'var(--color-encore-green-muted)'
-                  : 'rgba(26,58,45,0.70)',
+                  ? DOW_SAT_COLOR
+                  : 'var(--color-encore-green-muted)',
             }}
           >
             {label}

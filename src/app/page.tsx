@@ -37,6 +37,7 @@ import BarChart from '@/components/encore/BarChart'
 import ColorPicker from '@/components/encore/ColorPicker'
 import ViewToggle from '@/components/encore/ViewToggle'
 import PieChart from '@/components/encore/PieChart'
+import ArtistStackChart from '@/components/encore/ArtistStackChart'
 import { SquaresFour, CalendarBlank } from '@phosphor-icons/react'
 
 const categories = [
@@ -964,6 +965,21 @@ export default function Page() {
             <PieChart
               totalLabel="TOTAL LIVES"
               unit="回"
+              data={[
+                { label: 'AOI',    value: 8, color: 'var(--color-encore-green)', image: '/grape/artist/soloA_ssw.png' },
+                { label: 'MEI',    value: 5, color: 'var(--color-encore-amber)', image: '/grape/artist/soloC.png' },
+                { label: 'NANA',   value: 4, color: '#0EA5E9',                   image: '/grape/artist/soloB_RB.png' },
+                { label: 'Luna',   value: 2, color: '#7C3AED',                   image: '/grape/artist/vtuber.jpg' },
+              ]}
+            />
+          </div>
+        </SectionBlock>
+
+        {/* S34 Artist Stack Chart (PieChart の代替・Grape Report で使用中) */}
+        <SectionBlock id="s34" num="34" title="Artist Stack Chart">
+          <div style={{ width: 375 }}>
+            <ArtistStackChart
+              totalLabel="TOTAL EVENTS"
               data={[
                 { label: 'AOI',    value: 8, color: 'var(--color-encore-green)', image: '/grape/artist/soloA_ssw.png' },
                 { label: 'MEI',    value: 5, color: 'var(--color-encore-amber)', image: '/grape/artist/soloC.png' },

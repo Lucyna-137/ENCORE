@@ -28,6 +28,7 @@ import * as ty from '@/components/encore/typographyStyles'
 import type { GrapeLive, SetlistItem } from '@/lib/grape/types'
 import { useSetlistStore } from '@/lib/grape/useSetlistStore'
 import { normalizeSong } from '@/lib/grape/normalizeSong'
+import { useGrapeToast } from '@/lib/grape/useGrapeToast'
 
 interface SetlistEditorSheetProps {
   live: GrapeLive
@@ -65,6 +66,7 @@ export default function SetlistEditorSheet({ live, isOpen, onClose, onSaved }: S
 
   // ─── ローカル編集 state ───────────────────────────────────────────────
   const [items, setItems] = useState<SetlistItem[]>([])
+  const { show: showToast } = useGrapeToast()
   const [approximate, setApproximate] = useState(false)
   const [initialSnapshot, setInitialSnapshot] = useState<string>('')
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false)
@@ -105,7 +107,20 @@ export default function SetlistEditorSheet({ live, isOpen, onClose, onSaved }: S
   }
 
   const removeItem = (index: number) => {
+    const item = items[index]
+    const prevItems = items
     setItems(prev => prev.filter((_, i) => i !== index))
+    // UNDO トースト: 種別ごとのラベル
+    const label = item?.kind === 'song' && item.title ? `「${item.title}」`
+      : item?.kind === 'mc' ? 'MC'
+      : item?.kind === 'divider' ? `「${item.label}」区切り`
+      : 'アイテム'
+    showToast(`${label}を削除しました`, {
+      action: {
+        label: '元に戻す',
+        onClick: () => setItems(prevItems),
+      },
+    })
   }
 
   const editSongTitle = (index: number, title: string) => {

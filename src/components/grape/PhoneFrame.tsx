@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import ToastHost from './ToastHost'
 
 /**
  * PhoneFrame — Grapeの全画面ページ共通ラッパー
@@ -11,6 +12,9 @@ import React from 'react'
  *                          実機・Capacitor での通常表示
  *
  * 切り替えは `src/app/globals.css` のメディアクエリで制御。
+ *
+ * ToastHost を内包しており、全ページで `useGrapeToast().show()` で
+ * トーストを表示できる（フレーム内に重なって表示される）。
  */
 interface PhoneFrameProps {
   children: React.ReactNode
@@ -26,6 +30,7 @@ export default function PhoneFrame({ children, center = false }: PhoneFrameProps
     <div className="grape-outer">
       <div className={`grape-phone-frame${center ? ' grape-phone-frame--center' : ''}`}>
         {children}
+        <ToastHost />
       </div>
     </div>
   )

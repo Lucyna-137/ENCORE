@@ -3,6 +3,7 @@
 import React from 'react'
 import { Crown, X, UsersThree, ChartLineUp, Sparkle, Check } from '@phosphor-icons/react'
 import { useIsPremium } from '@/lib/grape/premium'
+import { useGrapeToast } from '@/lib/grape/useGrapeToast'
 
 // ─── Premium 特典リスト ──────────────────────────────────────────────────────
 export const PREMIUM_FEATURES = [
@@ -38,6 +39,20 @@ const PUR = {
 
 export default function PremiumUpgradeSheet({ onClose }: { onClose: () => void }) {
   const isPremium = useIsPremium()
+  const { show: showToast } = useGrapeToast()
+
+  // 「購入を復元」押下時のハンドラ。
+  // 実際のストア課金連携（RevenueCat）は Capacitor 移行後に実装。
+  // 現状はプレースホルダとして、トーストで「復元処理を試みた」ことを示す。
+  const handleRestore = () => {
+    // 既に Premium の場合: 確認トースト
+    // Free の場合: 復元対象なしトースト
+    if (isPremium) {
+      showToast('Premium は既にご利用中です')
+    } else {
+      showToast('復元可能な購入が見つかりませんでした')
+    }
+  }
 
   return (
     /* フルカバー — スクロール可能なシート

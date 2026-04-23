@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { X, LinkSimple, MagnifyingGlass, Sparkle, CalendarBlank, MapPin, Clock, UserCircle, Ticket, Warning, UserCirclePlus, PencilSimple, type Icon } from '@phosphor-icons/react'
 import * as ty from '@/components/encore/typographyStyles'
 import type { GrapeLive, GrapeArtist, LiveTypeGrape, TicketStatus } from '@/lib/grape/types'
+import { useGrapeToast } from '@/lib/grape/useGrapeToast'
 
 // ─── 解析レスポンス型 ────────────────────────────────────────────────────────
 interface ExtractedEvent {
@@ -42,6 +43,7 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
   const [stage, setStage] = useState<Stage>('input')
   const [url, setUrl] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const { show: showToast } = useGrapeToast()
   const [result, setResult] = useState<ExtractedEvent | null>(null)
   /** 未登録アーティストのうち、新規登録する/しない のチェック状態 */
   const [toRegister, setToRegister] = useState<Record<string, boolean>>({})
@@ -203,6 +205,7 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
     }
 
     onImport(prefill)
+    showToast('イベント情報を抽出しました')
   }
 
   const GOLD = '#C08A4A'

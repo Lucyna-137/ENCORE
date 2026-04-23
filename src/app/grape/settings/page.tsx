@@ -15,8 +15,12 @@ import {
 } from '@phosphor-icons/react'
 import PhoneFrame from '@/components/grape/PhoneFrame'
 import PremiumUpgradeSheet from '@/components/grape/PremiumUpgradeSheet'
+import ArtistDeleteConfirmDialog from '@/components/grape/ArtistDeleteConfirmDialog'
+import { getAllSetlists } from '@/lib/grape/useSetlistStore'
+import { buildExportPayload, buildExportFilename, downloadExportBlob, formatExportSummary } from '@/lib/grape/exportData'
 import { useGrapeStore } from '@/lib/grape/useGrapeStore'
 import { useIsPremium } from '@/lib/grape/premium'
+import { useGrapeToast } from '@/lib/grape/useGrapeToast'
 import type { GrapeArtist, ArtistMember } from '@/lib/grape/types'
 import { DOW_SUN_COLOR, DOW_SAT_COLOR } from '@/lib/grape/constants'
 import ColorPicker from '@/components/encore/ColorPicker'
@@ -213,11 +217,15 @@ function StyleSelector() {
     getCurrentPaletteSchemeId,
     () => 'preset-grape',
   )
+  const { show: showToast } = useGrapeToast()
 
   const options = PRESET_SCHEMES.map(s => ({ id: s.id, label: s.name }))
 
   const handleSelect = (id: string) => {
+    if (id === activeId) return  // 同じパレット選択時はトースト出さない
+    const scheme = PRESET_SCHEMES.find(s => s.id === id)
     loadPaletteScheme(id)
+    if (scheme) showToast(`パレットを「${scheme.name}」に変更しました`)
     // activeId は useSyncExternalStore が encore-palette-update で自動更新する
   }
 
@@ -1119,114 +1127,6 @@ function ArtistEditSheet({
   )
 }
 
-// ─── DeleteConfirmDialog ──────────────────────────────────────────────────────
-
-function DeleteConfirmDialog({
-  artistName,
-  linkedEventCount,
-  onConfirmWithEvents,
-  onConfirmKeepEvents,
-  onCancel,
-}: {
-  artistName: string
-  linkedEventCount: number
-  onConfirmWithEvents: () => void
-  onConfirmKeepEvents: () => void
-  onCancel: () => void
-}) {
-  const btnBase: React.CSSProperties = {
-    width: '100%', height: 46, borderRadius: 999,
-    border: 'none', cursor: 'pointer',
-    fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-    fontSize: 14, fontWeight: 700,
-    WebkitTapHighlightColor: 'transparent',
-  }
-  return (
-    <div style={{
-      position: 'absolute', inset: 0,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      zIndex: 70,
-    }}>
-      <div
-        onClick={onCancel}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.50)' }}
-      />
-      <div style={{
-        position: 'relative', zIndex: 1,
-        background: 'var(--color-encore-bg)',
-        borderRadius: 16, padding: '24px 20px 20px',
-        width: 300,
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
-      }}>
-        <div style={{
-          width: 44, height: 44, borderRadius: 999,
-          background: 'rgba(255,59,48,0.1)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          marginBottom: 4,
-        }}>
-          <Trash size={20} weight="regular" color="#FF3B30" />
-        </div>
-        <span style={{
-          fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-          fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)',
-          textAlign: 'center',
-        }}>
-          {artistName}を削除しますか？
-        </span>
-
-        {linkedEventCount > 0 && (
-          <div style={{
-            display: 'flex', alignItems: 'flex-start', gap: 6,
-            background: 'rgba(255,149,0,0.10)',
-            borderRadius: 10, padding: '10px 12px',
-            marginTop: 2, marginBottom: 4, width: '100%',
-          }}>
-            <Warning size={14} weight="regular" color="var(--color-encore-amber)" style={{ flexShrink: 0, marginTop: 1 }} />
-            <span style={{
-              ...ty.bodySM, color: 'var(--color-encore-amber)', lineHeight: 1.5,
-            }}>
-              {linkedEventCount}件のイベントが紐づいています。どう扱いますか？
-            </span>
-          </div>
-        )}
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', marginTop: 4 }}>
-          <button
-            onClick={onConfirmWithEvents}
-            style={{ ...btnBase, background: '#FF3B30', color: '#fff' }}
-          >
-            {linkedEventCount > 0 ? `イベントも削除（${linkedEventCount}件）` : '削除する'}
-          </button>
-          {linkedEventCount > 0 && (
-            <button
-              onClick={onConfirmKeepEvents}
-              style={{
-                ...btnBase,
-                background: 'transparent',
-                border: '1.5px solid var(--color-encore-green)',
-                color: 'var(--color-encore-green)',
-              }}
-            >
-              イベントは残す
-            </button>
-          )}
-          <button
-            onClick={onCancel}
-            style={{
-              ...btnBase,
-              background: 'transparent',
-              color: 'var(--color-encore-text-muted)',
-              fontSize: 13, fontWeight: 400,
-            }}
-          >
-            キャンセル
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 // ─── ArtistManageSection ──────────────────────────────────────────────────────
 
 const ARTIST_VISIBLE_COUNT = 5
@@ -1392,6 +1292,7 @@ export default function SettingsPage() {
   // ── アーティスト管理 ──────────────────────────────────────────────────────
   const { lives, artists, addArtist, updateArtist, deleteArtist, updateLives } = useGrapeStore()
   const isPremium = useIsPremium()
+  const { show: showToast } = useGrapeToast()
   const [editingArtist,    setEditingArtist]    = useState<GrapeArtist | null>(null)
   const [isAdding,         setIsAdding]         = useState(false)
   const [deletingArtist,   setDeletingArtist]   = useState<GrapeArtist | null>(null)
@@ -1419,21 +1320,30 @@ export default function SettingsPage() {
 
   function handleDeleteWithEvents() {
     if (!deletingArtist) return
-    updateLives(prev => prev.filter(l => l.artist !== deletingArtist.name))
+    const name = deletingArtist.name
+    const eventCount = lives.filter(l => l.artist === name).length
+    updateLives(prev => prev.filter(l => l.artist !== name))
     deleteArtist(deletingArtist.id)
     setDeletingArtist(null)
+    showToast(
+      eventCount > 0
+        ? `「${name}」とイベント ${eventCount} 件を削除しました`
+        : `「${name}」を削除しました`,
+    )
   }
 
   function handleDeleteKeepEvents() {
     if (!deletingArtist) return
+    const name = deletingArtist.name
     // artistImage をクリアして Person アイコン fallback へ
     updateLives(prev => prev.map(l =>
-      l.artist === deletingArtist.name
+      l.artist === name
         ? { ...l, artistImage: undefined, artistImages: undefined }
         : l
     ))
     deleteArtist(deletingArtist.id)
     setDeletingArtist(null)
+    showToast(`「${name}」を削除しました（イベントは残しました）`)
   }
 
   return (
@@ -1540,6 +1450,27 @@ export default function SettingsPage() {
             <BackupNote />
           </SettingsSection>
 
+          {/* データ管理（Premium 限定・エクスポート） */}
+          {isPremium && (
+            <SettingsSection label="データ管理">
+              <SettingsRow
+                icon={<SettingsIconWrap bg="rgba(26,58,45,0.10)" color="var(--color-encore-green)"><UploadSimple size={15} weight="regular" /></SettingsIconWrap>}
+                label="すべてのデータをエクスポート"
+                description=".json でライブ・アーティスト・セットリストを書き出し"
+                onClick={() => {
+                  const payload = buildExportPayload({
+                    lives,
+                    artists,
+                    setlists: getAllSetlists(),
+                  })
+                  const filename = buildExportFilename()
+                  downloadExportBlob(payload, filename)
+                  showToast(`バックアップを保存しました（${formatExportSummary(payload.stats)}）`)
+                }}
+              />
+            </SettingsSection>
+          )}
+
           {/* サポート */}
           <SettingsSection label="サポート">
             <SettingsRow
@@ -1632,9 +1563,9 @@ export default function SettingsPage() {
           />
         )}
 
-        {/* ── 削除確認ダイアログ ── */}
+        {/* ── 削除確認ダイアログ（共通 ArtistDeleteConfirmDialog 使用）── */}
         {deletingArtist && (
-          <DeleteConfirmDialog
+          <ArtistDeleteConfirmDialog
             artistName={deletingArtist.name}
             linkedEventCount={lives.filter(l => l.artist === deletingArtist.name).length}
             onConfirmWithEvents={handleDeleteWithEvents}

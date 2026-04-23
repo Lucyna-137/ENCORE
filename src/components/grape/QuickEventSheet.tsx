@@ -7,6 +7,7 @@ import { CaretDown, CaretUp, CaretLeft, CaretRight, Camera, LinkSimple, Note, Ca
 import ColorPicker, { DEFAULT_EVENT_COLOR_VISUAL, type ColorValue } from '@/components/encore/ColorPicker'
 import { TODAY, DOW_SUN_COLOR, DOW_SAT_COLOR, TICKET_STATUS_LABEL } from '@/lib/grape/constants'
 import { useIsPremium } from '@/lib/grape/premium'
+import { useGrapeToast } from '@/lib/grape/useGrapeToast'
 import { Sparkle as SparkleIcon } from '@phosphor-icons/react'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -1428,14 +1429,10 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
   const [showColorPicker, setShowColorPicker]   = useState(false)
   const [showNewArtist, setShowNewArtist]        = useState(false)
   const [activeTimePicker, setActiveTimePicker]  = useState<'opening'|'start'|'end'|null>(null)
-  const [artistToast, setArtistToast]           = useState<string | null>(null)
-  const [artistToastVisible, setArtistToastVisible] = useState(false)
+  const { show: showToast } = useGrapeToast()
 
   const showArtistToast = (name: string) => {
-    setArtistToast(name)
-    setArtistToastVisible(true)
-    setTimeout(() => setArtistToastVisible(false), 2200)
-    setTimeout(() => setArtistToast(null), 2700)
+    showToast(`${name} を登録しました`)
   }
 
   // 初期値を記録して変更検知に使う
@@ -1643,6 +1640,8 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
     try { localStorage.removeItem(DRAFT_KEY) } catch {}
     onSave?.(payload)
     onClose()
+    // トースト通知: 新規作成 or 編集
+    showToast(isEditMode ? 'イベントを更新しました' : 'イベントを保存しました')
   }
 
   const ticketBadge = ticketStatus ? TICKET_STATUS_LABEL[ticketStatus as keyof typeof TICKET_STATUS_LABEL] : undefined
@@ -2353,32 +2352,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
         />
       )}
 
-      {/* アーティスト登録トースト */}
-      {artistToast && (
-        <div style={{
-          position: 'absolute', left: 16, right: 16, bottom: 100, zIndex: 800,
-          transform: artistToastVisible ? 'translateY(0)' : 'translateY(20px)',
-          opacity: artistToastVisible ? 1 : 0,
-          transition: 'transform 0.28s cubic-bezier(0.32,0.72,0,1), opacity 0.28s',
-          pointerEvents: 'none',
-        }}>
-          <div style={{
-            background: 'var(--color-encore-green)',
-            borderRadius: 14,
-            padding: '12px 16px',
-            display: 'flex', alignItems: 'center', gap: 10,
-          }}>
-            <CheckCircle size={18} weight="fill" color="var(--color-encore-white)" />
-            <span style={{
-              fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-              fontSize: 13, fontWeight: 700,
-              color: 'var(--color-encore-white)',
-            }}>
-              {artistToast} を登録しました
-            </span>
-          </div>
-        </div>
-      )}
+      {/* トーストは PhoneFrame 内の ToastHost が共通で表示（useGrapeToast 経由） */}
     </>
   )
 }

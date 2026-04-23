@@ -1057,14 +1057,14 @@ function OCRStage2Preview() {
             textShadow: '0 2px 6px rgba(0,0,0,0.5)',
           }}>
             <div style={{ fontSize: 11, letterSpacing: '0.24em', opacity: 0.7, marginBottom: 6 }}>SETLIST</div>
-            1. 憂う門には福来たる<br/>
-            2. キミノネイロ<br/>
-            3. IF<br/>
-            4. シェルター<br/>
-            5. 六畳夢想<br/>
-            6. 繕い<br/>
+            1. 雨宿りサイダー<br/>
+            2. 朝凪ボイス<br/>
+            3. Eclipse Bay<br/>
+            4. 影絵の森<br/>
+            5. 十八時の特等席<br/>
+            6. 三拍子のラブレター<br/>
             <span style={{ fontSize: 11, opacity: 0.7 }}>— ENCORE —</span><br/>
-            7. Navy
+            7. Satellite Diary
           </div>
         </div>
         <div style={{ ...t.sub, fontSize: 12, textAlign: 'center' }}>
@@ -1161,14 +1161,14 @@ function OCRStage3Loading() {
 
 function OCRStage4Review() {
   const rows: Row[] = [
-    { kind: 'song', title: '憂う門には福来たる', art: ART.covers.indie },
-    { kind: 'song', title: 'キミノネイロ', art: ART.covers.ssw },
-    { kind: 'song', title: 'IF' },
-    { kind: 'song', title: 'シェルタ—' }, // low conf by position
-    { kind: 'song', title: '六畳夢想', art: ART.covers.acoustic },
-    { kind: 'song', title: '繕い', art: ART.covers.ssw },
+    { kind: 'song', title: '雨宿りサイダー', art: ART.covers.indie },
+    { kind: 'song', title: '朝凪ボイス', art: ART.covers.ssw },
+    { kind: 'song', title: 'Eclipse Bay' },
+    { kind: 'song', title: '影絵の森—' }, // low conf by position
+    { kind: 'song', title: '十八時の特等席', art: ART.covers.acoustic },
+    { kind: 'song', title: '三拍子のラブレター', art: ART.covers.ssw },
     { kind: 'divider', label: 'ENCORE' },
-    { kind: 'song', title: 'Navy', art: ART.covers.indie },
+    { kind: 'song', title: 'Satellite Diary', art: ART.covers.indie },
   ]
 
   let pos = 0

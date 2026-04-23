@@ -14,6 +14,8 @@ import EventPreviewScreen from '@/components/grape/EventPreviewScreen'
 import { ATTENDANCE_LABEL, CURRENT_YEAR, CURRENT_MONTH, TODAY, LIVE_TYPE_COLOR, DOW_SUN_COLOR, DOW_SAT_COLOR } from '@/lib/grape/constants'
 import ColorPicker from '@/components/encore/ColorPicker'
 import PhoneFrame from '@/components/grape/PhoneFrame'
+import { useGrapeToast } from '@/lib/grape/useGrapeToast'
+import ArtistDeleteConfirmDialog from '@/components/grape/ArtistDeleteConfirmDialog'
 
 // ─── 定数 ─────────────────────────────────────────────────────────────────────
 
@@ -738,35 +740,6 @@ function ArtistEditSheet({
   )
 }
 
-// ─── DeleteConfirmDialog ──────────────────────────────────────────────────────
-
-function DeleteConfirmDialog({ artistName, onConfirm, onCancel }: { artistName: string; onConfirm: () => void; onCancel: () => void }) {
-  return (
-    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 80 }}>
-      <div onClick={onCancel} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.50)' }} />
-      <div style={{ position: 'relative', zIndex: 1, background: 'var(--color-encore-bg)', borderRadius: 16, padding: '24px 24px 16px', width: 280, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-        <div style={{ width: 44, height: 44, borderRadius: 999, background: 'rgba(255,59,48,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 4 }}>
-          <Trash size={20} weight="regular" color="#FF3B30" />
-        </div>
-        <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)', textAlign: 'center' }}>
-          {artistName}を削除しますか？
-        </span>
-        <span style={{ ...ty.bodySM, color: 'var(--color-encore-text-muted)', textAlign: 'center', lineHeight: 1.6, marginBottom: 8 }}>
-          この操作は取り消せません。
-        </span>
-        <div style={{ display: 'flex', gap: 10, width: '100%', marginTop: 4 }}>
-          <button onClick={onCancel} style={{ flex: 1, height: 46, borderRadius: 999, border: '1.5px solid var(--color-encore-green)', background: 'transparent', cursor: 'pointer', fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 14, fontWeight: 700, color: 'var(--color-encore-green)', WebkitTapHighlightColor: 'transparent' }}>
-            キャンセル
-          </button>
-          <button onClick={onConfirm} style={{ flex: 1, height: 46, borderRadius: 999, border: 'none', background: '#FF3B30', cursor: 'pointer', fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 14, fontWeight: 700, color: '#fff', WebkitTapHighlightColor: 'transparent' }}>
-            削除
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 // ─── ArtistMenuPopover ────────────────────────────────────────────────────────
 // ... ボタンの直下に生えるポップオーバー型メニュー
 
@@ -876,6 +849,7 @@ export default function ArtistDetailPage() {
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
   const { lives, artists, updateLive, deleteLive, addLive, updateArtist, deleteArtist } = useGrapeStore()
+  const { show: showToast } = useGrapeToast()
 
   const artist = useMemo(() => artists.find(a => a.id === id), [artists, id])
 
@@ -953,10 +927,7 @@ export default function ArtistDetailPage() {
   const handleSaveArtist = (updated: GrapeArtist) => {
     updateArtist(updated)
     setShowEditSheet(false)
-  }
-  const handleDeleteArtist = () => {
-    if (artist?.id) deleteArtist(artist.id)
-    router.back()
+    showToast('アーティスト情報を保存しました')
   }
 
   // スワイプハンドラ（今月モード時のみ月送り）
@@ -991,6 +962,46 @@ export default function ArtistDetailPage() {
           </button>
       </PhoneFrame>
     )
+  }
+
+  // ── ここから先: artist は確定（上の `if (!artist) return` で早期リターン済み）──
+
+  // アーティスト削除ハンドラ（共通ダイアログ ArtistDeleteConfirmDialog 使用）
+  // 2 択: イベントも削除 / イベントは残す
+  // トーストは遷移先ページがマウントしてから表示させるため setTimeout で遅延実行。
+  const artistLinkedEventCount = lives.filter(l => l.artist === artist.name).length
+
+  const handleDeleteArtistWithEvents = () => {
+    const name = artist.name
+    const count = artistLinkedEventCount
+    // 紐づくライブを削除
+    lives.forEach(l => { if (l.artist === name) deleteLive(l.id) })
+    deleteArtist(artist.id)
+    setShowDeleteDialog(false)
+    router.back()
+    setTimeout(() => {
+      showToast(
+        count > 0
+          ? `「${name}」とイベント ${count} 件を削除しました`
+          : `「${name}」を削除しました`,
+      )
+    }, 120)
+  }
+
+  const handleDeleteArtistKeepEvents = () => {
+    const name = artist.name
+    // artistImage をクリアして Person アイコン fallback へ
+    lives.forEach(l => {
+      if (l.artist === name) {
+        updateLive({ ...l, artistImage: undefined, artistImages: undefined })
+      }
+    })
+    deleteArtist(artist.id)
+    setShowDeleteDialog(false)
+    router.back()
+    setTimeout(() => {
+      showToast(`「${name}」を削除しました（イベントは残しました）`)
+    }, 120)
   }
 
   // この画面のみ正方形ヒーロー。PhoneFrame 幅 393 に合わせる。
@@ -1465,9 +1476,11 @@ export default function ArtistDetailPage() {
           />
         )}
         {showDeleteDialog && (
-          <DeleteConfirmDialog
+          <ArtistDeleteConfirmDialog
             artistName={artist.name}
-            onConfirm={handleDeleteArtist}
+            linkedEventCount={artistLinkedEventCount}
+            onConfirmWithEvents={handleDeleteArtistWithEvents}
+            onConfirmKeepEvents={handleDeleteArtistKeepEvents}
             onCancel={() => setShowDeleteDialog(false)}
           />
         )}

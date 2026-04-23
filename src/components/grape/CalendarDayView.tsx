@@ -126,6 +126,10 @@ export default function CalendarDayView({
   // 空きスロットからの drag-to-create
   const [createDrag, setCreateDrag] = useState<{ startY: number; currentY: number } | null>(null)
   const DRAG_TAP_THRESHOLD = 6 // px 未満ならタップ扱い
+  // iOS Safari 対策: touch は native addEventListener + 非パッシブ touchmove で処理。
+  // React の onTouchMove は passive なため preventDefault が効かず、スクロール奪取できない。
+  const eventAreaRef = useRef<HTMLDivElement>(null)
+  const LONG_PRESS_MS = 350
 
   // 当日の誕生日アーティスト
   const birthdayArtistsToday = useMemo(() => {
@@ -145,6 +149,118 @@ export default function CalendarDayView({
       scrollRef.current.scrollTop = 10 * HOUR_HEIGHT - 40
     }
   }, [])
+
+  // ─── Native touch 長押し drag-to-create（iOS Safari 対応）──────────────
+  // React の onTouchMove は passive のため preventDefault が効かない。
+  // native addEventListener で { passive: false } を指定することで、
+  // iOS Safari でも mid-gesture でスクロールをキャンセル → drag モードへ移行できる。
+  useEffect(() => {
+    const el = eventAreaRef.current
+    if (!el) return
+
+    let longPressTimer: ReturnType<typeof setTimeout> | null = null
+    let dragMode = false
+    let startY = 0
+    let currentY = 0
+
+    const cleanup = () => {
+      if (longPressTimer != null) {
+        clearTimeout(longPressTimer)
+        longPressTimer = null
+      }
+      dragMode = false
+    }
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return
+      if (draggingId) return
+      const target = e.target as HTMLElement
+      if (target.closest('[data-event-block="true"]')) return
+
+      const rect = el.getBoundingClientRect()
+      startY = e.touches[0].clientY - rect.top
+      currentY = startY
+      dragMode = false
+
+      longPressTimer = setTimeout(() => {
+        // 長押し発火: drag モード ON
+        dragMode = true
+        setCreateDrag({ startY, currentY })
+        try { navigator.vibrate?.(10) } catch {}
+        longPressTimer = null
+      }, LONG_PRESS_MS)
+    }
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return
+      const rect = el.getBoundingClientRect()
+      const y = e.touches[0].clientY - rect.top
+      currentY = y
+
+      if (longPressTimer != null) {
+        // 長押し待機中: ユーザーが動かした → スクロール意図とみなしてタイマーキャンセル
+        if (Math.abs(y - startY) > DRAG_TAP_THRESHOLD) {
+          clearTimeout(longPressTimer)
+          longPressTimer = null
+        }
+        return // native scroll に任せる
+      }
+
+      if (dragMode) {
+        // drag モード中: native scroll を停止し、ghost 帯を更新
+        e.preventDefault()
+        const clamped = Math.max(0, Math.min(24 * HOUR_HEIGHT, y))
+        setCreateDrag(prev => prev ? { ...prev, currentY: clamped } : prev)
+      }
+    }
+
+    const onTouchEnd = () => {
+      if (longPressTimer != null) {
+        // 長押し未発火で離した → タップとして処理
+        clearTimeout(longPressTimer)
+        longPressTimer = null
+        const startMin = yToMinSnap(startY, HOUR_HEIGHT)
+        const tapStartMin = Math.floor(startMin / 60) * 60
+        onSlotTap(date, tapStartMin)
+        return
+      }
+
+      if (dragMode) {
+        dragMode = false
+        const dy = Math.abs(currentY - startY)
+        const minY = Math.min(startY, currentY)
+        const maxY = Math.max(startY, currentY)
+        const startMin = yToMinSnap(minY, HOUR_HEIGHT)
+        setCreateDrag(null)
+        if (dy < DRAG_TAP_THRESHOLD) {
+          const tapStartMin = Math.floor(startMin / 60) * 60
+          onSlotTap(date, tapStartMin)
+        } else {
+          const endMin = yToMinSnap(maxY, HOUR_HEIGHT)
+          const safeEndMin = Math.min(24 * 60 - 1, Math.max(endMin, startMin + 30))
+          onSlotTap(date, startMin, safeEndMin)
+        }
+      }
+    }
+
+    const onTouchCancel = () => {
+      cleanup()
+      setCreateDrag(null)
+    }
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true })
+    el.addEventListener('touchmove', onTouchMove, { passive: false })
+    el.addEventListener('touchend', onTouchEnd, { passive: true })
+    el.addEventListener('touchcancel', onTouchCancel, { passive: true })
+
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart)
+      el.removeEventListener('touchmove', onTouchMove)
+      el.removeEventListener('touchend', onTouchEnd)
+      el.removeEventListener('touchcancel', onTouchCancel)
+      cleanup()
+    }
+  }, [date, draggingId, onSlotTap])
 
   // Current time line — only if today (use 10:30 as demo time)
   // Current time line (動的・1分ごとに更新)
@@ -408,19 +524,29 @@ export default function CalendarDayView({
 
           {/* Event area */}
           <div
+            ref={eventAreaRef}
             style={{
               flex: 1,
               position: 'relative',
               background: isDragOver ? 'var(--color-grape-tint-04)' : 'transparent',
               transition: 'background 0.15s',
-              touchAction: createDrag ? 'none' : 'pan-y',
+              // touch-action: pan-y で native scroll を許可。長押しで drag モードに
+              // 入った瞬間、非パッシブ touchmove で preventDefault → スクロール停止 →
+              // drag ghost が描画される（native touch listener で実装・iOS Safari 対応）。
+              touchAction: 'pan-y',
+              // ネイティブ選択ハイライト残留を防止
+              WebkitUserSelect: 'none',
+              userSelect: 'none',
+              WebkitTouchCallout: 'none',
+              WebkitTapHighlightColor: 'transparent',
             }}
+            // マウス（デスクトップ）専用: 即座にドラッグモード
+            // touch は上の useEffect の native listener で処理
             onPointerDown={(e) => {
+              if (e.pointerType !== 'mouse') return
               if (draggingId) return
-              // マウス以外（touch/pen）の primary pointer のみで drag-to-create を起動
               if (e.button !== 0) return
               const target = e.target as HTMLElement
-              // 既存イベントブロック上で始まった場合はスキップ（event block 側で処理）
               if (target.closest('[data-event-block="true"]')) return
               const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
               const y = e.clientY - rect.top
@@ -428,12 +554,14 @@ export default function CalendarDayView({
               try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch {}
             }}
             onPointerMove={(e) => {
+              if (e.pointerType !== 'mouse') return
               if (!createDrag) return
               const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
               const y = Math.max(0, Math.min(24 * HOUR_HEIGHT, e.clientY - rect.top))
               setCreateDrag(prev => prev ? { ...prev, currentY: y } : prev)
             }}
             onPointerUp={(e) => {
+              if (e.pointerType !== 'mouse') return
               if (!createDrag) return
               try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId) } catch {}
               const { startY, currentY } = createDrag
@@ -443,17 +571,18 @@ export default function CalendarDayView({
               const maxY = Math.max(startY, currentY)
               const startMin = yToMinSnap(minY, HOUR_HEIGHT)
               if (dy < DRAG_TAP_THRESHOLD) {
-                // タップ: 従来通り時刻ジャストへ丸めて1時間
                 const tapStartMin = Math.floor(startMin / 60) * 60
                 onSlotTap(date, tapStartMin)
               } else {
                 const endMin = yToMinSnap(maxY, HOUR_HEIGHT)
-                // 最低30分確保
                 const safeEndMin = Math.min(24 * 60 - 1, Math.max(endMin, startMin + 30))
                 onSlotTap(date, startMin, safeEndMin)
               }
             }}
-            onPointerCancel={() => setCreateDrag(null)}
+            onPointerCancel={(e) => {
+              if (e.pointerType !== 'mouse') return
+              setCreateDrag(null)
+            }}
             onDragOver={(e) => {
               e.preventDefault()
               e.dataTransfer.dropEffect = 'move'

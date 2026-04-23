@@ -342,17 +342,8 @@ export default function TicketsPage() {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div className="grape-page-title" style={{ ...ty.display, lineHeight: 1 }}>Tickets</div>
-              {urgentLives.length > 0 && (
-                <span style={{
-                  ...ty.caption,
-                  fontSize: 11, fontWeight: 700,
-                  padding: '2px 8px', borderRadius: 999,
-                  background: 'var(--color-encore-amber)',
-                  color: 'var(--color-encore-white)',
-                }}>
-                  要対応 {urgentLives.length}件
-                </span>
-              )}
+              {/* 要対応件数はタブの数字バッジ + アラートバナーで明示するため、
+                 ここのタイトル横バッジは廃止（情報の三重化を避ける）。*/}
             </div>
             <button
               onClick={openSearch}
@@ -420,14 +411,24 @@ export default function TicketsPage() {
           <HorizontalTabs
             tabs={TAB_LABELS.map((label, i) => {
               if (TAB_KEYS[i] === 'urgent' && urgentLives.length > 0) {
+                // iOS 通知バッジ風: 数字入り小円バッジで件数を明示（旧: 赤ポチのみ）
                 return (
-                  <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                     {label}
                     <span style={{
-                      width: 6, height: 6, borderRadius: '50%',
+                      minWidth: 16, height: 16, padding: '0 5px',
+                      borderRadius: 999,
                       background: 'var(--color-encore-amber)',
-                      display: 'inline-block',
-                    }} />
+                      color: 'var(--color-encore-white)',
+                      fontFamily: 'var(--font-google-sans), sans-serif',
+                      fontSize: 10, fontWeight: 700,
+                      lineHeight: '16px',
+                      display: 'inline-flex',
+                      alignItems: 'center', justifyContent: 'center',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}>
+                      {urgentLives.length}
+                    </span>
                   </span>
                 )
               }

@@ -29,6 +29,7 @@ import AddActionSheet from '@/components/grape/AddActionSheet'
 import URLImportSheet from '@/components/grape/URLImportSheet'
 import PremiumUpgradeSheet from '@/components/grape/PremiumUpgradeSheet'
 import { useIsPremium } from '@/lib/grape/premium'
+import { useGrapeToast } from '@/lib/grape/useGrapeToast'
 import {
   CalendarBlank,
   Ticket,
@@ -283,26 +284,18 @@ export default function CalendarPage() {
     })
   }, [artists])
 
-  // ─── トースト ──────────────────────────────────────────────────────────────
-  const [toast, setToast] = useState<{ message: string; prevLives: GrapeLive[] } | null>(null)
-  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [toastVisible, setToastVisible] = useState(false)
-
-  const showToast = useCallback((message: string, prevLives: GrapeLive[]) => {
-    if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
-    setToast({ message, prevLives })
-    requestAnimationFrame(() => setToastVisible(true))
-    toastTimerRef.current = setTimeout(() => {
-      setToastVisible(false)
-      setTimeout(() => setToast(null), 320)
-    }, 4000)
-  }, [])
-
-  const dismissToast = useCallback(() => {
-    if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
-    setToastVisible(false)
-    setTimeout(() => setToast(null), 320)
-  }, [])
+  // ─── トースト（共通 useGrapeToast 経由で PhoneFrame 内の ToastHost が表示）──
+  // UNDO アクション付き: 4 秒間表示して「元に戻す」で復元可能
+  const { show: showToast } = useGrapeToast()
+  const showUndoToast = useCallback((message: string, prevLives: GrapeLive[]) => {
+    showToast(message, {
+      duration: 4000,
+      action: {
+        label: '元に戻す',
+        onClick: () => setLives(() => prevLives),
+      },
+    })
+  }, [showToast, setLives])
 
   // ─── ビュー切り替え（日付を引き継ぐ） ─────────────────────────────────────
   const switchView = useCallback((newMode: ViewMode) => {
@@ -393,7 +386,7 @@ export default function CalendarPage() {
     }))
     const [, m, d] = newDate.split('-').map(Number)
     const dow = ['日', '月', '火', '水', '木', '金', '土'][new Date(Number(newDate.split('-')[0]), m - 1, d).getDay()]
-    showToast(`${m}月${d}日（${dow}） ${fmtTime(newStartMin)} に移動しました`, prevLives)
+    showUndoToast(`${m}月${d}日（${dow}） ${fmtTime(newStartMin)} に移動しました`, prevLives)
   }
 
   const handleStatusChange = (liveId: string, status: import('@/lib/grape/types').AttendanceStatus) => {
@@ -402,8 +395,13 @@ export default function CalendarPage() {
   }
 
   const handleDeleteLive = (id: string) => {
+    const prevLives = lives
+    const deleted = lives.find(l => l.id === id)
     deleteLive(id)
     setPreviewLive(null)
+    if (deleted) {
+      showUndoToast(`「${deleted.title}」を削除しました`, prevLives)
+    }
   }
 
   const handleDuplicateLive = (live: GrapeLive) => {
@@ -818,63 +816,7 @@ export default function CalendarPage() {
           onStatusChange={handleStatusChange}
         />
 
-        {/* ── Toast ── */}
-        {toast && (
-          <div
-            style={{
-              position: 'absolute',
-              left: 12,
-              right: 12,
-              bottom: 80,
-              zIndex: 500,
-              transform: toastVisible ? 'translateY(0)' : 'translateY(120%)',
-              transition: 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)',
-              pointerEvents: toastVisible ? 'auto' : 'none',
-            }}
-          >
-            <div
-              style={{
-                background: 'var(--color-encore-green)',
-                borderRadius: 14,
-                padding: '13px 16px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 12,
-                boxShadow: '0 6px 24px rgba(0,0,0,0.22)',
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 13,
-                  fontWeight: 400,
-                  color: 'var(--color-encore-white)',
-                  flex: 1,
-                }}
-              >
-                {toast.message}
-              </span>
-              <button
-                onClick={() => { setLives(() => toast.prevLives); dismissToast() }}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: 'var(--color-encore-amber)',
-                  padding: '0 2px',
-                  flexShrink: 0,
-                  WebkitTapHighlightColor: 'transparent',
-                }}
-              >
-                元に戻す
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Toast は PhoneFrame 内の共通 ToastHost が表示（useGrapeToast 経由） */}
 
         {/* ── Tab Bar（TabBar.tsx準拠：regular・amber active・uppercase 9px 700） ── */}
         <div

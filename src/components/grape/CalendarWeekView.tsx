@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useMemo, useState } from 'react'
 import { CaretLeft, CaretRight } from '@phosphor-icons/react'
 import * as ty from '@/components/encore/typographyStyles'
 import type { GrapeLive, GrapeArtist } from '@/lib/grape/types'
-import { TODAY, HOUR_HEIGHT_WEEK as HOUR_HEIGHT, TIME_COL_WIDTH_WEEK as TIME_COL_WIDTH, DOW_MON_FIRST as DOW } from '@/lib/grape/constants'
+import { TODAY, HOUR_HEIGHT_WEEK as HOUR_HEIGHT, TIME_COL_WIDTH_WEEK as TIME_COL_WIDTH, DOW_MON_FIRST as DOW, DOW_SUN_COLOR, DOW_SAT_COLOR } from '@/lib/grape/constants'
 import CyclingArtistImage from './CyclingArtistImage'
 
 interface CalendarWeekViewProps {
@@ -151,6 +151,14 @@ export default function CalendarWeekView({
   // 空きスロットからの drag-to-create（列ごと）
   const [createDrag, setCreateDrag] = useState<{ dateStr: string; startY: number; currentY: number } | null>(null)
   const DRAG_TAP_THRESHOLD = 6
+  // iOS Safari 対策: touch は native addEventListener + 非パッシブ touchmove + 長押し
+  // で処理（Day View と同じパターン）。列ごとに ref を保持。
+  const LONG_PRESS_MS = 350
+  const columnRefsMap = useRef<Map<string, HTMLDivElement>>(new Map())
+  const setColumnRef = (dateStr: string) => (el: HTMLDivElement | null) => {
+    if (el) columnRefsMap.current.set(dateStr, el)
+    else columnRefsMap.current.delete(dateStr)
+  }
   const yToMinSnap = (y: number) => {
     const min = Math.round((y / HOUR_HEIGHT) * 60 / 15) * 15
     return Math.max(0, Math.min(24 * 60, min))
@@ -251,6 +259,108 @@ export default function CalendarWeekView({
     return () => clearInterval(id)
   }, [])
   const timeLineTop = (nowMinutes / 60) * HOUR_HEIGHT
+
+  // ─── Native touch 長押し drag-to-create（列ごと・iOS Safari 対応）──────
+  // React の onTouchMove は passive なため preventDefault が効かず、iOS 上で
+  // ネイティブスクロールを停止できない。列ごとに native addEventListener を attach し、
+  // 非パッシブ touchmove で drag モード中に preventDefault する。
+  useEffect(() => {
+    const cleanups: Array<() => void> = []
+    columnRefsMap.current.forEach((el, dateStr) => {
+      let longPressTimer: ReturnType<typeof setTimeout> | null = null
+      let dragMode = false
+      let startY = 0
+      let currentY = 0
+
+      const cleanup = () => {
+        if (longPressTimer != null) { clearTimeout(longPressTimer); longPressTimer = null }
+        dragMode = false
+      }
+
+      const onTouchStart = (e: TouchEvent) => {
+        if (e.touches.length !== 1) return
+        if (draggingId) return
+        const target = e.target as HTMLElement
+        if (target.closest('[data-event-block="true"]')) return
+
+        const rect = el.getBoundingClientRect()
+        startY = e.touches[0].clientY - rect.top
+        currentY = startY
+        dragMode = false
+
+        longPressTimer = setTimeout(() => {
+          dragMode = true
+          setCreateDrag({ dateStr, startY, currentY })
+          try { navigator.vibrate?.(10) } catch {}
+          longPressTimer = null
+        }, LONG_PRESS_MS)
+      }
+
+      const onTouchMove = (e: TouchEvent) => {
+        if (e.touches.length !== 1) return
+        const rect = el.getBoundingClientRect()
+        const y = e.touches[0].clientY - rect.top
+        currentY = y
+
+        if (longPressTimer != null) {
+          if (Math.abs(y - startY) > DRAG_TAP_THRESHOLD) {
+            clearTimeout(longPressTimer)
+            longPressTimer = null
+          }
+          return
+        }
+
+        if (dragMode) {
+          e.preventDefault()
+          const clamped = Math.max(0, Math.min(24 * HOUR_HEIGHT, y))
+          setCreateDrag(prev => prev ? { ...prev, currentY: clamped } : prev)
+        }
+      }
+
+      const onTouchEnd = () => {
+        if (longPressTimer != null) {
+          clearTimeout(longPressTimer)
+          longPressTimer = null
+          const startMin = yToMinSnap(startY)
+          const tapStartMin = Math.floor(startMin / 60) * 60
+          onSlotTap(dateStr, tapStartMin)
+          return
+        }
+        if (dragMode) {
+          dragMode = false
+          const dy = Math.abs(currentY - startY)
+          const minY = Math.min(startY, currentY)
+          const maxY = Math.max(startY, currentY)
+          const startMin = yToMinSnap(minY)
+          setCreateDrag(null)
+          if (dy < DRAG_TAP_THRESHOLD) {
+            const tapStartMin = Math.floor(startMin / 60) * 60
+            onSlotTap(dateStr, tapStartMin)
+          } else {
+            const endMin = yToMinSnap(maxY)
+            const safeEndMin = Math.min(24 * 60 - 1, Math.max(endMin, startMin + 30))
+            onSlotTap(dateStr, startMin, safeEndMin)
+          }
+        }
+      }
+
+      const onTouchCancel = () => { cleanup(); setCreateDrag(null) }
+
+      el.addEventListener('touchstart', onTouchStart, { passive: true })
+      el.addEventListener('touchmove', onTouchMove, { passive: false })
+      el.addEventListener('touchend', onTouchEnd, { passive: true })
+      el.addEventListener('touchcancel', onTouchCancel, { passive: true })
+
+      cleanups.push(() => {
+        el.removeEventListener('touchstart', onTouchStart)
+        el.removeEventListener('touchmove', onTouchMove)
+        el.removeEventListener('touchend', onTouchEnd)
+        el.removeEventListener('touchcancel', onTouchCancel)
+        cleanup()
+      })
+    })
+    return () => cleanups.forEach(fn => fn())
+  }, [days, draggingId, onSlotTap])
 
   // Week range label e.g. "3月16日 – 3月22日"
   const weekEnd = new Date(weekStart)
@@ -358,7 +468,11 @@ export default function CalendarWeekView({
                   ...ty.caption,
                   fontWeight: 700,
                   fontSize: 12,
-                  color: i === 6 ? 'var(--color-encore-error)' : 'var(--color-encore-text-sub)',
+                  // DOW_MON_FIRST 配列: 0=月 ... 5=土 / 6=日
+                  color:
+                    i === 6 ? DOW_SUN_COLOR
+                    : i === 5 ? DOW_SAT_COLOR
+                    : 'var(--color-encore-green-muted)',
                 }}
               >
                 {DOW[i]}
@@ -531,15 +645,24 @@ export default function CalendarWeekView({
               return (
                 <div
                   key={dateStr}
+                  ref={setColumnRef(dateStr)}
                   style={{
                     flex: 1,
                     position: 'relative',
                     borderRight: colIdx < 6 ? '1px solid var(--color-encore-border-light)' : 'none',
                     background: isDragOver ? 'var(--color-grape-tint-04)' : 'transparent',
                     transition: 'background 0.15s',
-                    touchAction: createDrag?.dateStr === dateStr ? 'none' : 'pan-y',
+                    // touch-action: pan-y で native scroll 許可、長押しで drag モード
+                    // （native touchmove の preventDefault でスクロールをキャンセル）
+                    touchAction: 'pan-y',
+                    WebkitUserSelect: 'none',
+                    userSelect: 'none',
+                    WebkitTouchCallout: 'none',
+                    WebkitTapHighlightColor: 'transparent',
                   }}
+                  // マウス専用: 即座ドラッグ（touch は上の useEffect で処理）
                   onPointerDown={(e) => {
+                    if (e.pointerType !== 'mouse') return
                     if (draggingId) return
                     if (e.button !== 0) return
                     const target = e.target as HTMLElement
@@ -550,12 +673,14 @@ export default function CalendarWeekView({
                     try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch {}
                   }}
                   onPointerMove={(e) => {
+                    if (e.pointerType !== 'mouse') return
                     if (!createDrag || createDrag.dateStr !== dateStr) return
                     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
                     const y = Math.max(0, Math.min(24 * HOUR_HEIGHT, e.clientY - rect.top))
                     setCreateDrag(prev => prev ? { ...prev, currentY: y } : prev)
                   }}
                   onPointerUp={(e) => {
+                    if (e.pointerType !== 'mouse') return
                     if (!createDrag || createDrag.dateStr !== dateStr) return
                     try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId) } catch {}
                     const { startY, currentY } = createDrag
@@ -565,7 +690,6 @@ export default function CalendarWeekView({
                     const maxY = Math.max(startY, currentY)
                     const startMin = yToMinSnap(minY)
                     if (dy < DRAG_TAP_THRESHOLD) {
-                      // タップ: 時刻ジャストへ丸めて1時間扱い
                       const tapStartMin = Math.floor(startMin / 60) * 60
                       onSlotTap(dateStr, tapStartMin)
                     } else {
@@ -574,7 +698,10 @@ export default function CalendarWeekView({
                       onSlotTap(dateStr, startMin, safeEndMin)
                     }
                   }}
-                  onPointerCancel={() => setCreateDrag(null)}
+                  onPointerCancel={(e) => {
+                    if (e.pointerType !== 'mouse') return
+                    setCreateDrag(null)
+                  }}
                   onDragOver={(e) => {
                     e.preventDefault()
                     e.dataTransfer.dropEffect = 'move'
