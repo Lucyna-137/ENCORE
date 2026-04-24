@@ -105,20 +105,23 @@ src/
 ## 画面確認
 - スクリーンショットは「確認して」と指示されたときのみ `webdev-mcp > takeScreenshot` を使う
 
-## Typographyルール（全コンポーネント共通）
+## Typographyルール（全コンポーネント共通・2026-04-24 偶数統一）
 | スタイル名 | サイズ | ウェイト | フォント | 用途 |
 |-----------|--------|---------|---------|------|
 | Display | 32px | 700 | EN | ランク名など大見出し |
 | Title | 24px | 700 | EN | セクション大見出し |
 | Heading | 18px | 700 | JA | モーダルタイトルなど |
-| Section | 15px | 700 | JA | カード・セクション見出し |
+| Section | 16px | 700 | JA | カード・セクション見出し |
 | Section SM | 14px | 700 | JA | サブ見出し |
-| Body | 13px | 400 | JA | 本文 |
+| Body | 14px | 400 | JA | 本文 |
 | Body SM / Sub | 12px | 400 | JA | 補足テキスト |
-| Price | 15px | 700 | EN | 金額表示 |
-| Link | 13px | 400 | JA | amber色リンク |
-| Caption | 11px | 400 | EN | 注釈・ラベル |
-| Caption Muted | 11px | 400 | EN | 薄い注釈 |
+| Price | 16px | 700 | EN | 金額表示 |
+| Link | 14px | 400 | JA | amber色リンク |
+| Caption | 12px | 400 | EN | 注釈・ラベル |
+| Caption Muted | 12px | 400 | EN | 薄い注釈 |
+
+※ 偶数統一（2 の倍数）。使用サイズは 8/10/12/14/16/18/20/22/24/26/28/30/32/34/40/52/56/76/88 の 19 種。
+※ iPhone 実機の視認性向上のため、すべての奇数 fontSize（11/13/15/17/19）を +1 偶数に統合済み。
 
 - EN = `var(--font-google-sans), sans-serif`
 - JA = `var(--font-google-sans), var(--font-noto-jp), sans-serif`

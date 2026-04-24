@@ -110,7 +110,7 @@ export default function ColorPicker({
           {/* 未選択の規定スウォッチ: "規定" のラベルを内側に表示 */}
           {!isSelected && isDefault && (
             <span style={{
-              fontSize: 7, fontWeight: 700,
+              fontSize: 8, fontWeight: 700,
               color: 'var(--color-encore-text-muted)',
               fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
               lineHeight: 1, textAlign: 'center',

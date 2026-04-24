@@ -91,7 +91,7 @@ export default function InputField({
             className="w-full outline-none"
             style={{
               ...ty.body,
-              fontSize: 15,
+              fontSize: 16,
               background: 'transparent',
               border: 'none',
               padding: '4px 0 6px',

@@ -682,10 +682,10 @@ export default function EventPreviewScreen({
                   <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 12, fontWeight: 700, color: palette.fg }}>
                     {u.label}
                   </span>
-                  <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 13, fontWeight: 700, color: palette.fg }}>
+                  <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 14, fontWeight: 700, color: palette.fg }}>
                     {formatDaysLabel(u.diff)}
                   </span>
-                  <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 11, fontWeight: 400, color: palette.fg, opacity: 0.72 }}>
+                  <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 12, fontWeight: 400, color: palette.fg, opacity: 0.72 }}>
                     {u.date}
                   </span>
                 </div>
@@ -738,7 +738,7 @@ export default function EventPreviewScreen({
                           }}
                         />
                       )}
-                      <span style={{ ...ty.body, fontSize: 13, color: 'var(--color-encore-green)' }}>
+                      <span style={{ ...ty.body, fontSize: 14, color: 'var(--color-encore-green)' }}>
                         {n}
                       </span>
                     </div>
@@ -748,7 +748,7 @@ export default function EventPreviewScreen({
             }
             // 単体アーティストは従来通りテキストのみ（カバーに画像があるため）
             return (
-              <div style={{ ...ty.sub, fontSize: 13, marginBottom: 20 }}>
+              <div style={{ ...ty.sub, fontSize: 14, marginBottom: 20 }}>
                 {names[0]}
               </div>
             )
@@ -769,13 +769,13 @@ export default function EventPreviewScreen({
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   {live.openingTime && (
                     <span>
-                      <span style={{ fontSize: 11, color: 'var(--color-encore-text-muted)', marginRight: 6 }}>開場</span>
+                      <span style={{ fontSize: 12, color: 'var(--color-encore-text-muted)', marginRight: 6 }}>開場</span>
                       {live.openingTime}
                     </span>
                   )}
                   {live.startTime && (
                     <span>
-                      <span style={{ fontSize: 11, color: 'var(--color-encore-text-muted)', marginRight: 6 }}>開演</span>
+                      <span style={{ fontSize: 12, color: 'var(--color-encore-text-muted)', marginRight: 6 }}>開演</span>
                       {live.startTime}{live.endTime ? `〜${live.endTime}` : '〜'}
                     </span>
                   )}
@@ -835,7 +835,7 @@ export default function EventPreviewScreen({
                     WebkitTapHighlightColor: 'transparent',
                   }}
                 >
-                  <span style={{ color: 'var(--color-encore-amber)', textDecoration: 'underline', textDecorationColor: 'rgba(192,138,74,0.4)', fontSize: 13 }}>
+                  <span style={{ color: 'var(--color-encore-amber)', textDecoration: 'underline', textDecorationColor: 'rgba(192,138,74,0.4)', fontSize: 14 }}>
                     チケット情報を登録する
                   </span>
                 </button>
@@ -846,7 +846,7 @@ export default function EventPreviewScreen({
             {typeof live?.price === 'number' && live.price > 0 && (
               <InfoRow icon={<CurrencyJpy size={16} weight="regular" />}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                  <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)' }}>
+                  <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 16, fontWeight: 700, color: 'var(--color-encore-green)' }}>
                     ¥{live.price.toLocaleString('ja-JP')}
                   </span>
                   {live.drink1Separate && (
@@ -1001,7 +1001,7 @@ export default function EventPreviewScreen({
             {/* タイトル */}
             <div style={{
               fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-              fontSize: 13, fontWeight: 700,
+              fontSize: 14, fontWeight: 700,
               color: 'var(--color-encore-text-muted)',
               textAlign: 'center', paddingBottom: 12,
             }}>
@@ -1029,7 +1029,7 @@ export default function EventPreviewScreen({
                 >
                   <span style={{
                     fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                    fontSize: 15, fontWeight: isSelected ? 700 : 400,
+                    fontSize: 16, fontWeight: isSelected ? 700 : 400,
                     color: isSelected ? 'var(--color-encore-green)' : 'var(--color-encore-text-sub)',
                   }}>
                     {label}

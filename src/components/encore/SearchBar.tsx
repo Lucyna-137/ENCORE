@@ -55,7 +55,7 @@ export default function SearchBar({
           className="flex-1 outline-none"
           style={{
             ...ty.body,
-            fontSize: 15,
+            fontSize: 16,
             background: 'transparent',
             border: 'none',
           }}

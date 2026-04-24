@@ -62,9 +62,10 @@ export default function HorizontalTabs({
             className="cursor-pointer select-none"
             style={{
               ...ty.bodySM,
+              fontSize: 14,
               flex: 1,
               textAlign: 'center',
-              padding: '13px 8px 12px',
+              padding: '14px 8px 13px',
               color: active === i ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)',
               transition: 'color 0.2s',
               whiteSpace: 'nowrap',

@@ -21,7 +21,7 @@ function StatusBar({ dark = false }: { dark?: boolean }) {
       <span
         style={{
           fontFamily: 'var(--font-google-sans), sans-serif',
-          fontSize: 15,
+          fontSize: 16,
           fontWeight: 700,
           color: dark ? 'var(--color-encore-white)' : 'var(--color-encore-green)',
           letterSpacing: '-0.03em',

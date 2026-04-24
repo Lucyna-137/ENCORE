@@ -48,7 +48,7 @@ function SettingsSection({ label, action, children }: { label: string; action?: 
       }}>
         <span style={{
           fontFamily: 'var(--font-google-sans), sans-serif',
-          fontSize: 11, fontWeight: 700, letterSpacing: '0.08em',
+          fontSize: 12, fontWeight: 700, letterSpacing: '0.08em',
           textTransform: 'uppercase' as const,
           color: 'var(--color-encore-text-muted)',
           flex: 1,
@@ -128,12 +128,12 @@ function SettingsRow({
     >
       {icon}
       <div style={{ flex: 1 }}>
-        <div style={{ ...ty.body, fontSize: 15 }}>{label}</div>
+        <div style={{ ...ty.body, fontSize: 16 }}>{label}</div>
         {description && (
           <div style={{ ...ty.bodySM, color: 'var(--color-encore-text-muted)', marginTop: 1 }}>{description}</div>
         )}
       </div>
-      {value && <span style={{ ...ty.body, fontSize: 15, color: 'var(--color-encore-text-muted)' }}>{value}</span>}
+      {value && <span style={{ ...ty.body, fontSize: 16, color: 'var(--color-encore-text-muted)' }}>{value}</span>}
       {showChevron && onClick && (
         <svg width="14" height="14" viewBox="0 0 256 256" fill="none">
           <polyline
@@ -170,7 +170,7 @@ function SettingsToggleRow({
     >
       {icon}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ ...ty.body, fontSize: 15 }}>{label}</span>
+        <span style={{ ...ty.body, fontSize: 16 }}>{label}</span>
         {description && (
           <div style={{ ...ty.captionMuted, marginTop: 2, lineHeight: 1.45 }}>{description}</div>
         )}
@@ -249,7 +249,7 @@ function StyleSelector() {
                 cursor: 'pointer',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
                 fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                fontSize: 11, fontWeight: isActive ? 700 : 400,
+                fontSize: 12, fontWeight: isActive ? 700 : 400,
                 color: isActive ? 'var(--color-encore-green)' : 'var(--color-encore-text-sub)',
                 WebkitTapHighlightColor: 'transparent', transition: 'all 0.15s',
               }}
@@ -334,7 +334,7 @@ function PremiumInfoCard({
       <div style={{ flex: 1 }}>
         <div style={{
           fontFamily: 'var(--font-google-sans), sans-serif',
-          fontSize: 17, fontWeight: 700,
+          fontSize: 18, fontWeight: 700,
           color: '#FFFFFF',
           marginBottom: 4,
           display: 'flex', alignItems: 'center', gap: 8,
@@ -343,7 +343,7 @@ function PremiumInfoCard({
           {isPremium && (
             <span style={{
               fontFamily: 'var(--font-google-sans), sans-serif',
-              fontSize: 9, fontWeight: 700,
+              fontSize: 10, fontWeight: 700,
               letterSpacing: '0.14em',
               color: '#1C0F42',
               background: GOLD,
@@ -356,7 +356,7 @@ function PremiumInfoCard({
         </div>
         <div style={{
           fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-          fontSize: 11, fontWeight: 400,
+          fontSize: 12, fontWeight: 400,
           color: 'rgba(255,255,255,0.55)',
           lineHeight: 1.6,
         }}>
@@ -507,7 +507,7 @@ function PlanInfoModal({ onClose, onUpgrade }: { onClose: () => void; onUpgrade:
         <div style={{
           padding: '8px 20px 18px',
           fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-          fontSize: 13, lineHeight: 1.6,
+          fontSize: 14, lineHeight: 1.6,
           color: 'var(--color-encore-green)',
           textAlign: 'center',
         }}>
@@ -723,7 +723,7 @@ function ArtistEditSheet({
           </button>
           <span style={{
             fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-            fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)',
+            fontSize: 16, fontWeight: 700, color: 'var(--color-encore-green)',
           }}>
             {isNew ? 'アーティストを追加' : 'アーティストを編集'}
           </span>
@@ -746,7 +746,7 @@ function ArtistEditSheet({
           >
             <span style={{
               fontFamily: 'var(--font-google-sans), sans-serif',
-              fontSize: 13, fontWeight: 700,
+              fontSize: 14, fontWeight: 700,
               color: canSave ? '#fff' : 'var(--color-encore-text-muted)',
             }}>保存</span>
           </button>
@@ -776,7 +776,7 @@ function ArtistEditSheet({
           </div>
           <span style={{
             fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-            fontSize: 11, fontWeight: 400,
+            fontSize: 12, fontWeight: 400,
             color: 'var(--color-encore-text-muted)',
           }}>
             {showOverlay ? 'タップして写真を選択' : 'タップして変更'}
@@ -878,7 +878,7 @@ function ArtistEditSheet({
                   <span style={{
                     flex: 1, textAlign: 'center',
                     fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                    fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)',
+                    fontSize: 16, fontWeight: 700, color: 'var(--color-encore-green)',
                   }}>
                     {pickerMonth + 1}月
                   </span>
@@ -967,7 +967,7 @@ function ArtistEditSheet({
                     style={{
                       flex: 1, border: 'none', outline: 'none', background: 'transparent',
                       fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                      fontSize: 15, fontWeight: 400, color: 'var(--color-encore-green)',
+                      fontSize: 16, fontWeight: 400, color: 'var(--color-encore-green)',
                     }}
                   />
                   <button
@@ -984,7 +984,7 @@ function ArtistEditSheet({
                     style={{
                       background: 'transparent', border: 'none', cursor: 'pointer',
                       fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                      fontSize: 13, fontWeight: 400, flexShrink: 0,
+                      fontSize: 14, fontWeight: 400, flexShrink: 0,
                       color: member.birthday ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)',
                       padding: '2px 0',
                       WebkitTapHighlightColor: 'transparent',
@@ -1018,7 +1018,7 @@ function ArtistEditSheet({
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
                       <button onClick={() => setMemberPickerMonth(m => Math.max(0, m - 1))} disabled={memberPickerMonth === 0} style={navBtnStyle(memberPickerMonth === 0)}>‹</button>
-                      <span style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)' }}>
+                      <span style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 16, fontWeight: 700, color: 'var(--color-encore-green)' }}>
                         {memberPickerMonth + 1}月
                       </span>
                       <button onClick={() => setMemberPickerMonth(m => Math.min(11, m + 1))} disabled={memberPickerMonth === 11} style={navBtnStyle(memberPickerMonth === 11)}>›</button>
@@ -1074,7 +1074,7 @@ function ArtistEditSheet({
               }}
             >
               <Plus size={13} weight="bold" color="var(--color-encore-green)" />
-              <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 13, fontWeight: 700, color: 'var(--color-encore-green)' }}>
+              <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 14, fontWeight: 700, color: 'var(--color-encore-green)' }}>
                 メンバーを追加
               </span>
             </button>
@@ -1092,7 +1092,7 @@ function ArtistEditSheet({
             >
               <span style={{
                 fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                fontSize: 15, fontWeight: 400, color: 'var(--color-encore-green)', flex: 1, textAlign: 'left',
+                fontSize: 16, fontWeight: 400, color: 'var(--color-encore-green)', flex: 1, textAlign: 'left',
               }}>
                 イベントを常に色指定する
               </span>
@@ -1158,7 +1158,7 @@ function ArtistManageSection({
           {/* カウンター: Premium 時は「N 組」、Free 時は「N / 5」*/}
           <span style={{
             fontFamily: 'var(--font-google-sans), sans-serif',
-            fontSize: 11, fontWeight: 400,
+            fontSize: 12, fontWeight: 400,
             color: atLimit ? 'var(--color-encore-amber)' : 'var(--color-encore-text-muted)',
           }}>
             {isPremium
@@ -1175,7 +1175,7 @@ function ArtistManageSection({
               padding: '2px 0',
               color: atLimit ? 'var(--color-encore-amber)' : 'var(--color-encore-green)',
               fontFamily: 'var(--font-google-sans), sans-serif',
-              fontSize: 13, fontWeight: 700,
+              fontSize: 14, fontWeight: 700,
               WebkitTapHighlightColor: 'transparent',
             }}
           >
@@ -1213,7 +1213,7 @@ function ArtistManageSection({
 
                 {/* 名前 */}
                 <span style={{
-                  ...ty.body, fontSize: 15, flex: 1, fontWeight: 700,
+                  ...ty.body, fontSize: 16, flex: 1, fontWeight: 700,
                   color: 'var(--color-encore-green)',
                 }}>
                   {artist.name}
@@ -1263,7 +1263,7 @@ function ArtistManageSection({
                   border: 'none', cursor: 'pointer',
                   color: 'var(--color-encore-green)',
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 13, fontWeight: 700,
+                  fontSize: 14, fontWeight: 700,
                   WebkitTapHighlightColor: 'transparent',
                 }}
               >
@@ -1504,7 +1504,7 @@ export default function SettingsPage() {
             <div style={{
               padding: '0 20px 8px',
               fontFamily: 'var(--font-google-sans), sans-serif',
-              fontSize: 11, fontWeight: 700, letterSpacing: '0.08em',
+              fontSize: 12, fontWeight: 700, letterSpacing: '0.08em',
               textTransform: 'uppercase' as const,
               color: 'var(--color-encore-text-muted)',
             }}>
@@ -1534,7 +1534,7 @@ export default function SettingsPage() {
                 <Icon size={24} weight="regular" color={color} />
                 <span style={{
                   fontFamily: 'var(--font-google-sans), sans-serif',
-                  fontSize: 9, fontWeight: 700,
+                  fontSize: 10, fontWeight: 700,
                   letterSpacing: '0.08em', textTransform: 'uppercase' as const, color,
                 }}>
                   {label}
@@ -1601,7 +1601,7 @@ export default function SettingsPage() {
             <Check size={14} weight="bold" color="#fff" />
             <span style={{
               fontFamily: 'var(--font-google-sans), sans-serif',
-              fontSize: 13, fontWeight: 700, color: '#fff',
+              fontSize: 14, fontWeight: 700, color: '#fff',
             }}>
               保存しました
             </span>

@@ -63,7 +63,7 @@ export default function ToastHost() {
         <span
           style={{
             fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-            fontSize: 13,
+            fontSize: 14,
             fontWeight: 400,
             color: 'var(--color-encore-white)',
             flex: 1,
@@ -82,7 +82,7 @@ export default function ToastHost() {
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-              fontSize: 13,
+              fontSize: 14,
               fontWeight: 700,
               color: 'var(--color-encore-amber)',
               padding: '0 2px',

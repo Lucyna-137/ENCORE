@@ -271,7 +271,7 @@ export default function SetlistEditorSheet({ live, isOpen, onClose, onSaved }: S
               border: 'none',
               cursor: isDirty ? 'pointer' : 'default',
               fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-              fontSize: 13, fontWeight: 700,
+              fontSize: 14, fontWeight: 700,
               WebkitTapHighlightColor: 'transparent',
               opacity: isDirty ? 1 : 0.6,
             }}
@@ -419,7 +419,7 @@ function Row({
         <DotLeader />
         <span style={{
           fontFamily: 'var(--font-google-sans), sans-serif',
-          fontSize: 11, fontWeight: 700,
+          fontSize: 12, fontWeight: 700,
           color: 'var(--color-encore-amber)',
           letterSpacing: '0.24em',
           textTransform: 'uppercase',
@@ -453,7 +453,7 @@ function Row({
       >
         <span style={{
           fontFamily: 'var(--font-google-sans), sans-serif',
-          fontSize: 11, fontWeight: 700,
+          fontSize: 12, fontWeight: 700,
           color: 'var(--color-encore-text-sub)',
           letterSpacing: '0.2em',
           flexShrink: 0,
@@ -665,7 +665,7 @@ function ActionButton({
         border: primary ? 'none' : '1px solid var(--color-encore-border)',
         color: primary ? 'white' : 'var(--color-encore-green)',
         fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-        fontSize: 13, fontWeight: 700,
+        fontSize: 14, fontWeight: 700,
         cursor: 'pointer',
         WebkitTapHighlightColor: 'transparent',
       }}

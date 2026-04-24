@@ -54,7 +54,7 @@ export default function LiveCompareCard({ live, onStatusChange }: LiveCompareCar
           <div
             style={{
               ...ty.section,
-              fontSize: 13,
+              fontSize: 14,
               lineHeight: 1.35,
               marginBottom: 2,
               overflow: 'hidden',
@@ -68,7 +68,7 @@ export default function LiveCompareCard({ live, onStatusChange }: LiveCompareCar
           <div
             style={{
               ...ty.sub,
-              fontSize: 11,
+              fontSize: 12,
               marginBottom: 2,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
@@ -102,12 +102,12 @@ export default function LiveCompareCard({ live, onStatusChange }: LiveCompareCar
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
           <AttendanceStatusMarker status={live.attendanceStatus} />
-          <span style={{ ...ty.captionMuted, fontSize: 11 }}>
+          <span style={{ ...ty.captionMuted, fontSize: 12 }}>
             {STATUS_LABEL[live.attendanceStatus]}
           </span>
           <span
             style={{
-              fontSize: 9,
+              fontSize: 10,
               fontWeight: 700,
               fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
               padding: '1px 6px',

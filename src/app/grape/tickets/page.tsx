@@ -172,7 +172,7 @@ function TicketCard({
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
           <span style={{
             flex: 1, minWidth: 0,
-            fontSize: 15, fontWeight: 700,
+            fontSize: 16, fontWeight: 700,
             color: 'var(--color-encore-green)',
             fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
             display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
@@ -208,7 +208,7 @@ function TicketCard({
         {/* Row 3: date + price */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{
-            fontSize: 11, fontWeight: 700,
+            fontSize: 12, fontWeight: 700,
             color: dowColor,
             fontFamily: 'var(--font-google-sans), sans-serif',
           }}>
@@ -216,7 +216,7 @@ function TicketCard({
           </span>
           {live.price != null && live.price > 0 && (
             <span style={{
-              fontSize: 11, fontWeight: 700,
+              fontSize: 12, fontWeight: 700,
               color: 'var(--color-encore-text-muted)',
               fontFamily: 'var(--font-google-sans), sans-serif',
               marginLeft: 'auto',
@@ -232,7 +232,7 @@ function TicketCard({
             {nextDate && (
               <span style={{
                 display: 'flex', alignItems: 'center', gap: 3,
-                fontSize: 11,
+                fontSize: 12,
                 color: isUrgentDate ? 'var(--color-encore-amber)' : 'var(--color-encore-text-muted)',
                 fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
               }}>
@@ -467,7 +467,7 @@ export default function TicketsPage() {
                   style={{
                     flex: 1, border: 'none', background: 'transparent', outline: 'none',
                     fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                    fontSize: 13, color: 'var(--color-encore-green)',
+                    fontSize: 14, color: 'var(--color-encore-green)',
                   }}
                 />
                 {searchQuery && (
@@ -484,7 +484,7 @@ export default function TicketsPage() {
                 style={{
                   background: 'none', border: 'none', cursor: 'pointer',
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 13, color: 'var(--color-encore-green)',
+                  fontSize: 14, color: 'var(--color-encore-green)',
                   WebkitTapHighlightColor: 'transparent', padding: '4px 0',
                 }}
               >
@@ -621,7 +621,7 @@ export default function TicketsPage() {
                       <Plus size={15} weight="regular" color="#fff" />
                       <span style={{
                         fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                        fontSize: 13, fontWeight: 700, color: '#fff',
+                        fontSize: 14, fontWeight: 700, color: '#fff',
                       }}>
                         チケットを追加
                       </span>
@@ -640,7 +640,7 @@ export default function TicketsPage() {
                     <MagnifyingGlass size={40} weight="light" color="var(--color-encore-border)" />
                     <span style={{
                       fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                      fontSize: 13, fontWeight: 400,
+                      fontSize: 14, fontWeight: 400,
                       color: 'var(--color-encore-text-muted)',
                       lineHeight: 1.6,
                     }}>
@@ -665,7 +665,7 @@ export default function TicketsPage() {
                   <Ticket size={40} weight="light" color="var(--color-encore-border)" />
                   <span style={{
                     fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                    fontSize: 13, fontWeight: 400,
+                    fontSize: 14, fontWeight: 400,
                     color: 'var(--color-encore-text-muted)',
                   }}>
                     {tabEmptyMsg[activeTab]}
@@ -723,7 +723,7 @@ export default function TicketsPage() {
                 <span
                   style={{
                     fontFamily: 'var(--font-google-sans), sans-serif',
-                    fontSize: 9,
+                    fontSize: 10,
                     fontWeight: 700,
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase',

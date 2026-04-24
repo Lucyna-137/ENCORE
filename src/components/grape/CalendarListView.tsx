@@ -219,7 +219,7 @@ function ArtistFilterStrip({
           >
             <span style={{
               fontFamily: 'var(--font-google-sans), sans-serif',
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: 700,
               color: selectedArtist === null ? 'var(--color-encore-white)' : 'var(--color-encore-text-sub)',
               letterSpacing: '0.03em',
@@ -305,7 +305,7 @@ function ArtistFilterStrip({
               </div>
               <span style={{
                 fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                fontSize: 9,
+                fontSize: 10,
                 fontWeight: isSelected ? 700 : 400,
                 color: isSelected ? 'var(--color-encore-green)' : 'var(--color-encore-text-muted)',
                 letterSpacing: '0.02em',
@@ -611,7 +611,7 @@ const CalendarListView = forwardRef<CalendarListViewHandle, CalendarListViewProp
                           )}
                           <span style={{
                             fontFamily: 'var(--font-google-sans), sans-serif',
-                            fontSize: 11, fontWeight: 700,
+                            fontSize: 12, fontWeight: 700,
                             color: isCurrentWeek ? 'var(--color-encore-amber)' : 'var(--color-encore-text-sub)',
                             fontVariantNumeric: 'tabular-nums',
                           }}>
@@ -623,7 +623,7 @@ const CalendarListView = forwardRef<CalendarListViewHandle, CalendarListViewProp
                           }} />
                           <span style={{
                             fontFamily: 'var(--font-google-sans), sans-serif',
-                            fontSize: 11, fontWeight: 700,
+                            fontSize: 12, fontWeight: 700,
                             color: 'var(--color-encore-green)',
                           }}>
                             {weekSummary.count} 件
@@ -631,7 +631,7 @@ const CalendarListView = forwardRef<CalendarListViewHandle, CalendarListViewProp
                           {weekSummary.hasPrice && (
                             <span style={{
                               fontFamily: 'var(--font-google-sans), sans-serif',
-                              fontSize: 11, fontWeight: 400,
+                              fontSize: 12, fontWeight: 400,
                               color: 'var(--color-encore-text-sub)',
                             }}>
                               ¥{weekSummary.totalPrice.toLocaleString('ja-JP')}
@@ -657,7 +657,7 @@ const CalendarListView = forwardRef<CalendarListViewHandle, CalendarListViewProp
                         <Warning size={12} weight="fill" color="var(--color-encore-error)" />
                         <span style={{
                           fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                          fontSize: 11, fontWeight: 700,
+                          fontSize: 12, fontWeight: 700,
                           color: 'var(--color-encore-error)',
                         }}>
                           同じ時間帯に別のイベント

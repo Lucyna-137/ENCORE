@@ -50,7 +50,7 @@ export default function TabBar({ items = defaultItems, defaultActive = 2 }: TabB
           <span
             style={{
               fontFamily: 'var(--font-google-sans), sans-serif',
-              fontSize: 9,
+              fontSize: 10,
               fontWeight: 700,
               letterSpacing: '0.08em',
               textTransform: 'uppercase' as const,

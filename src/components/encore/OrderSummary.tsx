@@ -55,7 +55,7 @@ export default function OrderSummary({ items = defaultItems, total = '¥3,500' }
               {item.image && <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
             </div>
             <div className="flex-1">
-              <div style={{ ...ty.section, fontSize: 17, marginBottom: 4 }}>{item.name}</div>
+              <div style={{ ...ty.section, fontSize: 18, marginBottom: 4 }}>{item.name}</div>
               <div style={{ ...ty.sub, lineHeight: 1.5 }}>{item.detail}</div>
               <div className="flex gap-3 mt-1.5">
                 <button style={{ ...ty.link, cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}>

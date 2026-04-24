@@ -59,7 +59,7 @@ export default function Select({ label, options, value, placeholder = '選択し
           border: 'none',
           cursor: 'pointer',
           ...(selected ? ty.body : ty.bodySM),
-          fontSize: 15,
+          fontSize: 16,
           color: selected ? 'var(--color-encore-green)' : 'var(--color-encore-text-sub)',
           transition: 'border-color 0.15s',
           WebkitTapHighlightColor: 'transparent',

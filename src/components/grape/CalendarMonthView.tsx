@@ -87,7 +87,7 @@ function BirthdayTooltipCard({ data, onClose }: { data: BirthdayTooltipData; onC
               <div>
                 <div style={{
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 13, fontWeight: 700,
+                  fontSize: 14, fontWeight: 700,
                   color: 'var(--color-encore-green)',
                   lineHeight: 1.3,
                 }}>
@@ -465,7 +465,7 @@ export default function CalendarMonthView({
                     border: 'none',
                     padding: 0,
                     cursor: 'pointer',
-                    fontSize: 13,
+                    fontSize: 14,
                     lineHeight: 1,
                     WebkitTapHighlightColor: 'transparent',
                     zIndex: 1,
@@ -550,7 +550,7 @@ export default function CalendarMonthView({
                       style={{
                         ...ty.body,
                         fontWeight: 700,
-                        fontSize: 15,
+                        fontSize: 16,
                         color: textColor,
                         lineHeight: 1,
                       }}
@@ -627,7 +627,7 @@ export default function CalendarMonthView({
                         background: 'var(--color-encore-amber)',
                         color: 'var(--color-encore-white)',
                         borderRadius: '50%',
-                        fontSize: 11,
+                        fontSize: 12,
                         fontWeight: 700,
                         fontFamily: 'var(--font-google-sans), sans-serif',
                         display: 'flex',

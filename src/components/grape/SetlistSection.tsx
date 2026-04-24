@@ -130,7 +130,7 @@ export default function SetlistSection({
               border: 'none',
               color: 'white',
               fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-              fontSize: 13, fontWeight: 700,
+              fontSize: 14, fontWeight: 700,
               cursor: 'pointer',
               WebkitTapHighlightColor: 'transparent',
             }}
@@ -237,7 +237,7 @@ function PreviewRow({
           flexShrink: 0,
           textAlign: 'right',
           fontFamily: 'var(--font-google-sans), sans-serif',
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: 700,
           color: 'var(--color-encore-green)',
           fontVariantNumeric: 'tabular-nums',
@@ -249,7 +249,7 @@ function PreviewRow({
         <div
           style={{
             ...ty.body,
-            fontSize: 13,
+            fontSize: 14,
             fontWeight: 700,
             overflow: 'hidden',
             textOverflow: 'ellipsis',

@@ -109,7 +109,7 @@ export default function DayAgendaSheet({ date, lives, onClose, onAddLive, onStat
         {/* Header */}
         <div style={{ padding: '0 20px 12px' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
-            <span style={{ ...ty.heading, fontSize: 17 }}>
+            <span style={{ ...ty.heading, fontSize: 18 }}>
               {date ? formatDateJa(date) : ''}
             </span>
             <span style={{ ...ty.captionMuted }}>
@@ -203,7 +203,7 @@ export default function DayAgendaSheet({ date, lives, onClose, onAddLive, onStat
                   background: active ? 'var(--color-encore-green)' : 'transparent',
                   color: active ? 'var(--color-encore-white)' : 'var(--color-encore-text-sub)',
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: 700,
                   cursor: 'pointer',
                   WebkitTapHighlightColor: 'transparent',

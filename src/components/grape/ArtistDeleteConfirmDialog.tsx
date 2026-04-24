@@ -75,7 +75,7 @@ export default function ArtistDeleteConfirmDialog({
         </div>
         <span style={{
           fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-          fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)',
+          fontSize: 16, fontWeight: 700, color: 'var(--color-encore-green)',
           textAlign: 'center',
         }}>
           {artistName}を削除しますか？
@@ -123,7 +123,7 @@ export default function ArtistDeleteConfirmDialog({
               ...btnBase,
               background: 'transparent',
               color: 'var(--color-encore-text-muted)',
-              fontSize: 13, fontWeight: 400,
+              fontSize: 14, fontWeight: 400,
             }}
           >
             キャンセル

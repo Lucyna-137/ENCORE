@@ -20,7 +20,7 @@ function CopyLabel({ text, cls }: { text: string; cls: string }) {
         onClick={handleCopy}
         style={{
           fontFamily: 'monospace',
-          fontSize: 11,
+          fontSize: 12,
           color: copied ? 'var(--color-encore-amber)' : 'var(--color-encore-green)',
           opacity: copied ? 1 : 0.45,
           marginTop: 2,
@@ -55,7 +55,7 @@ export default function Typography() {
         </div>
         <div className="flex items-center" style={{ gap: 20 }}>
           <CopyLabel text="Section —15px 700" cls="ty.section" />
-          <div style={{ fontFamily: JA, fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)' }}>ライブ履歴</div>
+          <div style={{ fontFamily: JA, fontSize: 16, fontWeight: 700, color: 'var(--color-encore-green)' }}>ライブ履歴</div>
         </div>
         <div className="flex items-center" style={{ gap: 20 }}>
           <CopyLabel text="Section SM —14px 700" cls="ty.sectionSM" />
@@ -63,7 +63,7 @@ export default function Typography() {
         </div>
         <div className="flex items-center" style={{ gap: 20 }}>
           <CopyLabel text="Body —13px 400" cls="ty.body" />
-          <div style={{ fontFamily: JA, fontSize: 13, color: 'var(--color-encore-green)', lineHeight: 1.6 }}>AOI ONE MAN LIVE 2026</div>
+          <div style={{ fontFamily: JA, fontSize: 14, color: 'var(--color-encore-green)', lineHeight: 1.6 }}>AOI ONE MAN LIVE 2026</div>
         </div>
         <div className="flex items-center" style={{ gap: 20 }}>
           <CopyLabel text="Body SM —12px 400" cls="ty.bodySM" />
@@ -75,21 +75,21 @@ export default function Typography() {
         </div>
         <div className="flex items-center" style={{ gap: 20 }}>
           <CopyLabel text="Price —15px 700" cls="ty.price" />
-          <div style={{ fontFamily: EN, fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)' }}>¥1,295</div>
+          <div style={{ fontFamily: EN, fontSize: 16, fontWeight: 700, color: 'var(--color-encore-green)' }}>¥1,295</div>
         </div>
         <div className="flex items-center" style={{ gap: 20 }}>
           <CopyLabel text="Link —13px 400 Amber" cls="ty.link" />
-          <button style={{ color: 'var(--color-encore-amber)', fontSize: 13, cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 2, background: 'none', border: 'none', fontFamily: JA, padding: 0 }}>
+          <button style={{ color: 'var(--color-encore-amber)', fontSize: 14, cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 2, background: 'none', border: 'none', fontFamily: JA, padding: 0 }}>
             これスキ！
           </button>
         </div>
         <div className="flex items-center" style={{ gap: 20 }}>
           <CopyLabel text="Caption —11px 400" cls="ty.caption" />
-          <div style={{ fontFamily: EN, fontSize: 11, color: 'var(--color-encore-green)' }}>Zepp Haneda・Open 18:00</div>
+          <div style={{ fontFamily: EN, fontSize: 12, color: 'var(--color-encore-green)' }}>Zepp Haneda・Open 18:00</div>
         </div>
         <div className="flex items-center" style={{ gap: 20 }}>
           <CopyLabel text="Caption Muted — 11px 400" cls="ty.captionMuted" />
-          <div style={{ fontFamily: EN, fontSize: 11, color: 'rgba(27,60,45,0.35)' }}>powered by ENCORE PLATFORM</div>
+          <div style={{ fontFamily: EN, fontSize: 12, color: 'rgba(27,60,45,0.35)' }}>powered by ENCORE PLATFORM</div>
         </div>
       </div>
     </div>

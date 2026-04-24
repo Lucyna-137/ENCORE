@@ -228,7 +228,7 @@ function ArtistEventCard({
               {/* Title row: タイトル（左）+ 金額（右） */}
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginBottom: 4 }}>
                 <div style={{
-                  ...ty.sectionSM, fontSize: 13,
+                  ...ty.sectionSM, fontSize: 14,
                   flex: 1, minWidth: 0,
                   display: '-webkit-box',
                   WebkitBoxOrient: 'vertical',
@@ -240,7 +240,7 @@ function ArtistEventCard({
                 </div>
                 {live.price !== undefined && live.price > 0 && (
                   <div style={{
-                    ...ty.price, fontSize: 11,
+                    ...ty.price, fontSize: 12,
                     color: 'var(--color-encore-text-sub)',
                     flexShrink: 0,
                     whiteSpace: 'nowrap',
@@ -253,7 +253,7 @@ function ArtistEventCard({
               {/* Date */}
               <div style={{
                 fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                fontSize: 13, fontWeight: 700,
+                fontSize: 14, fontWeight: 700,
                 color: 'var(--color-encore-text-sub)',
                 marginBottom: 5,
               }}>
@@ -266,7 +266,7 @@ function ArtistEventCard({
                   <MapPin size={10} weight="fill" color="var(--color-encore-text-muted)" />
                   <span style={{
                     fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                    fontSize: 11, display: 'block',
+                    fontSize: 12, display: 'block',
                     color: 'var(--color-encore-text-sub)',
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   }}>
@@ -326,7 +326,7 @@ function LiveTypeBreakdown({ lives }: { lives: GrapeLive[] }) {
               width: 7, height: 7, borderRadius: 2, flexShrink: 0,
               background: LIVE_TYPE_COLOR[d.type] ?? 'var(--color-encore-border)',
             }} />
-            <span style={{ ...ty.bodySM, color: 'var(--color-encore-text-sub)', fontSize: 11 }}>{d.type}</span>
+            <span style={{ ...ty.bodySM, color: 'var(--color-encore-text-sub)', fontSize: 12 }}>{d.type}</span>
             <span style={{ ...ty.caption, fontWeight: 700, marginLeft: 'auto', paddingRight: 10 }}>
               {d.count}
             </span>
@@ -610,7 +610,7 @@ function ArtistEditSheet({
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--color-encore-text-muted)', WebkitTapHighlightColor: 'transparent' }}>
             <X size={20} weight="bold" />
           </button>
-          <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)' }}>
+          <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 16, fontWeight: 700, color: 'var(--color-encore-green)' }}>
             アーティストを編集
           </span>
           <button
@@ -622,7 +622,7 @@ function ArtistEditSheet({
               transition: 'background 0.15s', WebkitTapHighlightColor: 'transparent',
             }}
           >
-            <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 13, fontWeight: 700, color: canSave ? '#fff' : 'var(--color-encore-text-muted)' }}>保存</span>
+            <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 14, fontWeight: 700, color: canSave ? '#fff' : 'var(--color-encore-text-muted)' }}>保存</span>
           </button>
         </div>
         {/* アバター */}
@@ -635,7 +635,7 @@ function ArtistEditSheet({
               </div>
             )}
           </div>
-          <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 11, color: 'var(--color-encore-text-muted)' }}>
+          <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 12, color: 'var(--color-encore-text-muted)' }}>
             {showOverlay ? 'タップして写真を選択' : 'タップして変更'}
           </span>
           <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
@@ -684,7 +684,7 @@ function ArtistEditSheet({
                   <span style={{
                     flex: 1, textAlign: 'center',
                     fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                    fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)',
+                    fontSize: 16, fontWeight: 700, color: 'var(--color-encore-green)',
                   }}>
                     {pickerMonth + 1}月
                   </span>
@@ -724,7 +724,7 @@ function ArtistEditSheet({
               onClick={() => setAlwaysColor(v => !v)}
               style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '10px 0', background: 'transparent', border: 'none', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
             >
-              <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 15, fontWeight: 400, color: 'var(--color-encore-green)' }}>
+              <span style={{ fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', fontSize: 16, fontWeight: 400, color: 'var(--color-encore-green)' }}>
                 イベントを常に色指定する
               </span>
               <div style={{ position: 'relative', width: 44, height: 26, borderRadius: 999, background: alwaysColor ? 'var(--color-encore-green)' : 'var(--color-encore-border)', transition: 'background 0.2s', flexShrink: 0 }}>
@@ -1032,7 +1032,7 @@ export default function ArtistDetailPage() {
               color: '#fff',
               textShadow: '0 1px 3px rgba(0,0,0,0.45)',
               fontFamily: 'var(--font-google-sans), sans-serif',
-              fontSize: 15, fontWeight: 700,
+              fontSize: 16, fontWeight: 700,
               letterSpacing: '-0.03em',
               pointerEvents: 'none',
             }}>
@@ -1136,7 +1136,7 @@ export default function ArtistDetailPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                 <span style={{
                   fontFamily: 'var(--font-google-sans), sans-serif',
-                  fontSize: 11, fontWeight: 400,
+                  fontSize: 12, fontWeight: 400,
                   color: 'rgba(255,255,255,0.65)',
                 }}>
                   {periodLabel}
@@ -1146,7 +1146,7 @@ export default function ArtistDetailPage() {
                   fontSize: 22, fontWeight: 700, lineHeight: 1,
                   color: '#fff',
                 }}>
-                  {periodLives.length}<span style={{ fontSize: 13, fontWeight: 400, marginLeft: 2 }}>本</span>
+                  {periodLives.length}<span style={{ fontSize: 14, fontWeight: 400, marginLeft: 2 }}>本</span>
                 </span>
               </div>
             </div>
@@ -1212,7 +1212,7 @@ export default function ArtistDetailPage() {
                 maxWidth: 210,
                 lineHeight: 1.6,
                 fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                fontSize: 11, fontWeight: 400,
+                fontSize: 12, fontWeight: 400,
                 boxShadow: '0 4px 16px rgba(0,0,0,0.18)',
                 pointerEvents: 'none',
               }}>
@@ -1251,7 +1251,7 @@ export default function ArtistDetailPage() {
               >
                 <span style={{
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 13, fontWeight: 700,
+                  fontSize: 14, fontWeight: 700,
                   color: 'var(--color-encore-green)',
                 }}>
                   {period === '今月'
@@ -1337,7 +1337,7 @@ export default function ArtistDetailPage() {
                       >
                         <span style={{
                           fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                          fontSize: 13, fontWeight: isSelected ? 700 : 400,
+                          fontSize: 14, fontWeight: isSelected ? 700 : 400,
                           color: isSelected ? 'var(--color-encore-green)' : 'var(--color-encore-text-sub)',
                         }}>
                           {label}

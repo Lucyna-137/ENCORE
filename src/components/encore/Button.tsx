@@ -29,7 +29,7 @@ const isWhiteText = (variant: string) =>
 
 const textStyle = (variant: string) => {
   const color = isWhiteText(variant) ? 'var(--color-encore-white)' : 'var(--color-encore-green)'
-  if (variant.startsWith('xs')) return { ...ty.bodySM, fontSize: 11, fontWeight: 700, color }
+  if (variant.startsWith('xs')) return { ...ty.bodySM, fontSize: 12, fontWeight: 700, color }
   if (variant.startsWith('sm')) return { ...ty.bodySM, fontWeight: 700, color }
   return { ...ty.sectionSM, color }
 }

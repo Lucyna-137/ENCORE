@@ -27,7 +27,7 @@ export const heading: React.CSSProperties = {
 
 export const section: React.CSSProperties = {
   fontFamily: JA,
-  fontSize: 15,
+  fontSize: 16,
   fontWeight: 700,
   color: 'var(--color-encore-green)',
 }
@@ -41,7 +41,7 @@ export const sectionSM: React.CSSProperties = {
 
 export const body: React.CSSProperties = {
   fontFamily: JA,
-  fontSize: 13,
+  fontSize: 14,
   fontWeight: 400,
   color: 'var(--color-encore-green)',
 }
@@ -55,28 +55,28 @@ export const bodySM: React.CSSProperties = {
 
 export const caption: React.CSSProperties = {
   fontFamily: 'var(--font-google-sans), sans-serif',
-  fontSize: 11,
+  fontSize: 12,
   fontWeight: 400,
   color: 'var(--color-encore-green)',
 }
 
 export const captionMuted: React.CSSProperties = {
   fontFamily: EN,
-  fontSize: 11,
+  fontSize: 12,
   fontWeight: 400,
   color: 'var(--color-encore-text-muted)',
 }
 
 export const price: React.CSSProperties = {
   fontFamily: EN,
-  fontSize: 15,
+  fontSize: 16,
   fontWeight: 700,
   color: 'var(--color-encore-green)',
 }
 
 export const link: React.CSSProperties = {
   fontFamily: JA,
-  fontSize: 13,
+  fontSize: 14,
   fontWeight: 400,
   color: 'var(--color-encore-amber)',
 }

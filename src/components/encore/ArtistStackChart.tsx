@@ -107,7 +107,7 @@ export default function ArtistStackChart({
         <div
           style={{
             fontFamily: 'var(--font-google-sans), sans-serif',
-            fontSize: 11,
+            fontSize: 12,
             fontWeight: 700,
             letterSpacing: '0.08em',
             color: 'var(--color-encore-amber)',
@@ -166,7 +166,7 @@ export default function ArtistStackChart({
               <div style={{ minWidth: 0 }}>
                 <div style={{
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 13, fontWeight: 700,
+                  fontSize: 14, fontWeight: 700,
                   color: 'var(--color-encore-green)',
                   lineHeight: 1.2,
                 }}>
@@ -174,7 +174,7 @@ export default function ArtistStackChart({
                 </div>
                 <div style={{
                   fontFamily: 'var(--font-google-sans), sans-serif',
-                  fontSize: 11, fontWeight: 400,
+                  fontSize: 12, fontWeight: 400,
                   color: 'var(--color-encore-text-sub)',
                   marginTop: 2,
                   letterSpacing: '0.02em',

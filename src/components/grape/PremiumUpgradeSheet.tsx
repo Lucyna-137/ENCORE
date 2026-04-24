@@ -125,7 +125,7 @@ export default function PremiumUpgradeSheet({ onClose }: { onClose: () => void }
                 background: PUR.gold,
                 color: PUR.bg,
                 fontFamily: 'var(--font-google-sans), sans-serif',
-                fontSize: 9, fontWeight: 700,
+                fontSize: 10, fontWeight: 700,
                 letterSpacing: '0.14em',
                 padding: '2px 7px',
                 borderRadius: 999,
@@ -153,7 +153,7 @@ export default function PremiumUpgradeSheet({ onClose }: { onClose: () => void }
           </div>
           <div style={{
             fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-            fontSize: 13, fontWeight: 400, lineHeight: 1.65,
+            fontSize: 14, fontWeight: 400, lineHeight: 1.65,
             color: PUR.sub,
           }}>
             {isPremium ? (
@@ -194,13 +194,13 @@ export default function PremiumUpgradeSheet({ onClose }: { onClose: () => void }
               <div style={{ flex: 1 }}>
                 <div style={{
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 13, fontWeight: 700,
+                  fontSize: 14, fontWeight: 700,
                   color: PUR.title,
                   marginBottom: 2,
                 }}>{label}</div>
                 <div style={{
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 11, fontWeight: 400,
+                  fontSize: 12, fontWeight: 400,
                   color: PUR.sub,
                   lineHeight: 1.5,
                 }}>{desc}</div>
@@ -240,13 +240,13 @@ export default function PremiumUpgradeSheet({ onClose }: { onClose: () => void }
               <div>
                 <div style={{
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 13, fontWeight: 700,
+                  fontSize: 14, fontWeight: 700,
                   color: PUR.title,
                   marginBottom: 3,
                 }}>買い切り</div>
                 <div style={{
                   fontFamily: 'var(--font-google-sans), sans-serif',
-                  fontSize: 11, fontWeight: 400,
+                  fontSize: 12, fontWeight: 400,
                   color: PUR.sub,
                 }}>リリース記念価格 · サブスクなし · 税込</div>
               </div>

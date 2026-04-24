@@ -69,7 +69,7 @@ function WeekBirthdayTooltip({ data, onClose }: { data: WeekBirthdayTooltipData;
               <div>
                 <div style={{
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 13, fontWeight: 700, color: 'var(--color-encore-green)', lineHeight: 1.3,
+                  fontSize: 14, fontWeight: 700, color: 'var(--color-encore-green)', lineHeight: 1.3,
                 }}>
                   {artist.name} 誕生日
                 </div>
@@ -501,7 +501,7 @@ export default function CalendarWeekView({
                   style={{
                     ...ty.body,
                     fontWeight: 700,
-                    fontSize: 15,
+                    fontSize: 16,
                     color: urgencyPalette?.textColor
                       ?? (isToday ? 'var(--color-encore-white)' : 'var(--color-encore-green)'),
                   }}
@@ -570,7 +570,7 @@ export default function CalendarWeekView({
                 }}
               >
                 {h > 0 && (
-                  <span style={{ ...ty.captionMuted, fontSize: 11 }}>
+                  <span style={{ ...ty.captionMuted, fontSize: 12 }}>
                     {h}:00
                   </span>
                 )}
@@ -881,7 +881,7 @@ export default function CalendarWeekView({
                           <span
                             style={{
                               ...ty.caption,
-                              fontSize: 9,
+                              fontSize: 10,
                               fontWeight: 700,
                               color: 'inherit',
                               overflow: 'hidden',

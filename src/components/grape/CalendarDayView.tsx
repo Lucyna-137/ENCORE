@@ -418,7 +418,7 @@ export default function CalendarDayView({
                 </span>
                 <span style={{
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 11, fontWeight: 700,
+                  fontSize: 12, fontWeight: 700,
                   color: palette.fg,
                   opacity: 0.7,
                   flexShrink: 0,
@@ -514,7 +514,7 @@ export default function CalendarDayView({
                 }}
               >
                 {h > 0 && (
-                  <span style={{ ...ty.captionMuted, fontSize: 11 }}>
+                  <span style={{ ...ty.captionMuted, fontSize: 12 }}>
                     {h}:00
                   </span>
                 )}
@@ -709,7 +709,7 @@ export default function CalendarDayView({
                 >
                   <span style={{
                     fontFamily: 'var(--font-google-sans), sans-serif',
-                    fontSize: 11,
+                    fontSize: 12,
                     fontWeight: 700,
                     color: 'var(--color-encore-green)',
                     background: 'rgba(255,255,255,0.9)',

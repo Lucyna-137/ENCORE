@@ -84,7 +84,7 @@ export default function UrgencySummaryCard({ lives, today }: UrgencySummaryCardP
             marginLeft: 'auto',
             ...ty.caption,
             fontWeight: 700,
-            fontSize: 11,
+            fontSize: 12,
             color: 'var(--color-encore-amber)',
             background: 'rgba(192,138,74,0.18)',
             padding: '2px 8px',

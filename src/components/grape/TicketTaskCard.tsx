@@ -170,7 +170,7 @@ export default function TicketTaskCard({ live, onCardTap, onQuickAction }: Ticke
           <div
             style={{
               ...ty.captionMuted,
-              fontSize: 11,
+              fontSize: 12,
               marginBottom: 6,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -182,7 +182,7 @@ export default function TicketTaskCard({ live, onCardTap, onQuickAction }: Ticke
 
           {/* Date row + Deadline + Announcement */}
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 5, marginBottom: 4 }}>
-            <span style={{ ...ty.captionMuted, fontSize: 11 }}>
+            <span style={{ ...ty.captionMuted, fontSize: 12 }}>
               {live.date.slice(5).replace('-', '/')}
             </span>
 
@@ -291,7 +291,7 @@ export default function TicketTaskCard({ live, onCardTap, onQuickAction }: Ticke
               <span
                 style={{
                   ...ty.caption,
-                  fontSize: 9,
+                  fontSize: 10,
                   color: PRIORITY_COLOR[live.priority],
                   fontWeight: 700,
                   letterSpacing: '0.04em',
@@ -332,7 +332,7 @@ export default function TicketTaskCard({ live, onCardTap, onQuickAction }: Ticke
                   : 'transparent',
                 cursor: 'pointer',
                 ...ty.caption,
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: 700,
                 color: isUrgentAction(action) && action !== 'detail'
                   ? 'var(--color-encore-white)'

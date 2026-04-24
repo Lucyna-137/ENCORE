@@ -111,7 +111,7 @@ export default function AddActionSheet({ onClose, onNewEvent, onImportFromUrl }:
               URLから取り込む
               <span style={{
                 fontFamily: 'var(--font-google-sans), sans-serif',
-                fontSize: 9, fontWeight: 700,
+                fontSize: 10, fontWeight: 700,
                 letterSpacing: '0.08em',
                 color: 'var(--color-encore-amber)',
                 background: 'rgba(192, 138, 74, 0.14)',

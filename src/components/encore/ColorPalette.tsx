@@ -666,7 +666,7 @@ export default function ColorPalette() {
                     padding: '0 0 0 2px',
                     cursor: 'pointer',
                     color: loaded ? 'rgba(255,255,255,0.6)' : 'var(--color-encore-text-muted)',
-                    fontSize: 13,
+                    fontSize: 14,
                     lineHeight: 1,
                     display: 'flex', alignItems: 'center',
                   }}
@@ -729,7 +729,7 @@ export default function ColorPalette() {
                     background: 'transparent',
                     color: 'rgba(255,255,255,0.5)',
                     fontFamily: 'var(--font-google-sans), sans-serif',
-                    fontSize: 11, fontWeight: 700,
+                    fontSize: 12, fontWeight: 700,
                     cursor: 'pointer',
                   }}
                 >

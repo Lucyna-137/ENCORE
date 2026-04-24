@@ -127,7 +127,7 @@ function SectionLabel({ label }: { label: string }) {
     <div style={{ padding: '22px 20px 8px' }}>
       <span style={{
         fontFamily: 'var(--font-google-sans), sans-serif',
-        fontSize: 11, fontWeight: 700, letterSpacing: '0.08em',
+        fontSize: 12, fontWeight: 700, letterSpacing: '0.08em',
         textTransform: 'uppercase' as const,
         color: 'var(--color-encore-text-muted)',
       }}>
@@ -245,7 +245,7 @@ function HeroCard({
                 }}>
                   <span style={{
                     fontFamily: 'var(--font-google-sans), sans-serif',
-                    fontSize: 11, fontWeight: 700, color: '#fff',
+                    fontSize: 12, fontWeight: 700, color: '#fff',
                     letterSpacing: '-0.02em',
                   }}>
                     +{overflow}
@@ -272,7 +272,7 @@ function HeroCard({
               </div>
             )}
             <div style={{
-              ...ty.section, fontSize: 17,
+              ...ty.section, fontSize: 18,
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               minWidth: 0, flex: 1,
             }}>{topArtist?.name ?? '—'}</div>
@@ -282,7 +282,7 @@ function HeroCard({
         <div style={{ padding: '13px 16px', overflow: 'hidden', minWidth: 0 }}>
           <div style={{ ...ty.caption, marginBottom: 5 }}>最多会場</div>
           <div style={{
-            ...ty.section, lineHeight: 1.35, fontSize: 17,
+            ...ty.section, lineHeight: 1.35, fontSize: 18,
             overflow: 'hidden',
             display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2,
           }}>{topVenue?.name ?? '—'}</div>
@@ -334,7 +334,7 @@ function MonthlyChart({ data }: { data: ReturnType<typeof computeMonthlyStats> }
               flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
             }}>
               <div style={{
-                ...ty.caption, fontSize: 11, height: 14,
+                ...ty.caption, fontSize: 12, height: 14,
                 fontWeight: isCurr ? 700 : 400,
                 color: 'var(--color-encore-green)',
                 visibility: d.count > 0 ? 'visible' : 'hidden',
@@ -351,7 +351,7 @@ function MonthlyChart({ data }: { data: ReturnType<typeof computeMonthlyStats> }
               }} />
               <div style={{
                 fontFamily: 'var(--font-google-sans), sans-serif',
-                fontSize: 11, lineHeight: 1,
+                fontSize: 12, lineHeight: 1,
                 color: 'var(--color-encore-green)',
                 fontWeight: isCurr ? 700 : 400,
               }}>
@@ -472,7 +472,7 @@ function VenueRankingCard({
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 7 }}>
               <span style={{
                 fontFamily: 'var(--font-google-sans), sans-serif',
-                fontSize: 11, fontWeight: 700, width: 14, textAlign: 'center', flexShrink: 0,
+                fontSize: 12, fontWeight: 700, width: 14, textAlign: 'center', flexShrink: 0,
                 color: idx === 0 ? 'var(--color-encore-amber)' : 'var(--color-encore-text-muted)',
               }}>
                 {idx + 1}
@@ -649,14 +649,15 @@ export default function ReportPage() {
                   key={p}
                   onClick={() => { setPeriod(p); setMonthOffset(0) }}
                   style={{
-                    padding: '5px 16px', borderRadius: 999,
-                    border: isActive ? 'none' : '1.5px solid var(--color-encore-border)',
+                    padding: '8px 20px', borderRadius: 999,
+                    // border幅は常に 1.5px 固定（色だけ切替）でレイアウトシフト回避
+                    border: `1.5px solid ${isActive ? 'transparent' : 'var(--color-encore-border)'}`,
                     background: isActive ? 'var(--color-encore-green)' : 'transparent',
                     color: isActive ? 'var(--color-encore-white)' : 'var(--color-encore-text-sub)',
                     fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                    fontSize: 12, fontWeight: 700,
+                    fontSize: 14, fontWeight: 700,
                     cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
-                    transition: 'all 0.15s',
+                    transition: 'background 0.15s, color 0.15s, border-color 0.15s',
                   }}
                 >
                   {p}
@@ -679,10 +680,19 @@ export default function ReportPage() {
                 fontSize: 12, fontWeight: 700,
                 color: 'var(--color-encore-green)',
                 minWidth: 28, textAlign: 'center',
+                display: 'inline-flex', alignItems: 'baseline', justifyContent: 'center', gap: 1,
               }}>
-                {displayDate.year !== CURRENT_YEAR
-                  ? `${displayDate.year}/${displayDate.month}`
-                  : `${displayDate.month}月`}
+                {displayDate.year !== CURRENT_YEAR ? (
+                  <>
+                    <span style={{ fontSize: 10 }}>{displayDate.year}/</span>
+                    <span style={{ fontSize: 16 }}>{displayDate.month}</span>
+                  </>
+                ) : (
+                  <>
+                    <span style={{ fontSize: 16 }}>{displayDate.month}</span>
+                    <span>月</span>
+                  </>
+                )}
               </span>
               <button
                 onClick={() => setMonthOffset(o => o + 1)}
@@ -760,7 +770,7 @@ export default function ReportPage() {
                 <Icon size={24} weight="regular" color={color} />
                 <span style={{
                   fontFamily: 'var(--font-google-sans), sans-serif',
-                  fontSize: 9, fontWeight: 700,
+                  fontSize: 10, fontWeight: 700,
                   letterSpacing: '0.08em', textTransform: 'uppercase' as const, color,
                 }}>
                   {label}

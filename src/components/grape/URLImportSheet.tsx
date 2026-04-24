@@ -383,7 +383,7 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
                   color: 'var(--color-encore-green)',
                   border: 'none',
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 13, fontWeight: 700,
+                  fontSize: 14, fontWeight: 700,
                   cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   WebkitTapHighlightColor: 'transparent',
@@ -595,7 +595,7 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
                   <span style={{
                     ...ty.section,
                     color: 'var(--color-encore-green)',
-                    fontSize: 13,
+                    fontSize: 14,
                   }}>
                     未登録のアーティスト{unregisteredArtists.length}組
                   </span>
@@ -754,7 +754,7 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
             <div style={{
               padding: '4px 20px 18px',
               fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-              fontSize: 13, lineHeight: 1.6,
+              fontSize: 14, lineHeight: 1.6,
               color: 'var(--color-encore-text-sub)',
               textAlign: 'center',
             }}>

@@ -149,7 +149,7 @@ export default function MiniEventSheet({ date, startMin, endMin, sameDayLives, o
             onClick={onExpand}
             style={{
               fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-              fontSize: 13,
+              fontSize: 14,
               fontWeight: 700,
               color: 'var(--color-encore-white)',
               background: 'var(--color-encore-green)',
@@ -217,7 +217,7 @@ export default function MiniEventSheet({ date, startMin, endMin, sameDayLives, o
                 )}
                 <span style={{
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 11, fontWeight: 700,
+                  fontSize: 12, fontWeight: 700,
                   color: conflicts.length > 0 ? 'var(--color-encore-error)' : 'var(--color-encore-text-muted)',
                   letterSpacing: '0.02em',
                 }}>
@@ -241,7 +241,7 @@ export default function MiniEventSheet({ date, startMin, endMin, sameDayLives, o
                       )}
                       <span style={{
                         fontFamily: 'var(--font-google-sans), sans-serif',
-                        fontSize: 11, fontWeight: 700,
+                        fontSize: 12, fontWeight: 700,
                         color: overlap ? 'var(--color-encore-error)' : 'var(--color-encore-text-sub)',
                         flexShrink: 0,
                         fontVariantNumeric: 'tabular-nums',
@@ -265,7 +265,7 @@ export default function MiniEventSheet({ date, startMin, endMin, sameDayLives, o
                 {sorted.length > 3 && (
                   <div style={{
                     fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                    fontSize: 11, fontWeight: 400,
+                    fontSize: 12, fontWeight: 400,
                     color: 'var(--color-encore-text-muted)',
                     paddingLeft: 2,
                   }}>

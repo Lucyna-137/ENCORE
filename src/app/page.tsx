@@ -124,7 +124,7 @@ function SectionBlock({
 }) {
   return (
     <div id={id} style={{ marginBottom: 80, scrollMarginTop: 32 }}>
-      <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-encore-text-muted)', marginBottom: 4 }}>
+      <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-encore-text-muted)', marginBottom: 4 }}>
         {num}
       </div>
       <div style={{
@@ -146,7 +146,7 @@ function Chip({ children }: { children: React.ReactNode }) {
     <div style={{
       display: 'inline-block',
       fontFamily: 'var(--font-google-sans), sans-serif',
-      fontSize: 9,
+      fontSize: 10,
       fontWeight: 700,
       letterSpacing: '0.1em',
       textTransform: 'uppercase' as const,
@@ -248,10 +248,10 @@ export default function Page() {
         }}
       >
         <div style={{ padding: '28px 18px 18px', flexShrink: 0 }}>
-          <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 17, fontWeight: 700, color: 'var(--color-encore-white)', letterSpacing: '0.14em' }}>
+          <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--color-encore-white)', letterSpacing: '0.14em' }}>
             ENCORE
           </div>
-          <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--color-encore-green-muted)', marginTop: 3 }}>
+          <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--color-encore-green-muted)', marginTop: 3 }}>
             UI Component Kit
           </div>
         </div>
@@ -261,7 +261,7 @@ export default function Page() {
               <div style={{
                 padding: '14px 18px 4px',
                 fontFamily: 'var(--font-google-sans), sans-serif',
-                fontSize: 9,
+                fontSize: 10,
                 fontWeight: 700,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase' as const,
@@ -288,7 +288,7 @@ export default function Page() {
                     background: activeSection === id ? 'rgba(255,255,255,0.1)' : 'transparent',
                   }}
                 >
-                  <span style={{ fontFamily: 'monospace', fontSize: 9, color: 'var(--color-encore-amber)', fontWeight: 700, minWidth: 14 }}>
+                  <span style={{ fontFamily: 'monospace', fontSize: 10, color: 'var(--color-encore-amber)', fontWeight: 700, minWidth: 14 }}>
                     {num}
                   </span>
                   {label}
@@ -309,7 +309,7 @@ export default function Page() {
           <div style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 34, fontWeight: 700, color: 'var(--color-encore-green)', letterSpacing: '-0.01em', marginBottom: 8 }}>
             ENCORE UI Kit
           </div>
-          <p style={{ fontSize: 13, color: 'var(--color-encore-text-sub)', lineHeight: 1.65 }}>
+          <p style={{ fontSize: 14, color: 'var(--color-encore-text-sub)', lineHeight: 1.65 }}>
             ENCOREアプリのデザイントークンとUIコンポーネント一覧。
           </p>
         </div>
@@ -493,7 +493,7 @@ export default function Page() {
             <div style={{ flex: 1, minWidth: 280, maxWidth: 375 }}>
               <Chip>Profile Edit — with icons</Chip>
               <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '24px 20px', marginTop: 6 }}>
-                <div style={{ fontSize: 13, color: '#1A3A2D', marginBottom: 20 }}>あなたのことを教えてください</div>
+                <div style={{ fontSize: 14, color: '#1A3A2D', marginBottom: 20 }}>あなたのことを教えてください</div>
                 <InputField label="ニックネーム" placeholder="ui pocket" defaultValue="ui pocket" icon={nicknameIcon} />
                 <InputField label="メールアドレス" placeholder="メールアドレス" type="email" icon={emailIcon} />
                 <InputField label="誕生日（入力しておくと良い事が…?）" placeholder="誕生日" icon={birthdayIcon} />
@@ -505,7 +505,7 @@ export default function Page() {
             <div style={{ flex: 1, minWidth: 280, maxWidth: 375 }}>
               <Chip>Text with counter</Chip>
               <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, padding: '24px 20px', marginTop: 6 }}>
-                <div style={{ fontSize: 13, fontWeight: 400, marginBottom: 16, color: 'var(--color-encore-green)' }}>何という名前で呼びますか？</div>
+                <div style={{ fontSize: 14, fontWeight: 400, marginBottom: 16, color: 'var(--color-encore-green)' }}>何という名前で呼びますか？</div>
                 <InputField label="ニックネーム" placeholder="ui pocket" defaultValue="ui pocket" icon={nicknameIcon} maxLength={20} showCounter />
               </div>
             </div>
@@ -547,7 +547,7 @@ export default function Page() {
         {/* S11 Segmented Control */}
         <SectionBlock id="s11" num="11" title="Segmented Control">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden', maxWidth: 375 }}>
-            <div style={{ padding: '16px 20px 4px', fontSize: 13, fontWeight: 400, color: 'var(--color-encore-green)' }}>このカードは何用ですか？</div>
+            <div style={{ padding: '16px 20px 4px', fontSize: 14, fontWeight: 400, color: 'var(--color-encore-green)' }}>このカードは何用ですか？</div>
             <SegmentedControl options={[
               { label: '個人用', icon: <User size={14} weight="light" /> },
               { label: 'ビジネス用', icon: <Buildings size={14} weight="light" /> },
@@ -574,7 +574,7 @@ export default function Page() {
         {/* S20 Toggle */}
         <SectionBlock id="s20" num="13" title="Toggle Switch">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden', maxWidth: 375 }}>
-            <div style={{ background: 'var(--color-encore-bg-section)', padding: '10px 20px', fontSize: 13, fontWeight: 400, color: 'var(--color-encore-text-sub)' }}>通知設定</div>
+            <div style={{ background: 'var(--color-encore-bg-section)', padding: '10px 20px', fontSize: 14, fontWeight: 400, color: 'var(--color-encore-text-sub)' }}>通知設定</div>
             <Toggle label="プッシュ通知" defaultChecked={true} />
             <div style={{ height: 1, background: 'var(--color-encore-border-light)', margin: '0 20px' }} />
             <Toggle label="メール通知" defaultChecked={false} />
@@ -697,7 +697,7 @@ export default function Page() {
         {/* S07 List Rows */}
         <SectionBlock id="s07" num="19" title="List Rows">
           <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden', maxWidth: 375 }}>
-            <div style={{ background: 'var(--color-encore-bg-section)', padding: '10px 20px', fontSize: 13, fontWeight: 400, color: 'var(--color-encore-text-sub)' }}>アカウント</div>
+            <div style={{ background: 'var(--color-encore-bg-section)', padding: '10px 20px', fontSize: 14, fontWeight: 400, color: 'var(--color-encore-text-sub)' }}>アカウント</div>
             <ListRow icon={paymentIcon} label="お支払い" showChevron />
             <div style={{ borderTop: '1px solid var(--color-encore-border-light)' }}>
               <ListRow icon={profileIcon} label="プロフィール" showChevron />
@@ -705,7 +705,7 @@ export default function Page() {
             <div style={{ borderTop: '1px solid var(--color-encore-border-light)' }}>
               <ListRow icon={promoIcon} label="プロモーション" showChevron />
             </div>
-            <div style={{ background: 'var(--color-encore-bg-section)', padding: '10px 20px', fontSize: 13, fontWeight: 400, color: 'var(--color-encore-text-sub)' }}>サポート</div>
+            <div style={{ background: 'var(--color-encore-bg-section)', padding: '10px 20px', fontSize: 14, fontWeight: 400, color: 'var(--color-encore-text-sub)' }}>サポート</div>
             <ListRow icon={historyIcon} label="設定" showChevron />
             <div style={{ borderTop: '1px solid var(--color-encore-border-light)' }}>
               <ListRow icon={helpIcon} label="ヘルプ" showChevron />
@@ -786,12 +786,12 @@ export default function Page() {
           <div style={{ maxWidth: 375 }}>
             <Button variant="sm-secondary" onClick={() => setSheetOpen(true)}>▲ ボトムシートを開く</Button>
             <div style={{ marginTop: 16, background: 'rgba(0,0,0,0.35)', borderRadius: 8, overflow: 'hidden' }}>
-              <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>背景コンテンツ</div>
+              <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.35)', fontSize: 14 }}>背景コンテンツ</div>
               <div style={{ background: 'var(--color-encore-bg)', borderRadius: '24px 24px 0 0', padding: '0 20px 28px' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0 24px' }}>
                   <div style={{ width: 36, height: 4, background: 'var(--color-encore-border)', borderRadius: 999 }} />
                 </div>
-                <div style={{ fontSize: 15, fontWeight: 700, textAlign: 'center', marginBottom: 4, color: 'var(--color-encore-green)', fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>前回のライブ</div>
+                <div style={{ fontSize: 16, fontWeight: 700, textAlign: 'center', marginBottom: 4, color: 'var(--color-encore-green)', fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>前回のライブ</div>
                 <div style={{ fontSize: 12, color: 'var(--color-encore-text-sub)', textAlign: 'center', marginBottom: 24, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif' }}>2026.3.1 | TOKYO STAGE</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <Button variant="primary">チケットを購入</Button>
@@ -816,10 +816,10 @@ export default function Page() {
         {/* S19 Notification */}
         <SectionBlock id="s19" num="27" title="Notification Banner">
           <div style={{ maxWidth: 375, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <span style={{ display: 'inline-block', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-encore-text-muted)', padding: '3px 0' }}>Dismissible</span>
+            <span style={{ display: 'inline-block', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-encore-text-muted)', padding: '3px 0' }}>Dismissible</span>
             <div style={{ background: 'var(--color-encore-bg)', borderRadius: 8, overflow: 'hidden' }}>
               <Notification key={notifKey} message="ログインが完了しました。さぁ、ライブ記録をはじめましょう！" icon={<Info size={18} weight="light" color="var(--color-encore-white)" />} />
-              <div style={{ padding: '16px 20px', fontSize: 13, color: 'var(--color-encore-text-muted)' }}>ページコンテンツ</div>
+              <div style={{ padding: '16px 20px', fontSize: 14, color: 'var(--color-encore-text-muted)' }}>ページコンテンツ</div>
             </div>
             <div style={{ alignSelf: 'flex-start' }}>
               <Button variant="sm-ghost" onClick={() => setNotifKey(k => k + 1)}>↺ リセット</Button>
@@ -858,7 +858,7 @@ export default function Page() {
                 expDisplay={ccMonth && ccYear ? `${ccMonth}/${ccYear}` : '月/年'}
               />
             </div>
-            <div style={{ background: 'var(--color-encore-bg-section)', padding: '14px 20px', fontSize: 13, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', color: 'var(--color-encore-text-sub)' }}>
+            <div style={{ background: 'var(--color-encore-bg-section)', padding: '14px 20px', fontSize: 14, fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif', color: 'var(--color-encore-text-sub)' }}>
               クレジット・デビットカードの情報を入力してください
             </div>
             <div style={{ padding: 20 }}>

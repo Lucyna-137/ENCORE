@@ -145,15 +145,15 @@ function CalendarViewToggle({
             onClick={() => onChange(opt.value)}
             style={{
               position: 'relative',
-              height: 34,
-              padding: '0 14px',
+              height: 40,
+              padding: '0 18px',
               borderRadius: 999,
               border: 'none',
               background: 'transparent',
               cursor: 'pointer',
               WebkitTapHighlightColor: 'transparent',
               fontFamily: 'var(--font-google-sans), sans-serif',
-              fontSize: 13,
+              fontSize: 16,
               fontWeight: 700,
               letterSpacing: '0.04em',
               color: isActive ? 'var(--color-encore-white)' : 'var(--color-encore-text-sub)',
@@ -500,7 +500,7 @@ export default function CalendarPage() {
             <span
               style={{
                 fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: 700,
                 color: 'var(--color-encore-green)',
                 letterSpacing: '0.02em',
@@ -854,7 +854,7 @@ export default function CalendarPage() {
                 <span
                   style={{
                     fontFamily: 'var(--font-google-sans), sans-serif',
-                    fontSize: 9,
+                    fontSize: 10,
                     fontWeight: 700,
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase' as const,

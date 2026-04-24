@@ -35,7 +35,7 @@ export default function BarChart({ data, orientation = 'horizontal', unit = '', 
                   <span style={{ ...ty.caption, fontWeight: 700 }}>
                     {d.value}{unit}
                   </span>
-                  <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 11, fontWeight: 700, color: d.color ?? barColor }}>
+                  <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 12, fontWeight: 700, color: d.color ?? barColor }}>
                     {Math.round((d.value / total) * 100)}%
                   </span>
                 </div>

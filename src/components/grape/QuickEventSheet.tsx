@@ -95,7 +95,7 @@ const flatInputStyle: React.CSSProperties = {
   outline: 'none',
   padding: '4px 0 8px',
   ...ty.body,
-  fontSize: 15,
+  fontSize: 16,
   lineHeight: 1.4,
   color: 'var(--color-encore-green)',
 }
@@ -183,7 +183,7 @@ function EncoreSelect<T extends string>({
           border: 'none',
           cursor: 'pointer',
           ...(selected ? ty.body : ty.bodySM),
-          fontSize: 15,
+          fontSize: 16,
           color: selected ? 'var(--color-encore-green)' : 'var(--color-encore-text-sub)',
           WebkitTapHighlightColor: 'transparent',
         }}
@@ -291,7 +291,7 @@ function FormSection({
           <span
             style={{
               ...ty.caption,
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: 700,
               padding: '2px 8px',
               borderRadius: 999,
@@ -606,7 +606,7 @@ function BrandedCalendar({ value, onChange }: { value: string; onChange: (v: str
       {/* Month nav */}
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 6 }}>
         <button onClick={prevMonth} style={btnBase}><CaretLeft size={15} weight="light" /></button>
-        <span style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 13, fontWeight: 700, color: 'var(--color-encore-green)' }}>
+        <span style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 14, fontWeight: 700, color: 'var(--color-encore-green)' }}>
           {viewYear}年{viewMonth}月
         </span>
         <button onClick={nextMonth} style={btnBase}><CaretRight size={15} weight="light" /></button>
@@ -642,7 +642,7 @@ function BrandedCalendar({ value, onChange }: { value: string; onChange: (v: str
                 border: isToday && !isSelected ? '1.5px solid var(--color-encore-green)' : '1.5px solid transparent',
               }}>
                 <span style={{
-                  fontSize: 13, lineHeight: 1,
+                  fontSize: 14, lineHeight: 1,
                   fontFamily: 'var(--font-google-sans), sans-serif',
                   fontWeight: isSelected || isToday ? 700 : 400,
                   color: isSelected ? 'var(--color-encore-white)' : isSun ? 'var(--color-encore-error)' : 'var(--color-encore-green)',
@@ -905,7 +905,7 @@ function BrandedTimePicker({ value, label, onChange, onClose }: {
             onClick={handleConfirm}
             style={{
               fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-              fontSize: 13, fontWeight: 700,
+              fontSize: 14, fontWeight: 700,
               color: 'var(--color-encore-white)',
               background: 'var(--color-encore-green)',
               border: 'none', cursor: 'pointer',
@@ -948,7 +948,7 @@ function FlatDateTimeField({
             flex: 1, background: 'transparent', border: 'none', cursor: 'pointer',
             padding: 0, textAlign: 'left',
             fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-            fontSize: 15, fontWeight: 400, lineHeight: 1.4,
+            fontSize: 16, fontWeight: 400, lineHeight: 1.4,
             color: hasValue ? 'var(--color-encore-green)' : 'var(--color-encore-text-sub)',
             WebkitTapHighlightColor: 'transparent',
           }}
@@ -1057,7 +1057,7 @@ function DateTimePickerSheet({
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px 8px' }}>
               <button onClick={prevMonth} style={navBtnSt}>‹</button>
-              <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)' }}>
+              <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 16, fontWeight: 700, color: 'var(--color-encore-green)' }}>
                 {pickerYear}年{pickerMonth + 1}月
               </span>
               <button onClick={nextMonth} style={navBtnSt}>›</button>
@@ -1066,7 +1066,7 @@ function DateTimePickerSheet({
               {DTP_DOW_LABELS.map((d, i) => (
                 <div key={d} style={{
                   textAlign: 'center', padding: '2px 0',
-                  fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 11, fontWeight: 700,
+                  fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 12, fontWeight: 700,
                   color: i === 0 ? DOW_SUN_COLOR : i === 6 ? DOW_SAT_COLOR : 'var(--color-encore-text-muted)',
                 }}>{d}</div>
               ))}
@@ -1087,7 +1087,7 @@ function DateTimePickerSheet({
                     background: isSelected ? 'var(--color-encore-green)' : 'transparent',
                     border: isToday && !isSelected ? '1.5px solid var(--color-encore-green)' : 'none',
                     cursor: 'pointer',
-                    fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 13,
+                    fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 14,
                     fontWeight: isSelected ? 700 : 400,
                     color: isSelected ? '#fff' : dow === 0 ? DOW_SUN_COLOR : dow === 6 ? DOW_SAT_COLOR : 'var(--color-encore-green)',
                     WebkitTapHighlightColor: 'transparent', transition: 'background 0.12s',
@@ -1101,7 +1101,7 @@ function DateTimePickerSheet({
                 disabled={!selectedDate}
                 style={{
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 13, fontWeight: 400,
+                  fontSize: 14, fontWeight: 400,
                   color: selectedDate ? 'var(--color-encore-text-sub)' : 'var(--color-encore-text-muted)',
                   background: 'transparent', border: 'none',
                   cursor: selectedDate ? 'pointer' : 'default',
@@ -1115,21 +1115,21 @@ function DateTimePickerSheet({
             <div style={{ display: 'flex', alignItems: 'center', padding: '4px 20px 12px' }}>
               <button onClick={() => setPhase('date')} style={{
                 background: 'transparent', border: 'none', cursor: 'pointer',
-                fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 15, fontWeight: 400,
+                fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 16, fontWeight: 400,
                 color: 'var(--color-encore-green)', padding: '6px 0', marginRight: 10,
                 WebkitTapHighlightColor: 'transparent',
               }}>‹ 日付</button>
               <span style={{ ...ty.caption, color: 'var(--color-encore-text-muted)', flex: 1 }}>{label} — 時刻</span>
               <button onClick={() => onConfirm(selectedDate, `${h}:${m}`)} style={{
                 fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                fontSize: 13, fontWeight: 700,
+                fontSize: 14, fontWeight: 700,
                 color: 'var(--color-encore-white)', background: 'var(--color-encore-green)',
                 border: 'none', cursor: 'pointer', padding: '8px 20px', borderRadius: 999,
                 WebkitTapHighlightColor: 'transparent',
               }}>確定</button>
             </div>
             <div style={{ textAlign: 'center', paddingBottom: 8 }}>
-              <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 13, fontWeight: 700, color: 'var(--color-encore-green)' }}>
+              <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 14, fontWeight: 700, color: 'var(--color-encore-green)' }}>
                 {selectedDate.replace(/-/g, '/')}
               </span>
             </div>
@@ -1188,7 +1188,7 @@ function TripleTimePicker({
                 flex: 1,
                 textAlign: 'left',
                 cursor: 'pointer',
-                fontSize: 15,
+                fontSize: 16,
                 fontWeight: 700,
                 border: 'none',
                 background: 'transparent',
@@ -1222,7 +1222,7 @@ function TripleTimePicker({
     <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
       <TimeChip label="開場" value={openingTime} fieldKey="opening" />
 
-      <span style={{ paddingBottom: 12, flexShrink: 0, fontSize: 13, color: 'var(--color-encore-text-muted)', lineHeight: 1 }}>→</span>
+      <span style={{ paddingBottom: 12, flexShrink: 0, fontSize: 14, color: 'var(--color-encore-text-muted)', lineHeight: 1 }}>→</span>
 
       <TimeChip label="開演" value={startTime} fieldKey="start" />
 
@@ -1230,7 +1230,7 @@ function TripleTimePicker({
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingBottom: 10, flexShrink: 0 }}>
         <div style={{ width: 14, height: 1, background: 'var(--color-encore-border)' }} />
         {durationLabel && (
-          <span style={{ ...ty.caption, fontSize: 9, color: 'var(--color-encore-text-sub)', whiteSpace: 'nowrap', marginTop: 3 }}>
+          <span style={{ ...ty.caption, fontSize: 10, color: 'var(--color-encore-text-sub)', whiteSpace: 'nowrap', marginTop: 3 }}>
             {durationLabel}
           </span>
         )}
@@ -1262,7 +1262,7 @@ function LiveTypeToggle({ value, onChange }: { value: LiveTypeGrape | null; onCh
               color: isActive ? 'var(--color-encore-white)' : 'var(--color-encore-text-sub)',
               cursor: 'pointer',
               fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: 700,
               whiteSpace: 'nowrap',
               WebkitTapHighlightColor: 'transparent',
@@ -1757,7 +1757,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 5,
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: 700,
                   padding: '5px 10px',
                   borderRadius: 999,
@@ -1810,7 +1810,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
                   {preview && (
                     <div style={{
                       fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                      fontSize: 11, fontWeight: 400,
+                      fontSize: 12, fontWeight: 400,
                       color: 'var(--color-encore-text-sub)',
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>
@@ -1860,7 +1860,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
               borderRadius: 10,
               padding: '8px 12px',
               fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-              fontSize: 11, fontWeight: 700,
+              fontSize: 12, fontWeight: 700,
               color: 'var(--color-encore-green)',
               textAlign: 'center',
             }}>
@@ -1916,7 +1916,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
                     <div key={l.id} style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
                       <span style={{
                         fontFamily: 'var(--font-google-sans), sans-serif',
-                        fontSize: 11, fontWeight: 700,
+                        fontSize: 12, fontWeight: 700,
                         color: 'var(--color-encore-error)',
                         fontVariantNumeric: 'tabular-nums',
                         flexShrink: 0,
@@ -1925,7 +1925,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
                       </span>
                       <span style={{
                         fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                        fontSize: 11, fontWeight: 400,
+                        fontSize: 12, fontWeight: 400,
                         color: 'var(--color-encore-text-sub)',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -1938,7 +1938,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
                   {conflicts.length > 3 && (
                     <span style={{
                       fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                      fontSize: 11, fontWeight: 400,
+                      fontSize: 12, fontWeight: 400,
                       color: 'var(--color-encore-text-muted)',
                     }}>
                       …他 {conflicts.length - 3} 件
@@ -2058,7 +2058,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
               }}
             >
               <Palette size={16} weight="regular" color="var(--color-encore-green)" />
-              <span style={{ ...ty.body, fontSize: 15, flex: 1, textAlign: 'left' }}>
+              <span style={{ ...ty.body, fontSize: 16, flex: 1, textAlign: 'left' }}>
                 イベントの色
               </span>
               {/* 現在色チップ */}
@@ -2114,7 +2114,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
                       padding: '4px 10px', borderRadius: 999, border: 'none',
                       background: salePhase === phase ? 'var(--color-encore-green)' : 'var(--color-encore-bg-section)',
                       color: salePhase === phase ? 'var(--color-encore-white)' : 'var(--color-encore-text-sub)',
-                      fontSize: 11, fontWeight: 700, cursor: 'pointer',
+                      fontSize: 12, fontWeight: 700, cursor: 'pointer',
                       fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
                       WebkitTapHighlightColor: 'transparent',
                     }}
@@ -2188,7 +2188,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
                       alignItems: 'center',
                       gap: 4,
                       fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                      fontSize: 11,
+                      fontSize: 12,
                       fontWeight: drink1Sep ? 700 : 400,
                       color: drink1Sep ? 'var(--color-encore-green)' : 'var(--color-encore-text-sub)',
                       WebkitTapHighlightColor: 'transparent',
@@ -2545,7 +2545,7 @@ function CoverArtEditor({
           }}
         >
           <Camera size={24} weight="light" color="var(--color-encore-text-sub)" />
-          <span style={{ ...ty.captionMuted, fontSize: 11 }}>
+          <span style={{ ...ty.captionMuted, fontSize: 12 }}>
             {availableImages.length > 0
               ? `タップして画像を選択（登録済み${availableImages.length}枚/ローカル）`
               : 'タップして画像を追加'}

@@ -160,7 +160,7 @@ export default function PrivacyPage() {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
           {/* アプリ名 */}
-          <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '0.06em' }}>
+          <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: '0.06em' }}>
             GRAPE
           </span>
 
@@ -205,7 +205,7 @@ export default function PrivacyPage() {
         {c.sections.map((section, i) => (
           <div key={i} style={{ marginBottom: 32 }}>
             <h2 style={{
-              fontSize: 15, fontWeight: 700,
+              fontSize: 16, fontWeight: 700,
               marginBottom: 10,
               paddingBottom: 8,
               borderBottom: '1px solid var(--color-encore-border-light)',
@@ -213,7 +213,7 @@ export default function PrivacyPage() {
               {section.heading}
             </h2>
             <p style={{
-              fontSize: 13, fontWeight: 400,
+              fontSize: 14, fontWeight: 400,
               lineHeight: 1.8,
               color: 'var(--color-encore-green)',
               whiteSpace: 'pre-line',
@@ -227,13 +227,13 @@ export default function PrivacyPage() {
                 background: 'var(--color-encore-bg-section)',
                 borderRadius: 8,
               }}>
-                <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>
+                <p style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>
                   {c.company}
                 </p>
                 <a
                   href={`mailto:${c.email}`}
                   style={{
-                    fontSize: 13, fontWeight: 400,
+                    fontSize: 14, fontWeight: 400,
                     color: 'var(--color-encore-amber)',
                     textDecoration: 'none',
                   }}
@@ -253,7 +253,7 @@ export default function PrivacyPage() {
           textAlign: 'center',
         }}>
           <p style={{
-            fontSize: 11, fontWeight: 400,
+            fontSize: 12, fontWeight: 400,
             color: 'var(--color-encore-text-sub)',
           }}>
             © {new Date().getFullYear()} {c.company}. All rights reserved.

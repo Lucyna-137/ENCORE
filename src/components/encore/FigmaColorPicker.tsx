@@ -224,7 +224,7 @@ export default function FigmaColorPicker({ value, alpha, onChange }: Props) {
     background: T.inputBg,
     color: T.text,
     fontFamily: 'monospace',
-    fontSize: 11,
+    fontSize: 12,
     outline: 'none',
     textAlign: 'center',
     width: 36,
@@ -477,7 +477,7 @@ export default function FigmaColorPicker({ value, alpha, onChange }: Props) {
                 background: T.inputBg,
                 color: T.text,
                 fontFamily: 'monospace',
-                fontSize: 11,
+                fontSize: 12,
                 outline: 'none',
               }}
             />
@@ -493,7 +493,7 @@ export default function FigmaColorPicker({ value, alpha, onChange }: Props) {
                     onChange={e => handleRgbChannel(ch, e.target.value)}
                     style={inputStyle}
                   />
-                  <span style={{ color: T.textDim, fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 9, fontWeight: 700 }}>
+                  <span style={{ color: T.textDim, fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, fontWeight: 700 }}>
                     {ch.toUpperCase()}
                   </span>
                 </div>
@@ -511,7 +511,7 @@ export default function FigmaColorPicker({ value, alpha, onChange }: Props) {
                     onChange={e => handleHslChannel(ch, e.target.value)}
                     style={inputStyle}
                   />
-                  <span style={{ color: T.textDim, fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 9, fontWeight: 700 }}>
+                  <span style={{ color: T.textDim, fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, fontWeight: 700 }}>
                     {ch === 'hh' ? 'H' : ch === 'hs' ? 'S' : 'L'}
                   </span>
                 </div>
@@ -541,7 +541,7 @@ export default function FigmaColorPicker({ value, alpha, onChange }: Props) {
                 background: T.inputBg,
                 color: T.text,
                 fontFamily: 'monospace',
-                fontSize: 11,
+                fontSize: 12,
                 outline: 'none',
                 textAlign: 'right',
               }}

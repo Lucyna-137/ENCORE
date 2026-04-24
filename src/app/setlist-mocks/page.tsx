@@ -38,12 +38,12 @@ const t = {
   display:   { fontFamily: EN, fontSize: 32, fontWeight: 700, color: 'var(--color-encore-green)', letterSpacing: '-0.01em' } as React.CSSProperties,
   title:     { fontFamily: EN, fontSize: 24, fontWeight: 700, color: 'var(--color-encore-green)' } as React.CSSProperties,
   heading:   { fontFamily: JA, fontSize: 18, fontWeight: 700, color: 'var(--color-encore-green)' } as React.CSSProperties,
-  section:   { fontFamily: JA, fontSize: 15, fontWeight: 700, color: 'var(--color-encore-green)' } as React.CSSProperties,
+  section:   { fontFamily: JA, fontSize: 16, fontWeight: 700, color: 'var(--color-encore-green)' } as React.CSSProperties,
   sectionSM: { fontFamily: JA, fontSize: 14, fontWeight: 700, color: 'var(--color-encore-green)' } as React.CSSProperties,
-  body:      { fontFamily: JA, fontSize: 13, fontWeight: 400, color: 'var(--color-encore-green)' } as React.CSSProperties,
+  body:      { fontFamily: JA, fontSize: 14, fontWeight: 400, color: 'var(--color-encore-green)' } as React.CSSProperties,
   bodySM:    { fontFamily: JA, fontSize: 12, fontWeight: 400, color: 'var(--color-encore-green)' } as React.CSSProperties,
-  caption:   { fontFamily: EN, fontSize: 11, fontWeight: 400, color: 'var(--color-encore-green)' } as React.CSSProperties,
-  captionMuted: { fontFamily: EN, fontSize: 11, fontWeight: 400, color: 'var(--color-encore-text-muted)' } as React.CSSProperties,
+  caption:   { fontFamily: EN, fontSize: 12, fontWeight: 400, color: 'var(--color-encore-green)' } as React.CSSProperties,
+  captionMuted: { fontFamily: EN, fontSize: 12, fontWeight: 400, color: 'var(--color-encore-text-muted)' } as React.CSSProperties,
   sub:       { fontFamily: JA, fontSize: 12, fontWeight: 400, color: 'var(--color-encore-text-sub)' } as React.CSSProperties,
 }
 
@@ -119,7 +119,7 @@ function MockPhone({ label, children }: { label: string; children: React.ReactNo
       </div>
       <div style={{
         fontFamily: EN,
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: 700,
         color: 'var(--color-encore-text-sub)',
         letterSpacing: '0.14em',
@@ -142,7 +142,7 @@ function StatusBar() {
       alignItems: 'center',
       justifyContent: 'space-between',
       fontFamily: EN,
-      fontSize: 15,
+      fontSize: 16,
       fontWeight: 700,
       color: 'var(--color-encore-green)',
       flexShrink: 0,
@@ -220,7 +220,7 @@ function EditorHeader() {
           background: 'var(--color-encore-green)',
           color: 'var(--color-encore-white)',
           border: 'none', cursor: 'pointer',
-          fontFamily: JA, fontSize: 13, fontWeight: 700,
+          fontFamily: JA, fontSize: 14, fontWeight: 700,
         }}>保存</button>
       </div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 9 }}>
@@ -321,7 +321,7 @@ function SongRow({
         flexShrink: 0,
         textAlign: 'right',
         fontFamily: EN,
-        fontSize: 19,
+        fontSize: 20,
         fontWeight: 700,
         color: muted ? 'var(--color-encore-text-muted)' : 'var(--color-encore-green)',
         fontVariantNumeric: 'tabular-nums',
@@ -537,12 +537,12 @@ function MemoryModeToggle({ on }: { on?: boolean }) {
       gap: 10,
     }}>
       <div style={{
-        fontFamily: JA, fontSize: 13, fontWeight: 700,
+        fontFamily: JA, fontSize: 14, fontWeight: 700,
         color: on ? 'var(--color-encore-amber)' : 'var(--color-encore-green)',
       }}>
         うろ覚えで記録
       </div>
-      <span style={{ ...t.sub, fontSize: 11, flex: 1, minWidth: 0 }}>
+      <span style={{ ...t.sub, fontSize: 12, flex: 1, minWidth: 0 }}>
         記憶モードの曲は集計で薄く表示
       </span>
       <span style={{
@@ -603,10 +603,10 @@ function EditorFooter() {
         </div>
         <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-            <span style={{ ...t.sectionSM, fontSize: 13, color: 'var(--color-encore-green)' }}>画像から取り込む</span>
+            <span style={{ ...t.sectionSM, fontSize: 14, color: 'var(--color-encore-green)' }}>画像から取り込む</span>
             <PremiumStamp small />
           </div>
-          <div style={{ ...t.sub, fontSize: 11 }}>写真1枚で AI が自動抽出</div>
+          <div style={{ ...t.sub, fontSize: 12 }}>写真1枚で AI が自動抽出</div>
         </div>
         <CaretRight size={14} weight="bold" color="var(--color-encore-amber)" style={{ flexShrink: 0, position: 'relative' }} />
       </div>
@@ -742,12 +742,12 @@ function PreviewSetlistSectionHeader({ count }: { count?: number }) {
       marginTop: 18,
     }}>
       <MusicNotes size={15} weight="regular" color="var(--color-encore-green)" style={{ transform: 'translateY(2px)', marginRight: 8 }} />
-      <span style={{ ...t.section, fontSize: 15, marginRight: 8 }}>Setlist</span>
-      <span style={{ ...t.sub, fontSize: 11, letterSpacing: '0.04em' }}>セットリスト</span>
+      <span style={{ ...t.section, fontSize: 16, marginRight: 8 }}>Setlist</span>
+      <span style={{ ...t.sub, fontSize: 12, letterSpacing: '0.04em' }}>セットリスト</span>
       {typeof count === 'number' && (
         <span style={{
           marginLeft: 'auto',
-          fontFamily: EN, fontSize: 11, fontWeight: 700,
+          fontFamily: EN, fontSize: 12, fontWeight: 700,
           color: 'var(--color-encore-text-sub)',
           fontVariantNumeric: 'tabular-nums',
         }}>
@@ -874,7 +874,7 @@ function SetlistSectionFreeLock() {
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
-                  ...t.section, fontSize: 15, marginBottom: 4,
+                  ...t.section, fontSize: 16, marginBottom: 4,
                   letterSpacing: '-0.005em',
                 }}>
                   あのライブで聴いた曲、覚えてる？
@@ -890,7 +890,7 @@ function SetlistSectionFreeLock() {
                   borderRadius: 999,
                   background: 'var(--color-encore-amber)',
                   color: 'var(--color-encore-white)',
-                  fontFamily: JA, fontSize: 13, fontWeight: 700,
+                  fontFamily: JA, fontSize: 14, fontWeight: 700,
                 }}>
                   <Sparkle size={12} weight="fill" />
                   Premium にアップグレード
@@ -985,7 +985,7 @@ function OCRStage1Pick() {
             <Camera size={28} weight="regular" color="var(--color-encore-green)" />
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ ...t.section, fontSize: 15, marginBottom: 4 }}>セトリ画像を選んでください</div>
+            <div style={{ ...t.section, fontSize: 16, marginBottom: 4 }}>セトリ画像を選んでください</div>
             <div style={{ ...t.sub, fontSize: 12, lineHeight: 1.55 }}>
               SNS で共有されたセットリスト、<br/>会場で手書きしたメモの写真など
             </div>
@@ -997,7 +997,7 @@ function OCRStage1Pick() {
             flex: 1, padding: '12px 14px', borderRadius: 10,
             background: 'var(--color-encore-green)', color: 'var(--color-encore-white)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            fontFamily: JA, fontSize: 13, fontWeight: 700,
+            fontFamily: JA, fontSize: 14, fontWeight: 700,
           }}>
             <Camera size={14} weight="regular" /> 撮影
           </span>
@@ -1007,7 +1007,7 @@ function OCRStage1Pick() {
             border: '1px solid var(--color-encore-border)',
             color: 'var(--color-encore-green)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            fontFamily: JA, fontSize: 13, fontWeight: 700,
+            fontFamily: JA, fontSize: 14, fontWeight: 700,
           }}>
             <ImageIcon size={14} weight="regular" /> フォト
           </span>
@@ -1024,7 +1024,7 @@ function OCRStage1Pick() {
           <Sparkle size={13} weight="fill" color="var(--color-encore-amber)" style={{ marginTop: 2, flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
             <div style={{ ...t.sectionSM, fontSize: 12, color: 'var(--color-encore-amber)' }}>AI が曲順・MC・ENCORE まで自動判定</div>
-            <div style={{ ...t.sub, fontSize: 11, marginTop: 2 }}>読み取り後、内容を確認してから保存できます</div>
+            <div style={{ ...t.sub, fontSize: 12, marginTop: 2 }}>読み取り後、内容を確認してから保存できます</div>
           </div>
         </div>
       </div>
@@ -1051,19 +1051,19 @@ function OCRStage2Preview() {
             position: 'absolute', inset: 0,
             padding: '38px 30px',
             color: 'rgba(255,255,255,0.9)',
-            fontFamily: JA, fontSize: 13, fontWeight: 700,
+            fontFamily: JA, fontSize: 14, fontWeight: 700,
             letterSpacing: '0.04em',
             lineHeight: 1.95,
             textShadow: '0 2px 6px rgba(0,0,0,0.5)',
           }}>
-            <div style={{ fontSize: 11, letterSpacing: '0.24em', opacity: 0.7, marginBottom: 6 }}>SETLIST</div>
+            <div style={{ fontSize: 12, letterSpacing: '0.24em', opacity: 0.7, marginBottom: 6 }}>SETLIST</div>
             1. 雨宿りサイダー<br/>
             2. 朝凪ボイス<br/>
             3. Eclipse Bay<br/>
             4. 影絵の森<br/>
             5. 十八時の特等席<br/>
             6. 三拍子のラブレター<br/>
-            <span style={{ fontSize: 11, opacity: 0.7 }}>— ENCORE —</span><br/>
+            <span style={{ fontSize: 12, opacity: 0.7 }}>— ENCORE —</span><br/>
             7. Satellite Diary
           </div>
         </div>
@@ -1144,7 +1144,7 @@ function OCRStage3Loading() {
                 )}
               </div>
               <span style={{
-                ...t.body, fontSize: 13,
+                ...t.body, fontSize: 14,
                 fontWeight: s.active ? 700 : 400,
                 color: s.active ? 'var(--color-encore-amber)' : s.done ? 'var(--color-encore-text-sub)' : 'var(--color-encore-text-muted)',
               }}>
@@ -1223,7 +1223,7 @@ function OCRStage4Review() {
         </div>
         <div style={{
           marginTop: 8, textAlign: 'center',
-          ...t.sub, fontSize: 11,
+          ...t.sub, fontSize: 12,
         }}>
           取り込み後も編集できます
         </div>
@@ -1254,7 +1254,7 @@ function OCRStage5Merge() {
         </div>
         <div style={{ textAlign: 'center' }}>
           <div style={{ ...t.heading, fontSize: 20, marginBottom: 6 }}>9曲を保存しました</div>
-          <div style={{ ...t.sub, fontSize: 13, lineHeight: 1.55 }}>
+          <div style={{ ...t.sub, fontSize: 14, lineHeight: 1.55 }}>
             アートワークは順次読み込まれます。<br/>
             いつでも編集できます。
           </div>
@@ -1293,7 +1293,7 @@ function ReportHeader() {
           {['今月', '今年', '累計'].map((p, i) => (
             <span key={p} style={{
               padding: '6px 14px', borderRadius: 999,
-              fontFamily: JA, fontSize: 13, fontWeight: 700,
+              fontFamily: JA, fontSize: 14, fontWeight: 700,
               color: i === 1 ? 'var(--color-encore-white)' : 'var(--color-encore-text-sub)',
               background: i === 1 ? 'var(--color-encore-green)' : 'transparent',
             }}>{p}</span>
@@ -1306,7 +1306,7 @@ function ReportHeader() {
       }}>
         <MusicNotes size={17} weight="regular" color="var(--color-encore-green)" style={{ transform: 'translateY(2px)' }} />
         <span style={{ ...t.section, fontSize: 16 }}>Songs</span>
-        <span style={{ ...t.sub, fontSize: 11, letterSpacing: '0.04em' }}>曲の振り返り</span>
+        <span style={{ ...t.sub, fontSize: 12, letterSpacing: '0.04em' }}>曲の振り返り</span>
       </div>
     </>
   )
@@ -1344,7 +1344,7 @@ function CardFrequentSongs() {
           clipPath: `path("${squirclePath(22)}")`,
           background: `url(${ART.koharu}) center/cover`,
         }} />
-        <span style={{ ...t.section, fontSize: 15 }}>koharu</span>
+        <span style={{ ...t.section, fontSize: 16 }}>koharu</span>
         <span style={{
           marginLeft: 'auto',
           display: 'inline-flex', alignItems: 'center', gap: 4,
@@ -1378,11 +1378,11 @@ function CardFrequentSongs() {
               flexShrink: 0,
               boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.06)',
             }} />
-            <span style={{ ...t.body, fontSize: 13.5, flex: 1, minWidth: 0, fontWeight: 700 }}>
+            <span style={{ ...t.body, fontSize: 14.5, flex: 1, minWidth: 0, fontWeight: 700 }}>
               {s.title}
             </span>
             <span style={{
-              fontFamily: EN, fontSize: 13, fontWeight: 700,
+              fontFamily: EN, fontSize: 14, fontWeight: 700,
               color: 'var(--color-encore-green-muted)',
               fontVariantNumeric: 'tabular-nums',
             }}>
@@ -1414,7 +1414,7 @@ function CardDebutSongs() {
     }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 12 }}>
         <span style={{ ...t.section, fontSize: 14 }}>初披露 ハイライト</span>
-        <span style={{ ...t.sub, fontSize: 11 }}>Debut songs</span>
+        <span style={{ ...t.sub, fontSize: 12 }}>Debut songs</span>
       </div>
       <div style={{
         fontFamily: JA,
@@ -1440,11 +1440,11 @@ function CardDebutSongs() {
               flexShrink: 0,
               fontFamily: EN, fontSize: 14, color: 'var(--color-encore-amber)',
             }}>◆</span>
-            <span style={{ ...t.body, fontSize: 13, fontWeight: 700, flex: 1, minWidth: 0 }}>
+            <span style={{ ...t.body, fontSize: 14, fontWeight: 700, flex: 1, minWidth: 0 }}>
               {s.title}
             </span>
             <span style={{
-              fontFamily: EN, fontSize: 11, fontWeight: 700,
+              fontFamily: EN, fontSize: 12, fontWeight: 700,
               color: 'var(--color-encore-text-sub)',
               fontVariantNumeric: 'tabular-nums',
             }}>
@@ -1473,7 +1473,7 @@ function CardMCEncore() {
     }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 14 }}>
         <span style={{ ...t.section, fontSize: 14 }}>MC · Encore</span>
-        <span style={{ ...t.sub, fontSize: 11 }}>あなたのライブ傾向</span>
+        <span style={{ ...t.sub, fontSize: 12 }}>あなたのライブ傾向</span>
       </div>
       {[
         { label: 'MC 平均', val: '3.2', unit: '回 / ライブ', pct: 45 },
@@ -1489,7 +1489,7 @@ function CardMCEncore() {
             <span style={{
               marginLeft: 'auto',
               fontFamily: EN,
-              fontSize: 17, fontWeight: 700,
+              fontSize: 18, fontWeight: 700,
               color: 'var(--color-encore-green)',
               fontVariantNumeric: 'tabular-nums',
               letterSpacing: '-0.02em',
@@ -1596,7 +1596,7 @@ function CardIchigoIchie() {
         }}>
           あの日、あのライブだけの1曲
         </div>
-        <div style={{ ...t.sub, fontSize: 11.5, lineHeight: 1.5, marginBottom: 12 }}>
+        <div style={{ ...t.sub, fontSize: 12.5, lineHeight: 1.5, marginBottom: 12 }}>
           全履歴で一度しか聴けなかった曲。
           <span style={{ color: 'var(--color-encore-amber)', fontWeight: 700 }}>5曲</span>
           見つかりました。
@@ -1630,7 +1630,7 @@ function CardIchigoIchie() {
                 }}>{s.date}</span>
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ ...t.body, fontSize: 13, fontWeight: 700, lineHeight: 1.2 }}>
+                <div style={{ ...t.body, fontSize: 14, fontWeight: 700, lineHeight: 1.2 }}>
                   {s.title}
                 </div>
                 <div style={{ ...t.sub, fontSize: 10.5, lineHeight: 1.3, marginTop: 1 }}>
@@ -1643,7 +1643,7 @@ function CardIchigoIchie() {
             marginTop: 4, paddingTop: 8,
             borderTop: '1px solid rgba(192,138,74,0.2)',
             textAlign: 'center',
-            fontFamily: JA, fontSize: 11.5, fontWeight: 700,
+            fontFamily: JA, fontSize: 12.5, fontWeight: 700,
             color: 'var(--color-encore-amber)',
           }}>
             他 2曲 を見る ›
@@ -1675,7 +1675,7 @@ function CardLongestSetlists() {
     }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 14 }}>
         <span style={{ ...t.section, fontSize: 14 }}>濃かったライブ</span>
-        <span style={{ ...t.sub, fontSize: 11 }}>Longest setlists</span>
+        <span style={{ ...t.sub, fontSize: 12 }}>Longest setlists</span>
       </div>
       {lives.map((l, i) => (
         <div key={i} style={{
@@ -1684,12 +1684,12 @@ function CardLongestSetlists() {
         }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 9, marginBottom: 5 }}>
             <span style={{
-              fontFamily: EN, fontSize: 13, fontWeight: 700,
+              fontFamily: EN, fontSize: 14, fontWeight: 700,
               color: i === 0 ? 'var(--color-encore-amber)' : 'var(--color-encore-green)',
               fontVariantNumeric: 'tabular-nums',
               minWidth: 18,
             }}>{String(l.rank).padStart(2, '0')}</span>
-            <span style={{ ...t.body, fontSize: 13, fontWeight: 700, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ ...t.body, fontSize: 14, fontWeight: 700, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {l.title}
             </span>
             <span style={{ ...t.captionMuted, fontSize: 10.5 }}>{l.date}</span>
@@ -1699,7 +1699,7 @@ function CardLongestSetlists() {
               fontVariantNumeric: 'tabular-nums',
               minWidth: 28,
               textAlign: 'right',
-            }}>{l.n}<span style={{ fontSize: 9, color: 'var(--color-encore-text-muted)' }}>曲</span></span>
+            }}>{l.n}<span style={{ fontSize: 10, color: 'var(--color-encore-text-muted)' }}>曲</span></span>
           </div>
           <div style={{
             height: 3, borderRadius: 2,
@@ -1750,7 +1750,7 @@ function FreeSongsTeaser() {
         }}>
           <Lock size={20} weight="regular" color="var(--color-encore-amber)" />
         </div>
-        <div style={{ ...t.heading, fontSize: 17, marginBottom: 8 }}>
+        <div style={{ ...t.heading, fontSize: 18, marginBottom: 8 }}>
           あなたの「音楽史」を、<br/>ここで振り返る。
         </div>
         <div style={{ ...t.sub, fontSize: 12.5, lineHeight: 1.55, marginBottom: 18 }}>
@@ -1763,7 +1763,7 @@ function FreeSongsTeaser() {
           borderRadius: 999,
           background: 'var(--color-encore-amber)',
           color: 'var(--color-encore-white)',
-          fontFamily: JA, fontSize: 13, fontWeight: 700,
+          fontFamily: JA, fontSize: 14, fontWeight: 700,
         }}>
           <Sparkle size={12} weight="fill" />
           Premium でロック解除
@@ -1816,10 +1816,10 @@ function SettingsDataManagement() {
           padding: '0 20px 6px',
           display: 'flex', alignItems: 'baseline', gap: 8,
         }}>
-          <span style={{ ...t.caption, fontWeight: 700, fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-encore-text-sub)' }}>
+          <span style={{ ...t.caption, fontWeight: 700, fontSize: 12, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-encore-text-sub)' }}>
             DATA
           </span>
-          <span style={{ ...t.sub, fontSize: 11 }}>データ管理</span>
+          <span style={{ ...t.sub, fontSize: 12 }}>データ管理</span>
         </div>
 
         <div style={{
@@ -1844,7 +1844,7 @@ function SettingsDataManagement() {
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ ...t.section, fontSize: 14, marginBottom: 2 }}>すべてのデータをエクスポート</div>
-              <div style={{ ...t.sub, fontSize: 11.5 }}>
+              <div style={{ ...t.sub, fontSize: 12.5 }}>
                 ライブ · アーティスト · セトリを1つの <span style={{ fontFamily: EN, fontWeight: 700 }}>.json</span> に書き出します
               </div>
             </div>
@@ -1869,7 +1869,7 @@ function SettingsDataManagement() {
                 インポート
                 <span style={{
                   marginLeft: 8,
-                  fontFamily: EN, fontSize: 9, fontWeight: 700,
+                  fontFamily: EN, fontSize: 10, fontWeight: 700,
                   color: 'var(--color-encore-text-muted)',
                   letterSpacing: '0.16em',
                   padding: '1px 6px',
@@ -1880,7 +1880,7 @@ function SettingsDataManagement() {
                   COMING SOON
                 </span>
               </div>
-              <div style={{ ...t.sub, fontSize: 11.5 }}>バックアップからの復元（準備中）</div>
+              <div style={{ ...t.sub, fontSize: 12.5 }}>バックアップからの復元（準備中）</div>
             </div>
           </div>
         </div>
@@ -1894,7 +1894,7 @@ function SettingsDataManagement() {
           display: 'flex', alignItems: 'flex-start', gap: 9,
         }}>
           <Note size={13} weight="regular" color="var(--color-encore-text-sub)" style={{ marginTop: 2, flexShrink: 0 }} />
-          <div style={{ ...t.sub, fontSize: 11.5, lineHeight: 1.55 }}>
+          <div style={{ ...t.sub, fontSize: 12.5, lineHeight: 1.55 }}>
             データは常に自分の端末に保存されます。<br/>
             機種変更時は、このエクスポートでバックアップ推奨。
           </div>
@@ -1910,7 +1910,7 @@ function SectionTitle({ eyebrow, title, note }: { eyebrow: string; title: string
   return (
     <div style={{ padding: '48px 40px 18px' }}>
       <div style={{
-        fontFamily: EN, fontSize: 11, fontWeight: 700,
+        fontFamily: EN, fontSize: 12, fontWeight: 700,
         color: 'var(--color-encore-amber)',
         letterSpacing: '0.26em',
         marginBottom: 8,
@@ -1921,7 +1921,7 @@ function SectionTitle({ eyebrow, title, note }: { eyebrow: string; title: string
         {title}
       </div>
       {note && (
-        <div style={{ ...t.sub, fontSize: 13.5, maxWidth: 720, lineHeight: 1.6 }}>
+        <div style={{ ...t.sub, fontSize: 14.5, maxWidth: 720, lineHeight: 1.6 }}>
           {note}
         </div>
       )}
@@ -2001,7 +2001,7 @@ export default function SetlistMocksPage() {
               background: 'var(--color-encore-amber)',
             }} />
             <span style={{
-              fontFamily: EN, fontSize: 11, fontWeight: 700,
+              fontFamily: EN, fontSize: 12, fontWeight: 700,
               letterSpacing: '0.2em',
               color: 'var(--color-encore-green)',
             }}>
@@ -2023,7 +2023,7 @@ export default function SetlistMocksPage() {
           </h1>
 
           <p style={{
-            fontFamily: JA, fontSize: 17, fontWeight: 400,
+            fontFamily: JA, fontSize: 18, fontWeight: 400,
             color: 'var(--color-encore-green)',
             lineHeight: 1.7,
             maxWidth: 640,
@@ -2046,7 +2046,7 @@ export default function SetlistMocksPage() {
           <div style={{
             marginTop: 36,
             display: 'flex', flexWrap: 'wrap', gap: 24,
-            fontFamily: EN, fontSize: 11, fontWeight: 700,
+            fontFamily: EN, fontSize: 12, fontWeight: 700,
             letterSpacing: '0.16em',
             color: 'var(--color-encore-text-sub)',
           }}>
@@ -2174,7 +2174,7 @@ export default function SetlistMocksPage() {
             }}>
               AESTHETIC DIRECTION
             </div>
-            <div style={{ ...t.body, fontSize: 13.5, lineHeight: 1.65 }}>
+            <div style={{ ...t.body, fontSize: 14.5, lineHeight: 1.65 }}>
               Concert Program × Editorial Journal.
               大きなタビュラー数字、ドットリーダー区切り、
               和英併記の見出し、アンバーは「金箔」のように
@@ -2189,7 +2189,7 @@ export default function SetlistMocksPage() {
             }}>
               DIFFERENTIATION
             </div>
-            <div style={{ ...t.body, fontSize: 13.5, lineHeight: 1.65 }}>
+            <div style={{ ...t.body, fontSize: 14.5, lineHeight: 1.65 }}>
               「一期一会の曲」カードは全履歴で
               1度きりだった曲を検出。
               LiveRock にはない、推し活の希少性×ロマンを
@@ -2204,7 +2204,7 @@ export default function SetlistMocksPage() {
             }}>
               NEXT STEP
             </div>
-            <div style={{ ...t.body, fontSize: 13.5, lineHeight: 1.65 }}>
+            <div style={{ ...t.body, fontSize: 14.5, lineHeight: 1.65 }}>
               Phase 1（3日）から着手。
               types.ts に Setlist 型 → useSetlistStore
               → EventPreviewScreen 表示 → SetlistEditorSheet。

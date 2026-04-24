@@ -163,20 +163,22 @@
 - `tabs: (string | React.ReactNode)[]`（ReactNode対応済み）
 - Phosphorアイコン入りタブラベル使用可能
 
-### Typography スケール（確定）
+### Typography スケール（確定・2026-04-24 偶数統一）
 | スタイル | サイズ | ウェイト | フォント |
 |---------|--------|---------|---------|
 | Display | 32px | 700 | EN |
 | Title | 24px | 700 | EN |
 | Heading | 18px | 700 | JA |
-| Section | 15px | 700 | JA |
+| Section | 16px | 700 | JA |
 | Section SM | 14px | 700 | JA |
-| Body | 13px | 400 | JA |
+| Body | 14px | 400 | JA |
 | Body SM / Sub | 12px | 400 | JA |
-| Price | 15px | 700 | EN |
-| Link | 13px | 400 | JA amber |
-| Caption | 11px | 400 | EN |
-| Caption Muted | 11px | 400 | EN muted |
+| Price | 16px | 700 | EN |
+| Link | 14px | 400 | JA amber |
+| Caption | 12px | 400 | EN |
+| Caption Muted | 12px | 400 | EN muted |
+
+※ 全サイズ偶数統一（2の倍数）。奇数を排除し 12/14/16/18/20/22/24/32 の階段に。iPhone 実機の視認性向上のため。
 
 - `text-sub` (rgba 0.55) は薄い → 通常テキストは `--color-encore-green` を使う
 - `typographyStyles.ts` に `section`・`sectionSM` の共通定数あり

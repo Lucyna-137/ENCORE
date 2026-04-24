@@ -86,7 +86,7 @@ export default function PieChart({ data, totalLabel = 'TOTAL LIVES', unit = '回
         }}>
           <div style={{
             ...ty.captionMuted,
-            fontSize: 9,
+            fontSize: 10,
             letterSpacing: '0.08em',
             marginBottom: 4,
           }}>
@@ -104,7 +104,7 @@ export default function PieChart({ data, totalLabel = 'TOTAL LIVES', unit = '回
           </div>
           <div style={{
             fontFamily: 'var(--font-google-sans), sans-serif',
-            fontSize: 9,
+            fontSize: 10,
             fontWeight: 700,
             color: 'var(--color-encore-green)',
             marginTop: 4,
