@@ -17,6 +17,8 @@ export default function SettingsPrivacyPage() {
       display: 'flex',
       flexDirection: 'column',
       background: 'var(--color-encore-bg)',
+      // iPhone ノッチ / Dynamic Island 下に戻るボタンが隠れるのを防ぐ
+      paddingTop: 'env(safe-area-inset-top)',
     }}>
       {/* 最小限ヘッダー（戻るボタンのみ） */}
       <div style={{
@@ -48,7 +50,7 @@ export default function SettingsPrivacyPage() {
 
       {/* /privacy をそのまま embed 表示 */}
       <iframe
-        src="/privacy?embed=1"
+        src="/privacy/index.html?embed=1"
         style={{
           flex: 1,
           width: '100%',

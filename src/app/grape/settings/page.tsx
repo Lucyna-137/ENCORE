@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import * as ty from '@/components/encore/typographyStyles'
 import { StatusBar } from '@/components/encore/NavHeader'
 import {
@@ -31,10 +32,10 @@ import { PRESET_SCHEMES, loadPaletteScheme, getCurrentPaletteSchemeId, subscribe
 // ─── 定数 ─────────────────────────────────────────────────────────────────────
 
 const TAB_ITEMS = [
-  { key: 'calendar', label: 'CALENDAR', Icon: CalendarBlank, href: '/grape/calendar' },
-  { key: 'tickets',  label: 'TICKETS',  Icon: Ticket,        href: '/grape/tickets'  },
-  { key: 'report',   label: 'REPORT',   Icon: ChartBar,      href: '/grape/report'   },
-  { key: 'settings', label: 'SETTINGS', Icon: GearSix,       href: '/grape/settings' },
+  { key: 'calendar', label: 'CALENDAR', Icon: CalendarBlank, href: '/grape/calendar/' },
+  { key: 'tickets',  label: 'TICKETS',  Icon: Ticket,        href: '/grape/tickets/'  },
+  { key: 'report',   label: 'REPORT',   Icon: ChartBar,      href: '/grape/report/'   },
+  { key: 'settings', label: 'SETTINGS', Icon: GearSix,       href: '/grape/settings/' },
 ]
 
 const APP_VERSION = '1.0.0'
@@ -1385,13 +1386,13 @@ export default function SettingsPage() {
             <SettingsRow
               icon={<SettingsIconWrap><FileText size={15} weight="regular" /></SettingsIconWrap>}
               label="利用規約"
-              onClick={() => router.push('/grape/settings/terms')}
+              onClick={() => router.push('/grape/settings/terms/')}
             />
             <SettingsDivider />
             <SettingsRow
               icon={<SettingsIconWrap><ShieldCheck size={15} weight="regular" /></SettingsIconWrap>}
               label="プライバシーポリシー"
-              onClick={() => router.push('/grape/settings/privacy')}
+              onClick={() => router.push('/grape/settings/privacy/')}
             />
             <SettingsDivider />
             <SettingsRow
@@ -1475,7 +1476,7 @@ export default function SettingsPage() {
             const isActive = key === 'settings'
             const color = isActive ? 'var(--color-encore-amber)' : 'var(--color-encore-green)'
             return (
-              <a key={key} href={href} style={{
+              <Link key={key} href={href} style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
                 gap: 4, textDecoration: 'none', flex: 1, paddingTop: 4,
                 WebkitTapHighlightColor: 'transparent',
@@ -1488,7 +1489,7 @@ export default function SettingsPage() {
                 }}>
                   {label}
                 </span>
-              </a>
+              </Link>
             )
           })}
         </div>

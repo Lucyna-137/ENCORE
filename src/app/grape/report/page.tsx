@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useMemo, useEffect, useRef } from 'react'
+import Link from 'next/link'
 import * as ty from '@/components/encore/typographyStyles'
 import { StatusBar } from '@/components/encore/NavHeader'
 import type { GrapeLive, GrapeArtist } from '@/lib/grape/types'
@@ -28,10 +29,10 @@ const ARTIST_COLORS = [
 ]
 
 const TAB_ITEMS = [
-  { key: 'calendar', label: 'CALENDAR', Icon: CalendarBlank, href: '/grape/calendar' },
-  { key: 'tickets',  label: 'TICKETS',  Icon: Ticket,        href: '/grape/tickets'  },
-  { key: 'report',   label: 'REPORT',   Icon: ChartBar,      href: '/grape/report'   },
-  { key: 'settings', label: 'SETTINGS', Icon: GearSix,       href: '/grape/settings' },
+  { key: 'calendar', label: 'CALENDAR', Icon: CalendarBlank, href: '/grape/calendar/' },
+  { key: 'tickets',  label: 'TICKETS',  Icon: Ticket,        href: '/grape/tickets/'  },
+  { key: 'report',   label: 'REPORT',   Icon: ChartBar,      href: '/grape/report/'   },
+  { key: 'settings', label: 'SETTINGS', Icon: GearSix,       href: '/grape/settings/' },
 ]
 
 type Period = '今月' | '今年' | '累計'
@@ -383,19 +384,26 @@ function ArtistRankingList({
     <div style={{ margin: '0 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
       {data.map((a, i) => {
         const artistId = artists.find(ar => ar.name === a.name)?.id
-        return (
-          <a
+        const cardInner = (
+          <ArtistCard
+            name={a.name}
+            image={a.image}
+            color={ARTIST_COLORS[i % ARTIST_COLORS.length]}
+            liveCount={a.count}
+          />
+        )
+        return artistId ? (
+          <Link
             key={a.name}
-            href={artistId ? `/grape/artist/${artistId}?period=${encodeURIComponent(period)}` : undefined}
+            href={`/grape/artist/?id=${encodeURIComponent(artistId)}&period=${encodeURIComponent(period)}`}
             style={{ textDecoration: 'none', display: 'block' }}
           >
-            <ArtistCard
-              name={a.name}
-              image={a.image}
-              color={ARTIST_COLORS[i % ARTIST_COLORS.length]}
-              liveCount={a.count}
-            />
-          </a>
+            {cardInner}
+          </Link>
+        ) : (
+          <div key={a.name} style={{ display: 'block' }}>
+            {cardInner}
+          </div>
         )
       })}
     </div>
@@ -762,7 +770,7 @@ export default function ReportPage() {
             const isActive = key === 'report'
             const color = isActive ? 'var(--color-encore-amber)' : 'var(--color-encore-green)'
             return (
-              <a key={key} href={href} style={{
+              <Link key={key} href={href} style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
                 gap: 4, textDecoration: 'none', flex: 1, paddingTop: 4,
                 WebkitTapHighlightColor: 'transparent',
@@ -775,7 +783,7 @@ export default function ReportPage() {
                 }}>
                   {label}
                 </span>
-              </a>
+              </Link>
             )
           })}
         </div>

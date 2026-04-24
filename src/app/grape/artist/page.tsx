@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, useMemo, useRef } from 'react'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import React, { useState, useMemo, useRef, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import {
   CaretLeft, CaretRight, CaretDown, MusicNote, MapPin, Question,
   DotsThree, Trash, X, UploadSimple, Cake, UserCirclePlus, UserCircle,
@@ -797,10 +797,18 @@ function buildPeriodLabel(period: Period): string {
 }
 
 export default function ArtistDetailPage() {
-  const params        = useParams()
+  // useSearchParams は static export で Suspense 境界が必須
+  return (
+    <Suspense fallback={null}>
+      <ArtistDetailContent />
+    </Suspense>
+  )
+}
+
+function ArtistDetailContent() {
   const router        = useRouter()
   const searchParams  = useSearchParams()
-  const id            = typeof params.id === 'string' ? params.id : ''
+  const id            = searchParams.get('id') ?? ''
 
   // Report ページから渡される期間クエリ（未指定時は「累計」扱い）
   const rawPeriod = searchParams.get('period')
@@ -1005,8 +1013,10 @@ export default function ArtistDetailPage() {
 
           {/* ステータスバー + 戻るボタン / ...ボタン: height:0 の sticky wrapper で常に固定 */}
           <div style={{ position: 'sticky', top: 0, height: 0, zIndex: 30, pointerEvents: 'none' }}>
-            {/* 透明ステータスバー（画像上に白文字でオーバーレイ） */}
-            <div style={{
+            {/* 透明ステータスバー（画像上に白文字でオーバーレイ）
+                grape-statusbar クラスで touch device (iOS) では children を visibility: hidden に
+                → 実機の iOS システムステータスバーだけが見える（ダブル表示回避） */}
+            <div className="grape-statusbar" style={{
               position: 'absolute', top: 0, left: 0, right: 0,
               height: 44,
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',

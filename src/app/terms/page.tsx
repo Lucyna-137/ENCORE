@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 
 // ─── 型 ──────────────────────────────────────────────────────────────────────
@@ -144,6 +144,14 @@ function LangToggle({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void 
 
 // ─── Page ────────────────────────────────────────────────────────────────────
 export default function TermsPage() {
+  return (
+    <Suspense fallback={null}>
+      <TermsContent />
+    </Suspense>
+  )
+}
+
+function TermsContent() {
   const [lang, setLang] = useState<Lang>('ja')
   const searchParams = useSearchParams()
   const isEmbed = searchParams.get('embed') === '1'
@@ -156,6 +164,10 @@ export default function TermsPage() {
       fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
       color: 'var(--color-encore-green)',
     }}>
+      {/* embed (iframe) モードでは mobile-CSS の overflow:hidden を上書きしてスクロール可能に */}
+      {isEmbed && (
+        <style>{`html, body { overflow: auto !important; height: auto !important; }`}</style>
+      )}
       {/* ヘッダー — embed モード時は非表示 */}
       {!isEmbed && (
         <div style={{

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react'
+import Link from 'next/link'
 import * as ty from '@/components/encore/typographyStyles'
 import { StatusBar } from '@/components/encore/NavHeader'
 import type { GrapeLive, ViewMode } from '@/lib/grape/types'
@@ -29,6 +30,7 @@ import AddActionSheet from '@/components/grape/AddActionSheet'
 import URLImportSheet from '@/components/grape/URLImportSheet'
 import PremiumUpgradeSheet from '@/components/grape/PremiumUpgradeSheet'
 import { useIsPremium } from '@/lib/grape/premium'
+import { URL_IMPORT_ENABLED } from '@/lib/grape/apiConfig'
 import { useGrapeToast } from '@/lib/grape/useGrapeToast'
 import {
   CalendarBlank,
@@ -49,10 +51,10 @@ const VIEW_OPTIONS: { value: ViewMode; label: string }[] = [
 ]
 
 const TAB_ITEMS = [
-  { key: 'calendar', label: 'CALENDAR', Icon: CalendarBlank, href: '/grape/calendar' },
-  { key: 'tickets',  label: 'TICKETS',  Icon: Ticket,        href: '/grape/tickets'  },
-  { key: 'report',   label: 'REPORT',   Icon: ChartBar,      href: '/grape/report'   },
-  { key: 'settings', label: 'SETTINGS', Icon: GearSix,       href: '/grape/settings' },
+  { key: 'calendar', label: 'CALENDAR', Icon: CalendarBlank, href: '/grape/calendar/' },
+  { key: 'tickets',  label: 'TICKETS',  Icon: Ticket,        href: '/grape/tickets/'  },
+  { key: 'report',   label: 'REPORT',   Icon: ChartBar,      href: '/grape/report/'   },
+  { key: 'settings', label: 'SETTINGS', Icon: GearSix,       href: '/grape/settings/' },
 ]
 
 // ─── 動的日付入りカレンダーアイコン（Google Calendar風） ─────────────────────
@@ -705,7 +707,7 @@ export default function CalendarPage() {
             <button
               onClick={() => {
                 setEditingLive(null); setSlotStartMin(undefined); setPrefillLive(null)
-                if (isPremium) {
+                if (isPremium && URL_IMPORT_ENABLED) {
                   setShowAddSheet(true)
                 } else {
                   setSheetState('full')
@@ -835,7 +837,7 @@ export default function CalendarPage() {
             const isActive = key === 'calendar'
             const color = isActive ? 'var(--color-encore-amber)' : 'var(--color-encore-green)'
             return (
-              <a
+              <Link
                 key={key}
                 href={href}
                 style={{
@@ -862,7 +864,7 @@ export default function CalendarPage() {
                 >
                   {label}
                 </span>
-              </a>
+              </Link>
             )
           })}
         </div>

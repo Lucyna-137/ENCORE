@@ -114,7 +114,13 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
     setError(null)
 
     try {
-      const res = await fetch('/api/event-from-url', {
+      const { GRAPE_API_URL } = await import('@/lib/grape/apiConfig')
+      if (!GRAPE_API_URL) {
+        setError('URL 取り込み機能は準備中です。手動入力をご利用ください。')
+        setStage('error')
+        return
+      }
+      const res = await fetch(`${GRAPE_API_URL}/event-from-url`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: url.trim() }),

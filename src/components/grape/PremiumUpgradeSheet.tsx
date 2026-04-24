@@ -4,6 +4,7 @@ import React from 'react'
 import { Crown, X, UsersThree, ChartLineUp, Sparkle, Check, MusicNotes } from '@phosphor-icons/react'
 import { useIsPremium } from '@/lib/grape/premium'
 import { useGrapeToast } from '@/lib/grape/useGrapeToast'
+import { URL_IMPORT_ENABLED } from '@/lib/grape/apiConfig'
 
 // ─── Premium 特典リスト（LP コピーと統一）──────────────────────────────────
 export const PREMIUM_FEATURES = [
@@ -12,11 +13,11 @@ export const PREMIUM_FEATURES = [
     label: 'アーティスト無制限登録',
     desc: '何人推しても、Grape はすべて受け止める。',
   },
-  {
+  ...(URL_IMPORT_ENABLED ? [{
     icon: Sparkle,
     label: 'URL / 画像からイベント自動取り込み',
     desc: '公式サイトやチケット販売URLを貼るだけ。AI がイベント情報を一瞬で埋める。',
-  },
+  }] : []),
   {
     icon: MusicNotes,
     label: 'セットリスト記録',

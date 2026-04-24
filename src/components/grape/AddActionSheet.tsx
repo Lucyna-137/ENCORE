@@ -3,6 +3,7 @@
 import React from 'react'
 import { PencilSimple, Sparkle } from '@phosphor-icons/react'
 import * as ty from '@/components/encore/typographyStyles'
+import { URL_IMPORT_ENABLED } from '@/lib/grape/apiConfig'
 
 /**
  * +ボタン（FAB）タップ時の選択シート（Premium時のみ表示）
@@ -86,44 +87,48 @@ export default function AddActionSheet({ onClose, onNewEvent, onImportFromUrl }:
           </div>
         </button>
 
-        <div style={{ height: 1, background: 'var(--color-encore-border-light)', margin: '0 20px' }} />
+        {URL_IMPORT_ENABLED && (
+          <>
+            <div style={{ height: 1, background: 'var(--color-encore-border-light)', margin: '0 20px' }} />
 
-        <button
-          onClick={onImportFromUrl}
-          style={{
-            width: '100%', padding: '16px 20px',
-            background: 'none', border: 'none',
-            display: 'flex', alignItems: 'center', gap: 14,
-            cursor: 'pointer',
-            WebkitTapHighlightColor: 'transparent',
-          }}
-        >
-          <div style={{
-            width: 36, height: 36, borderRadius: 10,
-            background: 'rgba(192, 138, 74, 0.14)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            flexShrink: 0,
-          }}>
-            <Sparkle size={16} weight="fill" color="var(--color-encore-amber)" />
-          </div>
-          <div style={{ flex: 1, textAlign: 'left' }}>
-            <div style={{ ...ty.section, display: 'flex', alignItems: 'center', gap: 6 }}>
-              URLから取り込む
-              <span style={{
-                fontFamily: 'var(--font-google-sans), sans-serif',
-                fontSize: 10, fontWeight: 700,
-                letterSpacing: '0.08em',
-                color: 'var(--color-encore-amber)',
+            <button
+              onClick={onImportFromUrl}
+              style={{
+                width: '100%', padding: '16px 20px',
+                background: 'none', border: 'none',
+                display: 'flex', alignItems: 'center', gap: 14,
+                cursor: 'pointer',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              <div style={{
+                width: 36, height: 36, borderRadius: 10,
                 background: 'rgba(192, 138, 74, 0.14)',
-                padding: '2px 6px',
-                borderRadius: 4,
-              }}>PREMIUM</span>
-            </div>
-            <div style={{ ...ty.bodySM, color: 'var(--color-encore-text-sub)', marginTop: 2 }}>
-              公式ページやチケット販売URLから自動入力
-            </div>
-          </div>
-        </button>
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+              }}>
+                <Sparkle size={16} weight="fill" color="var(--color-encore-amber)" />
+              </div>
+              <div style={{ flex: 1, textAlign: 'left' }}>
+                <div style={{ ...ty.section, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  URLから取り込む
+                  <span style={{
+                    fontFamily: 'var(--font-google-sans), sans-serif',
+                    fontSize: 10, fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    color: 'var(--color-encore-amber)',
+                    background: 'rgba(192, 138, 74, 0.14)',
+                    padding: '2px 6px',
+                    borderRadius: 4,
+                  }}>PREMIUM</span>
+                </div>
+                <div style={{ ...ty.bodySM, color: 'var(--color-encore-text-sub)', marginTop: 2 }}>
+                  公式ページやチケット販売URLから自動入力
+                </div>
+              </div>
+            </button>
+          </>
+        )}
 
         {/* キャンセル */}
         <div style={{ height: 8, background: 'var(--color-encore-bg-section)' }} />

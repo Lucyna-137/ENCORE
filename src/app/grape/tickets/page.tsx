@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useMemo, useRef, useEffect } from 'react'
+import Link from 'next/link'
 import * as ty from '@/components/encore/typographyStyles'
 import { StatusBar } from '@/components/encore/NavHeader'
 import type { GrapeLive, TicketStatus } from '@/lib/grape/types'
@@ -13,6 +14,7 @@ import AddActionSheet from '@/components/grape/AddActionSheet'
 import URLImportSheet from '@/components/grape/URLImportSheet'
 import PremiumUpgradeSheet from '@/components/grape/PremiumUpgradeSheet'
 import { useIsPremium } from '@/lib/grape/premium'
+import { URL_IMPORT_ENABLED } from '@/lib/grape/apiConfig'
 import HorizontalTabs from '@/components/encore/HorizontalTabs'
 import {
   CalendarBlank, Ticket, ChartBar, GearSix,
@@ -260,10 +262,10 @@ function TicketCard({
 
 // ─── Tab bar items ────────────────────────────────────────────────────────────
 const TAB_ITEMS = [
-  { key: 'calendar', label: 'CALENDAR', Icon: CalendarBlank, href: '/grape/calendar' },
-  { key: 'tickets',  label: 'TICKETS',  Icon: Ticket,        href: '/grape/tickets'  },
-  { key: 'report',   label: 'REPORT',   Icon: ChartBar,      href: '/grape/report'   },
-  { key: 'settings', label: 'SETTINGS', Icon: GearSix,       href: '/grape/settings' },
+  { key: 'calendar', label: 'CALENDAR', Icon: CalendarBlank, href: '/grape/calendar/' },
+  { key: 'tickets',  label: 'TICKETS',  Icon: Ticket,        href: '/grape/tickets/'  },
+  { key: 'report',   label: 'REPORT',   Icon: ChartBar,      href: '/grape/report/'   },
+  { key: 'settings', label: 'SETTINGS', Icon: GearSix,       href: '/grape/settings/' },
 ]
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -705,7 +707,7 @@ export default function TicketsPage() {
             const isActive = key === 'tickets'
             const color = isActive ? 'var(--color-encore-amber)' : 'var(--color-encore-green)'
             return (
-              <a
+              <Link
                 key={key}
                 href={href}
                 style={{
@@ -732,7 +734,7 @@ export default function TicketsPage() {
                 >
                   {label}
                 </span>
-              </a>
+              </Link>
             )
           })}
         </div>
@@ -742,7 +744,7 @@ export default function TicketsPage() {
           <button
             onClick={() => {
               setPrefillLive(null)
-              if (isPremium) {
+              if (isPremium && URL_IMPORT_ENABLED) {
                 setShowActionSheet(true)
               } else {
                 setShowAddSheet(true)
@@ -750,7 +752,8 @@ export default function TicketsPage() {
             }}
             style={{
               position: 'absolute',
-              bottom: 16 + 68,
+              // TabBar(68px) + safe-area(home indicator ~34px on iPhone) + 16px gap
+              bottom: 'calc(16px + 68px + env(safe-area-inset-bottom))',
               right: 16,
               width: 52,
               height: 52,

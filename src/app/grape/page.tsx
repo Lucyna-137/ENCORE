@@ -13,7 +13,7 @@ export default function GrapeIndexPage() {
 
   useEffect(() => {
     const tab = loadLastTab()
-    router.replace(`/grape/${tab}`)
+    router.replace(`/grape/${tab}/`)
   }, [router])
 
   return null

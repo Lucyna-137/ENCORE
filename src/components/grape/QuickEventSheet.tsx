@@ -9,6 +9,7 @@ import { TODAY, DOW_SUN_COLOR, DOW_SAT_COLOR, TICKET_STATUS_LABEL } from '@/lib/
 import { getHolidayName } from '@/lib/grape/holidays'
 import { useShowHolidays } from '@/lib/grape/useShowHolidays'
 import { useIsPremium } from '@/lib/grape/premium'
+import { URL_IMPORT_ENABLED } from '@/lib/grape/apiConfig'
 import { useGrapeToast } from '@/lib/grape/useGrapeToast'
 import { Sparkle as SparkleIcon } from '@phosphor-icons/react'
 
@@ -1485,7 +1486,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
   const [showConfirm, setShowConfirm] = useState(false)
   const isEditMode = !!live
   const isPremium  = useIsPremium()
-  const showUpsellBanner = !isEditMode && !isPremium && !!onShowPremium
+  const showUpsellBanner = !isEditMode && !isPremium && !!onShowPremium && URL_IMPORT_ENABLED
   const scrollableRef = React.useRef<HTMLDivElement>(null)
   const ticketSectionRef = React.useRef<HTMLDivElement>(null)
 
