@@ -11,16 +11,18 @@ import {
   FileText, ShieldCheck, Info, Star, ArrowSquareOut,
   MusicNote, UserCircle, PencilSimple, Trash, X,
   Check, UserCirclePlus, UploadSimple, Cake, CaretDown, CaretUp, Warning, Plus,
-  Lock, Crown, CaretRight, Question,
+  Lock, Crown, CaretRight, Question, Flag,
 } from '@phosphor-icons/react'
 import PhoneFrame from '@/components/grape/PhoneFrame'
 import PremiumUpgradeSheet from '@/components/grape/PremiumUpgradeSheet'
 import ArtistDeleteConfirmDialog from '@/components/grape/ArtistDeleteConfirmDialog'
+import BirthdayCalendar from '@/components/grape/BirthdayCalendar'
 import { getAllSetlists } from '@/lib/grape/useSetlistStore'
 import { buildExportPayload, buildExportFilename, downloadExportBlob, formatExportSummary } from '@/lib/grape/exportData'
 import { useGrapeStore } from '@/lib/grape/useGrapeStore'
-import { useIsPremium } from '@/lib/grape/premium'
+import { useIsPremium, setIsPremium } from '@/lib/grape/premium'
 import { useGrapeToast } from '@/lib/grape/useGrapeToast'
+import { useShowHolidays, setShowHolidays } from '@/lib/grape/useShowHolidays'
 import type { GrapeArtist, ArtistMember } from '@/lib/grape/types'
 import { DOW_SUN_COLOR, DOW_SAT_COLOR } from '@/lib/grape/constants'
 import ColorPicker from '@/components/encore/ColorPicker'
@@ -859,84 +861,13 @@ function ArtistEditSheet({
               )}
             </button>
 
-            {/* インラインカレンダー */}
+            {/* インラインカレンダー（BirthdayCalendar 共通コンポーネント使用） */}
             {showBdPicker && (
-              <div style={{
-                marginTop: 8,
-                borderRadius: 10,
-                border: '1px solid var(--color-encore-border-light)',
-                background: 'var(--color-encore-bg)',
-                padding: '12px 10px 14px',
-              }}>
-                {/* ナビゲーション行（月のみ、1〜12月） */}
-                <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
-                  <button
-                    onClick={() => goMonth(-1)}
-                    disabled={pickerMonth === 0}
-                    style={navBtnStyle(pickerMonth === 0)}
-                  >‹</button>
-                  <span style={{
-                    flex: 1, textAlign: 'center',
-                    fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                    fontSize: 16, fontWeight: 700, color: 'var(--color-encore-green)',
-                  }}>
-                    {pickerMonth + 1}月
-                  </span>
-                  <button
-                    onClick={() => goMonth(1)}
-                    disabled={pickerMonth === 11}
-                    style={navBtnStyle(pickerMonth === 11)}
-                  >›</button>
-                </div>
-
-                {/* 曜日ヘッダー */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 4 }}>
-                  {DOW_LABELS.map((d, i) => (
-                    <div key={d} style={{
-                      textAlign: 'center', padding: '2px 0',
-                      fontFamily: 'var(--font-google-sans), sans-serif',
-                      fontSize: 10, fontWeight: 700,
-                      color: i === 0 ? DOW_SUN_COLOR : i === 6 ? DOW_SAT_COLOR : 'var(--color-encore-text-muted)',
-                    }}>{d}</div>
-                  ))}
-                </div>
-
-                {/* 日グリッド */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px 0' }}>
-                  {calCells.map((day, idx) => {
-                    if (!day) return <div key={`e-${idx}`} />
-                    const isSelected = day === bdDay && pickerMonth + 1 === bdMonth
-                    const dow = (firstDow + (day - 1)) % 7
-                    return (
-                      <button
-                        key={day}
-                        onClick={() => {
-                          const mm = String(pickerMonth + 1).padStart(2, '0')
-                          const dd = String(day).padStart(2, '0')
-                          setBirthday(`2000-${mm}-${dd}`)
-                          setShowBdPicker(false)
-                        }}
-                        style={{
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          height: 36, borderRadius: 999,
-                          background: isSelected ? 'var(--color-encore-green)' : 'transparent',
-                          border: 'none', cursor: 'pointer',
-                          fontFamily: 'var(--font-google-sans), sans-serif',
-                          fontSize: 12, fontWeight: isSelected ? 700 : 400,
-                          color: isSelected
-                            ? '#fff'
-                            : dow === 0 ? DOW_SUN_COLOR
-                            : dow === 6 ? DOW_SAT_COLOR
-                            : 'var(--color-encore-green)',
-                          WebkitTapHighlightColor: 'transparent',
-                          transition: 'background 0.12s',
-                        }}
-                      >
-                        {day}
-                      </button>
-                    )
-                  })}
-                </div>
+              <div style={{ marginTop: 8 }}>
+                <BirthdayCalendar
+                  value={birthday}
+                  onSelect={(v) => { setBirthday(v); setShowBdPicker(false) }}
+                />
               </div>
             )}
           </div>
@@ -1007,58 +938,18 @@ function ArtistEditSheet({
                   </button>
                 </div>
 
-                {/* メンバー誕生日ピッカー */}
+                {/* メンバー誕生日ピッカー（BirthdayCalendar 共通コンポーネント使用） */}
                 {openMemberPicker === idx && (
-                  <div style={{
-                    marginTop: 8, marginBottom: 4,
-                    borderRadius: 10,
-                    border: '1px solid var(--color-encore-border-light)',
-                    background: 'var(--color-encore-bg)',
-                    padding: '12px 10px 14px',
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
-                      <button onClick={() => setMemberPickerMonth(m => Math.max(0, m - 1))} disabled={memberPickerMonth === 0} style={navBtnStyle(memberPickerMonth === 0)}>‹</button>
-                      <span style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 16, fontWeight: 700, color: 'var(--color-encore-green)' }}>
-                        {memberPickerMonth + 1}月
-                      </span>
-                      <button onClick={() => setMemberPickerMonth(m => Math.min(11, m + 1))} disabled={memberPickerMonth === 11} style={navBtnStyle(memberPickerMonth === 11)}>›</button>
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 4 }}>
-                      {DOW_LABELS.map((d, i) => (
-                        <div key={d} style={{ textAlign: 'center', padding: '2px 0', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, fontWeight: 700, color: i === 0 ? DOW_SUN_COLOR : i === 6 ? DOW_SAT_COLOR : 'var(--color-encore-text-muted)' }}>{d}</div>
-                      ))}
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px 0' }}>
-                      {memberCalCells.map((day, ci) => {
-                        if (!day) return <div key={`me-${ci}`} />
-                        const isSelected = day === openMemberBdDay && memberPickerMonth + 1 === openMemberBdMonth
-                        const dow = (memberFirstDow + (day - 1)) % 7
-                        return (
-                          <button
-                            key={day}
-                            onClick={() => {
-                              const mm = String(memberPickerMonth + 1).padStart(2, '0')
-                              const dd = String(day).padStart(2, '0')
-                              const updated = [...members]
-                              updated[idx] = { ...updated[idx], birthday: `2000-${mm}-${dd}` }
-                              setMembers(updated)
-                              setOpenMemberPicker(null)
-                            }}
-                            style={{
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              height: 36, borderRadius: 999,
-                              background: isSelected ? 'var(--color-encore-green)' : 'transparent',
-                              border: 'none', cursor: 'pointer',
-                              fontFamily: 'var(--font-google-sans), sans-serif',
-                              fontSize: 12, fontWeight: isSelected ? 700 : 400,
-                              color: isSelected ? '#fff' : dow === 0 ? DOW_SUN_COLOR : dow === 6 ? DOW_SAT_COLOR : 'var(--color-encore-green)',
-                              WebkitTapHighlightColor: 'transparent',
-                              transition: 'background 0.12s',
-                            }}
-                          >{day}</button>
-                        )
-                      })}
-                    </div>
+                  <div style={{ marginTop: 8, marginBottom: 4 }}>
+                    <BirthdayCalendar
+                      value={member.birthday ?? ''}
+                      onSelect={(v) => {
+                        const updated = [...members]
+                        updated[idx] = { ...updated[idx], birthday: v }
+                        setMembers(updated)
+                        setOpenMemberPicker(null)
+                      }}
+                    />
                   </div>
                 )}
               </div>
@@ -1293,6 +1184,7 @@ export default function SettingsPage() {
   const { lives, artists, addArtist, updateArtist, deleteArtist, updateLives } = useGrapeStore()
   const isPremium = useIsPremium()
   const { show: showToast } = useGrapeToast()
+  const showHolidaysEnabled = useShowHolidays()
   const [editingArtist,    setEditingArtist]    = useState<GrapeArtist | null>(null)
   const [isAdding,         setIsAdding]         = useState(false)
   const [deletingArtist,   setDeletingArtist]   = useState<GrapeArtist | null>(null)
@@ -1395,6 +1287,17 @@ export default function SettingsPage() {
           {/* 表示 */}
           <SettingsSection label="表示">
             <StyleSelector />
+            <SettingsDivider indent={0} />
+            <SettingsToggleRow
+              icon={<SettingsIconWrap bg="rgba(219,96,80,0.12)" color="var(--color-encore-error)"><Flag size={15} weight="regular" /></SettingsIconWrap>}
+              label="国民の休日を表示"
+              description="カレンダーの祝日を赤色で表示します"
+              value={showHolidaysEnabled}
+              onChange={(v) => {
+                setShowHolidays(v)
+                showToast(v ? '祝日表示をオンにしました' : '祝日表示をオフにしました')
+              }}
+            />
           </SettingsSection>
 
           {/* 通知 */}
@@ -1512,6 +1415,52 @@ export default function SettingsPage() {
             </div>
             <PremiumInfoCard isPremium={isPremium} onShowPremium={() => setShowPremiumSheet(true)} />
           </div>
+
+          {/* 開発者メニュー（Dev only。RevenueCat 統合時に削除） */}
+          <SettingsSection label="開発者メニュー（DEV）">
+            <SettingsToggleRow
+              icon={<SettingsIconWrap bg="rgba(192,138,74,0.14)" color="var(--color-encore-amber)"><Crown size={15} weight="regular" /></SettingsIconWrap>}
+              label="Premium 切替（Dev）"
+              description="実機・各ブラウザごとに localStorage に保存"
+              value={isPremium}
+              onChange={(v) => {
+                setIsPremium(v)
+                showToast(v ? 'Premium 化しました（Dev）' : 'Free へ戻しました（Dev）')
+              }}
+            />
+            <SettingsDivider />
+            <SettingsRow
+              icon={<SettingsIconWrap bg="rgba(219,96,80,0.12)" color="var(--color-encore-error)"><Trash size={15} weight="regular" /></SettingsIconWrap>}
+              label="空の状態で起動（Dev）"
+              description="全データを消去して「インストール直後」の状態を再現"
+              onClick={() => {
+                if (!confirm('全イベント・アーティスト・セットリスト・キャッシュを削除して、空の状態でリロードします。よろしいですか？')) return
+                // localStorage: grape-* と encore-* をすべて消去
+                Object.keys(localStorage).forEach(k => {
+                  if (k.startsWith('grape') || k.startsWith('encore')) localStorage.removeItem(k)
+                })
+                // 空起動フラグを立ててリロード
+                localStorage.setItem('grape-no-seed', 'true')
+                // IndexedDB（artwork キャッシュ）も削除
+                try { indexedDB.deleteDatabase('grape-artwork') } catch {}
+                location.reload()
+              }}
+            />
+            <SettingsDivider />
+            <SettingsRow
+              icon={<SettingsIconWrap bg="rgba(26,58,45,0.10)" color="var(--color-encore-green)"><ArrowSquareOut size={15} weight="regular" /></SettingsIconWrap>}
+              label="デモデータで再起動（Dev）"
+              description="空起動フラグを解除して、シードデータでリロード"
+              onClick={() => {
+                if (!confirm('現在のデータを消去して、シード（デモ）データでリロードします。よろしいですか？')) return
+                Object.keys(localStorage).forEach(k => {
+                  if (k.startsWith('grape') || k.startsWith('encore')) localStorage.removeItem(k)
+                })
+                try { indexedDB.deleteDatabase('grape-artwork') } catch {}
+                location.reload()
+              }}
+            />
+          </SettingsSection>
 
         </div>
 

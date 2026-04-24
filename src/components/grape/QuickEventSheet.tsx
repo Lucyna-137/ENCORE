@@ -6,6 +6,8 @@ import type { GrapeLive, AttendanceStatus, GrapeArtist, LiveTypeGrape, TicketSta
 import { CaretDown, CaretUp, CaretLeft, CaretRight, Camera, LinkSimple, Note, Car, X, CalendarBlank, ArrowsOutCardinal, Trash, Plus, UserCirclePlus, Clock, CheckCircle, Images, Palette } from '@phosphor-icons/react'
 import ColorPicker, { DEFAULT_EVENT_COLOR_VISUAL, type ColorValue } from '@/components/encore/ColorPicker'
 import { TODAY, DOW_SUN_COLOR, DOW_SAT_COLOR, TICKET_STATUS_LABEL } from '@/lib/grape/constants'
+import { getHolidayName } from '@/lib/grape/holidays'
+import { useShowHolidays } from '@/lib/grape/useShowHolidays'
 import { useIsPremium } from '@/lib/grape/premium'
 import { useGrapeToast } from '@/lib/grape/useGrapeToast'
 import { Sparkle as SparkleIcon } from '@phosphor-icons/react'
@@ -286,7 +288,7 @@ function FormSection({
         }}
       >
         <span style={{ color: 'var(--color-encore-green)', display: 'flex', alignItems: 'center' }}>{icon}</span>
-        <span style={{ ...ty.sectionSM, flex: 1, textAlign: 'left' }}>{label}</span>
+        <span style={{ ...ty.section, flex: 1, textAlign: 'left' }}>{label}</span>
         {!!badge && (
           <span
             style={{
@@ -567,27 +569,56 @@ function BigTitleInput({ value, onChange }: { value: string; onChange: (v: strin
 }
 
 // ─── BrandedCalendar ─────────────────────────────────────────────────────────
-const CAL_DOW = ['月', '火', '水', '木', '金', '土', '日']
+// Month カレンダーと同じく日曜始まり。日=赤系、土=青系。
+const CAL_DOW = ['日', '月', '火', '水', '木', '金', '土']
 
 function BrandedCalendar({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const now = new Date()
   const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`
+  const showHolidays = useShowHolidays()
 
   const initY = value ? Number(value.split('-')[0]) : now.getFullYear()
   const initM = value ? Number(value.split('-')[1]) : now.getMonth() + 1
   const [viewYear, setViewYear] = useState(initY)
   const [viewMonth, setViewMonth] = useState(initM)
 
-  const prevMonth = () => {
-    if (viewMonth === 1) { setViewYear(y => y - 1); setViewMonth(12) }
-    else setViewMonth(m => m - 1)
-  }
-  const nextMonth = () => {
-    if (viewMonth === 12) { setViewYear(y => y + 1); setViewMonth(1) }
-    else setViewMonth(m => m + 1)
+  // 月切替のスライドアニメーション phase
+  // 'exit-left'/'exit-right': 現在のグリッドが左右へ退場中
+  // 'enter-from-right'/'enter-from-left': 新グリッドを反対側にスナップ（アニメ前）
+  type NavPhase = 'exit-left' | 'exit-right' | 'enter-from-right' | 'enter-from-left' | null
+  const [navPhase, setNavPhase] = useState<NavPhase>(null)
+  // useEffect listener が古い navPhase を closure で捕まえる問題を回避するため、
+  // 二重起動ガードは ref ベースで常に最新の状態を参照する
+  const animatingRef = useRef(false)
+
+  const stepMonth = (dir: 'next' | 'prev') => {
+    if (dir === 'next') {
+      if (viewMonth === 12) { setViewYear(y => y + 1); setViewMonth(1) }
+      else setViewMonth(m => m + 1)
+    } else {
+      if (viewMonth === 1) { setViewYear(y => y - 1); setViewMonth(12) }
+      else setViewMonth(m => m - 1)
+    }
   }
 
-  const firstDow = (new Date(viewYear, viewMonth - 1, 1).getDay() + 6) % 7
+  const animateMonthChange = (dir: 'next' | 'prev') => {
+    if (animatingRef.current) return
+    animatingRef.current = true
+    setNavPhase(dir === 'next' ? 'exit-left' : 'exit-right')
+    setTimeout(() => {
+      stepMonth(dir)
+      setNavPhase(dir === 'next' ? 'enter-from-right' : 'enter-from-left')
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        setNavPhase(null)
+        animatingRef.current = false
+      }))
+    }, 180)
+  }
+
+  const prevMonth = () => animateMonthChange('prev')
+  const nextMonth = () => animateMonthChange('next')
+
+  const firstDow = new Date(viewYear, viewMonth - 1, 1).getDay()  // 0=Sun
   const daysInMonth = new Date(viewYear, viewMonth, 0).getDate()
   const cells: (number | null)[] = [
     ...Array(firstDow).fill(null),
@@ -601,51 +632,132 @@ function BrandedCalendar({ value, onChange }: { value: string; onChange: (v: str
     color: 'var(--color-encore-green)', WebkitTapHighlightColor: 'transparent',
   }
 
+  // ── 左右スワイプで月切替（native touch events、iOS Safari 対応の passive:false）──
+  const gridRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = gridRef.current
+    if (!el) return
+    let startX = 0, startY = 0
+    let mode: 'h' | 'v' | null = null
+    const GESTURE_DECIDE = 10
+    const SWIPE_THRESHOLD = 50
+
+    const onStart = (e: TouchEvent) => {
+      startX = e.touches[0].clientX
+      startY = e.touches[0].clientY
+      mode = null
+    }
+    const onMove = (e: TouchEvent) => {
+      const dx = e.touches[0].clientX - startX
+      const dy = e.touches[0].clientY - startY
+      if (mode === null) {
+        if (Math.abs(dx) > GESTURE_DECIDE && Math.abs(dx) > Math.abs(dy)) mode = 'h'
+        else if (Math.abs(dy) > GESTURE_DECIDE) mode = 'v'
+      }
+      if (mode === 'h') e.preventDefault()
+    }
+    const onEnd = (e: TouchEvent) => {
+      if (mode !== 'h') return
+      const dx = e.changedTouches[0].clientX - startX
+      if (Math.abs(dx) > SWIPE_THRESHOLD) {
+        if (dx < 0) nextMonth()
+        else prevMonth()
+      }
+      mode = null
+    }
+    el.addEventListener('touchstart', onStart, { passive: true })
+    el.addEventListener('touchmove', onMove, { passive: false })
+    el.addEventListener('touchend', onEnd, { passive: true })
+    return () => {
+      el.removeEventListener('touchstart', onStart)
+      el.removeEventListener('touchmove', onMove)
+      el.removeEventListener('touchend', onEnd)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewYear, viewMonth])
+
   return (
     <div style={{ padding: '8px 4px 4px' }}>
-      {/* Month nav */}
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 6 }}>
-        <button onClick={prevMonth} style={btnBase}><CaretLeft size={15} weight="light" /></button>
-        <span style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 14, fontWeight: 700, color: 'var(--color-encore-green)' }}>
-          {viewYear}年{viewMonth}月
+      {/* Month nav: 「2026年」(小) + 「4」(大) + 「月」(小) — 数字を目立たせる */}
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+        <button onClick={prevMonth} style={btnBase}><CaretLeft size={16} weight="light" /></button>
+        <span style={{
+          flex: 1, textAlign: 'center',
+          display: 'inline-flex', alignItems: 'baseline', justifyContent: 'center', gap: 2,
+          fontFamily: 'var(--font-google-sans), sans-serif',
+          color: 'var(--color-encore-green)',
+        }}>
+          <span style={{ fontSize: 14, fontWeight: 400, color: 'var(--color-encore-text-sub)' }}>
+            {viewYear}年
+          </span>
+          <span style={{ fontSize: 22, fontWeight: 700 }}>
+            {viewMonth}
+          </span>
+          <span style={{ fontSize: 14, fontWeight: 700 }}>月</span>
         </span>
-        <button onClick={nextMonth} style={btnBase}><CaretRight size={15} weight="light" /></button>
+        <button onClick={nextMonth} style={btnBase}><CaretRight size={16} weight="light" /></button>
       </div>
 
-      {/* DOW row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 2 }}>
+      {/* DOW row: 日=赤系、土=青系、平日=muted */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 4 }}>
         {CAL_DOW.map((d, i) => (
-          <div key={d} style={{ textAlign: 'center', fontSize: 10, fontFamily: 'var(--font-google-sans), sans-serif', color: i === 6 ? 'var(--color-encore-error)' : 'var(--color-encore-text-muted)', padding: '2px 0 4px' }}>
+          <div key={d} style={{
+            textAlign: 'center', fontSize: 12, fontFamily: 'var(--font-google-sans), sans-serif',
+            color: i === 0 ? DOW_SUN_COLOR : i === 6 ? DOW_SAT_COLOR : 'var(--color-encore-text-muted)',
+            padding: '2px 0 4px',
+          }}>
             {d}
           </div>
         ))}
       </div>
 
-      {/* Day cells */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
+      {/* Day cells（touch-action: pan-y で縦スクロール許可、左右スワイプだけ native で捕捉）*/}
+      <div
+        ref={gridRef}
+        style={{
+          display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)',
+          rowGap: 4,
+          touchAction: 'pan-y',
+          transform: (() => {
+            if (navPhase === 'exit-left')        return 'translateX(-100%)'
+            if (navPhase === 'exit-right')       return 'translateX(100%)'
+            if (navPhase === 'enter-from-right') return 'translateX(100%)'
+            if (navPhase === 'enter-from-left')  return 'translateX(-100%)'
+            return 'translate(0,0)'
+          })(),
+          transition: (navPhase === 'enter-from-right' || navPhase === 'enter-from-left')
+            ? 'none'
+            : 'transform 0.2s cubic-bezier(0.32, 0.72, 0, 1)',
+        }}
+      >
         {cells.map((day, idx) => {
-          if (day === null) return <div key={`e-${idx}`} style={{ height: 34 }} />
+          if (day === null) return <div key={`e-${idx}`} style={{ height: 42 }} />
           const dateStr = `${viewYear}-${String(viewMonth).padStart(2,'0')}-${String(day).padStart(2,'0')}`
           const isSelected = dateStr === value
           const isToday = dateStr === todayStr
-          const isSun = idx % 7 === 6
+          const dow = idx % 7  // 0=日, 6=土
+          // 祝日は日曜と同じ赤系で強調（トグル ON のときのみ）
+          const isHolidayDate = showHolidays && getHolidayName(dateStr) !== null
           return (
             <button
               key={dateStr}
               onClick={() => onChange(dateStr)}
-              style={{ height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, WebkitTapHighlightColor: 'transparent' }}
+              style={{ height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, WebkitTapHighlightColor: 'transparent' }}
             >
               <div style={{
-                width: 30, height: 30, borderRadius: '50%',
+                width: 36, height: 36, borderRadius: '50%',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: isSelected ? 'var(--color-encore-green)' : 'transparent',
                 border: isToday && !isSelected ? '1.5px solid var(--color-encore-green)' : '1.5px solid transparent',
               }}>
                 <span style={{
-                  fontSize: 14, lineHeight: 1,
+                  fontSize: 16, lineHeight: 1,
                   fontFamily: 'var(--font-google-sans), sans-serif',
                   fontWeight: isSelected || isToday ? 700 : 400,
-                  color: isSelected ? 'var(--color-encore-white)' : isSun ? 'var(--color-encore-error)' : 'var(--color-encore-green)',
+                  color: isSelected ? 'var(--color-encore-white)'
+                    : (dow === 0 || isHolidayDate) ? DOW_SUN_COLOR
+                    : dow === 6 ? DOW_SAT_COLOR
+                    : 'var(--color-encore-green)',
                 }}>
                   {day}
                 </span>

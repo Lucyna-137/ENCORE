@@ -51,13 +51,12 @@ function isGreyedOut(live: GrapeLive, today: string): boolean {
 }
 
 // ─── ヘルパー ──────────────────────────────────────────────────────────────
-/** YYYY-MM-DD → その週の月曜 YYYY-MM-DD */
-function getMondayOf(dateStr: string): string {
+/** YYYY-MM-DD → その週の日曜 YYYY-MM-DD（週頭 = 日曜） */
+function getSundayOf(dateStr: string): string {
   const [y, m, d] = dateStr.split('-').map(Number)
   const dt = new Date(y, m - 1, d)
   const dow = dt.getDay() // 0=Sun
-  const diff = dow === 0 ? -6 : 1 - dow
-  dt.setDate(dt.getDate() + diff)
+  dt.setDate(dt.getDate() - dow)
   const yy = dt.getFullYear()
   const mm = String(dt.getMonth() + 1).padStart(2, '0')
   const dd = String(dt.getDate()).padStart(2, '0')
@@ -507,7 +506,7 @@ const CalendarListView = forwardRef<CalendarListViewHandle, CalendarListViewProp
               // 週ごとのサマリー事前計算
               const weekSummaries = new Map<string, { count: number; totalPrice: number; hasPrice: boolean }>()
               for (const l of filteredLives) {
-                const wk = getMondayOf(l.date)
+                const wk = getSundayOf(l.date)
                 const s = weekSummaries.get(wk) ?? { count: 0, totalPrice: 0, hasPrice: false }
                 s.count += 1
                 if (typeof l.price === 'number' && l.price > 0) {
@@ -516,7 +515,7 @@ const CalendarListView = forwardRef<CalendarListViewHandle, CalendarListViewProp
                 }
                 weekSummaries.set(wk, s)
               }
-              const thisWeekMonday = getMondayOf(today)
+              const thisWeekMonday = getSundayOf(today)
 
               // ダブルブッキング判定（同日で時間帯重複）
               const conflictIds = new Set<string>()
@@ -540,7 +539,7 @@ const CalendarListView = forwardRef<CalendarListViewHandle, CalendarListViewProp
                 const showMonthSep = monthKey !== lastMonth
                 lastMonth = monthKey
 
-                const weekKey = getMondayOf(live.date)
+                const weekKey = getSundayOf(live.date)
                 const showWeekSep = weekKey !== lastWeek
                 lastWeek = weekKey
                 const isCurrentWeek = weekKey === thisWeekMonday

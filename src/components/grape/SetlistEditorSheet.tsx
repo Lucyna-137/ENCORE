@@ -29,6 +29,7 @@ import type { GrapeLive, SetlistItem } from '@/lib/grape/types'
 import { useSetlistStore } from '@/lib/grape/useSetlistStore'
 import { normalizeSong } from '@/lib/grape/normalizeSong'
 import { useGrapeToast } from '@/lib/grape/useGrapeToast'
+import { useArtworkLookup } from '@/lib/grape/useArtworkLookup'
 
 interface SetlistEditorSheetProps {
   live: GrapeLive
@@ -126,9 +127,20 @@ export default function SetlistEditorSheet({ live, isOpen, onClose, onSaved }: S
   const editSongTitle = (index: number, title: string) => {
     setItems(prev => prev.map((item, i) => {
       if (i !== index || item.kind !== 'song') return item
-      return { ...item, title, titleNormalized: normalizeSong(title) }
+      // 曲名変更時は artworkUrl をリセットして再検索させる
+      return { ...item, title, titleNormalized: normalizeSong(title), artworkUrl: undefined }
     }))
   }
+
+  /** iTunes Search で artwork URL が取れたら対応する item に保存 */
+  const setSongArtwork = useCallback((index: number, url: string | null) => {
+    setItems(prev => prev.map((item, i) => {
+      if (i !== index || item.kind !== 'song') return item
+      const next = url ?? undefined
+      if (item.artworkUrl === next) return item
+      return { ...item, artworkUrl: next }
+    }))
+  }, [])
 
   const editMCNote = (index: number, note: string) => {
     setItems(prev => prev.map((item, i) => {
@@ -314,9 +326,11 @@ export default function SetlistEditorSheet({ live, isOpen, onClose, onSaved }: S
                   songNumber={songNumber}
                   isDragging={!!isDragging}
                   translateY={translateY}
+                  liveArtist={live.artist}
                   onRemove={() => removeItem(index)}
                   onEditSongTitle={(title) => editSongTitle(index, title)}
                   onEditMCNote={(note) => editMCNote(index, note)}
+                  onArtworkResolved={(url) => setSongArtwork(index, url)}
                   onDragStart={(e) => handleDragStart(e, index)}
                   onDragMove={handleDragMove}
                   onDragEnd={handleDragEnd}
@@ -374,8 +388,10 @@ export default function SetlistEditorSheet({ live, isOpen, onClose, onSaved }: S
 function Row({
   item, index, songNumber,
   isDragging, translateY,
+  liveArtist,
   onRemove,
   onEditSongTitle, onEditMCNote,
+  onArtworkResolved,
   onDragStart, onDragMove, onDragEnd,
 }: {
   item: SetlistItem
@@ -383,13 +399,42 @@ function Row({
   songNumber: number | null
   isDragging: boolean
   translateY: number
+  /** 紐づく GrapeLive.artist（iTunes 検索の精度向上に使う） */
+  liveArtist: string
   onRemove: () => void
   onEditSongTitle: (title: string) => void
   onEditMCNote: (note: string) => void
+  /** iTunes で artwork URL が解決したら親へ通知（null = 見つからず）*/
+  onArtworkResolved: (url: string | null) => void
   onDragStart: (e: React.PointerEvent) => void
   onDragMove: (e: React.PointerEvent) => void
   onDragEnd: (e: React.PointerEvent) => void
 }) {
+  // ── アートワーク自動検索（song 以外では無効化）──
+  // Hook は条件付きで呼べないので、kind !== 'song' のときは enabled: false で noop
+  const isSong = item.kind === 'song'
+  const songItem = isSong ? (item as Extract<SetlistItem, { kind: 'song' }>) : null
+  const songTitle = songItem?.title ?? ''
+  const existingArtwork = songItem?.artworkUrl
+  // 検索アーティストの優先順位:
+  //   1. originalArtist（カバー曲の原曲アー写を引く）
+  //   2. performedBy（対バン/フェスで特定演者）
+  //   3. liveArtist（単独公演のデフォルト）
+  const searchArtist = songItem?.originalArtist || songItem?.performedBy || liveArtist
+  const { artworkUrl, loading: artworkLoading, lowConfidence } = useArtworkLookup(
+    songTitle, searchArtist,
+    { initialUrl: existingArtwork, enabled: isSong && !!songTitle.trim() },
+  )
+  // 親へ通知（artworkUrl 変化時）。無限ループ防止のため ref で直近値を追跡
+  const lastNotifiedRef = useRef<string | null | undefined>(existingArtwork)
+  useEffect(() => {
+    if (!isSong) return
+    if (artworkUrl === lastNotifiedRef.current) return
+    lastNotifiedRef.current = artworkUrl
+    onArtworkResolved(artworkUrl)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [artworkUrl, isSong])
+
   // ドラッグ中の共通スタイル
   const dragStyle: React.CSSProperties = isDragging
     ? {
@@ -521,18 +566,59 @@ function Row({
         {songNumber}
       </div>
 
-      {/* アートワークプレースホルダ（Phase 4 で実アートワークに差替） */}
+      {/* アートワーク（iTunes Search で自動取得、未取得 or loading 時はプレースホルダ）
+          lowConfidence = iTunes 実値とアーティスト名が大きく乖離 → ?マーカー重ね表示 */}
       <div
         style={{
           width: 44, height: 44,
-          clipPath: `path("${squirclePath(44)}")`,
-          background: 'var(--color-encore-bg-section)',
           flexShrink: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'var(--color-encore-text-muted)',
+          position: 'relative',
         }}
       >
-        <MusicNotes size={18} weight="regular" />
+        <div
+          style={{
+            width: 44, height: 44,
+            clipPath: `path("${squirclePath(44)}")`,
+            background: 'var(--color-encore-bg-section)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'var(--color-encore-text-muted)',
+            overflow: 'hidden',
+          }}
+        >
+          {artworkUrl ? (
+            <img
+              src={artworkUrl}
+              alt={item.title}
+              loading="lazy"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+          ) : (
+            <MusicNotes size={18} weight="regular" style={{ opacity: artworkLoading ? 0.3 : 1, transition: 'opacity 0.2s' }} />
+          )}
+        </div>
+        {/* confidence 低マーカー: 右下に "?" アンバーバッジ */}
+        {lowConfidence && (
+          <div
+            title="アーティストが一致しない可能性があります"
+            aria-label="artwork may not match artist"
+            style={{
+              position: 'absolute',
+              right: -2, bottom: -2,
+              width: 16, height: 16,
+              borderRadius: '50%',
+              background: 'var(--color-encore-amber)',
+              color: '#fff',
+              fontFamily: 'var(--font-google-sans), sans-serif',
+              fontSize: 11, fontWeight: 700,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: '1.5px solid var(--color-encore-white)',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.18)',
+              lineHeight: 1,
+            }}
+          >
+            ?
+          </div>
+        )}
       </div>
 
       {/* タイトル入力（クリック/フォーカスでテキストフィールド化） */}

@@ -4,7 +4,9 @@ import React, { useEffect, useRef, useMemo, useState } from 'react'
 import { CaretLeft, CaretRight } from '@phosphor-icons/react'
 import * as ty from '@/components/encore/typographyStyles'
 import type { GrapeLive, GrapeArtist } from '@/lib/grape/types'
-import { TODAY, HOUR_HEIGHT_WEEK as HOUR_HEIGHT, TIME_COL_WIDTH_WEEK as TIME_COL_WIDTH, DOW_MON_FIRST as DOW, DOW_SUN_COLOR, DOW_SAT_COLOR } from '@/lib/grape/constants'
+import { TODAY, HOUR_HEIGHT_WEEK as HOUR_HEIGHT, TIME_COL_WIDTH_WEEK as TIME_COL_WIDTH, DOW_SUN_FIRST as DOW, DOW_SUN_COLOR, DOW_SAT_COLOR } from '@/lib/grape/constants'
+import { getHolidayName } from '@/lib/grape/holidays'
+import { useShowHolidays } from '@/lib/grape/useShowHolidays'
 import CyclingArtistImage from './CyclingArtistImage'
 
 interface CalendarWeekViewProps {
@@ -145,6 +147,7 @@ export default function CalendarWeekView({
 }: CalendarWeekViewProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const weekHeaderRef = useRef<HTMLDivElement>(null)
+  const showHolidays = useShowHolidays()
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [dragOverDate, setDragOverDate] = useState<string | null>(null)
   const [activeBirthday, setActiveBirthday] = useState<WeekBirthdayTooltipData | null>(null)
@@ -153,7 +156,8 @@ export default function CalendarWeekView({
   const DRAG_TAP_THRESHOLD = 6
   // iOS Safari 対策: touch は native addEventListener + 非パッシブ touchmove + 長押し
   // で処理（Day View と同じパターン）。列ごとに ref を保持。
-  const LONG_PRESS_MS = 350
+  // 空きコマへのゴースト枠確保の長押し閾値。短すぎると誤タップ誘発、500ms がネイティブ長押し感覚。
+  const LONG_PRESS_MS = 500
   const columnRefsMap = useRef<Map<string, HTMLDivElement>>(new Map())
   const setColumnRef = (dateStr: string) => (el: HTMLDivElement | null) => {
     if (el) columnRefsMap.current.set(dateStr, el)
@@ -468,10 +472,10 @@ export default function CalendarWeekView({
                   ...ty.caption,
                   fontWeight: 700,
                   fontSize: 12,
-                  // DOW_MON_FIRST 配列: 0=月 ... 5=土 / 6=日
+                  // DOW_SUN_FIRST 配列: 0=日 ... 6=土
                   color:
-                    i === 6 ? DOW_SUN_COLOR
-                    : i === 5 ? DOW_SAT_COLOR
+                    i === 0 ? DOW_SUN_COLOR
+                    : i === 6 ? DOW_SAT_COLOR
                     : 'var(--color-encore-green-muted)',
                 }}
               >
@@ -503,7 +507,9 @@ export default function CalendarWeekView({
                     fontWeight: 700,
                     fontSize: 16,
                     color: urgencyPalette?.textColor
-                      ?? (isToday ? 'var(--color-encore-white)' : 'var(--color-encore-green)'),
+                      ?? (isToday ? 'var(--color-encore-white)'
+                        : (showHolidays && getHolidayName(dateStr) !== null) ? DOW_SUN_COLOR
+                        : 'var(--color-encore-green)'),
                   }}
                 >
                   {date.getDate()}
@@ -861,22 +867,22 @@ export default function CalendarWeekView({
                           ...eventStyle,
                         }}
                       >
-                        {live.coverImage ? (
+                        {/* アーティスト画像優先（小サイズでも識別しやすい） */}
+                        {(live.artistImages && live.artistImages.length > 1) ? (
+                          <div style={{ flexShrink: 0, marginTop: 1, pointerEvents: 'none' }}><CyclingArtistImage images={live.artistImages} alt={live.artist} size={16} intervalMs={2400} /></div>
+                        ) : live.artistImage ? (
+                          <img
+                            src={live.artistImage}
+                            alt={live.artist}
+                            style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginTop: 1, pointerEvents: 'none' }}
+                          />
+                        ) : live.coverImage && (
                           <img
                             src={live.coverImage}
                             alt={live.title}
                             style={{ width: 16, height: 16, borderRadius: 3, objectFit: 'cover', flexShrink: 0, marginTop: 1, pointerEvents: 'none' }}
                           />
-                        ) : (live.artistImages && live.artistImages.length > 1)
-                          ? <div style={{ flexShrink: 0, marginTop: 1, pointerEvents: 'none' }}><CyclingArtistImage images={live.artistImages} alt={live.artist} size={16} intervalMs={2400} /></div>
-                          : live.artistImage && (
-                            <img
-                              src={live.artistImage}
-                              alt={live.artist}
-                              style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginTop: 1, pointerEvents: 'none' }}
-                            />
-                          )
-                        }
+                        )}
                         <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, pointerEvents: 'none' }}>
                           <span
                             style={{

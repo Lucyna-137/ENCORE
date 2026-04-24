@@ -12,6 +12,7 @@ import { useGrapeStore } from '@/lib/grape/useGrapeStore'
 import type { GrapeLive, GrapeArtist } from '@/lib/grape/types'
 import EventPreviewScreen from '@/components/grape/EventPreviewScreen'
 import PremiumUpgradeSheet from '@/components/grape/PremiumUpgradeSheet'
+import BirthdayCalendar from '@/components/grape/BirthdayCalendar'
 import { ATTENDANCE_LABEL, CURRENT_YEAR, CURRENT_MONTH, TODAY, LIVE_TYPE_COLOR, DOW_SUN_COLOR, DOW_SAT_COLOR } from '@/lib/grape/constants'
 import ColorPicker from '@/components/encore/ColorPicker'
 import PhoneFrame from '@/components/grape/PhoneFrame'
@@ -673,48 +674,11 @@ function ArtistEditSheet({
               )}
             </button>
             {showBdPicker && (
-              <div style={{ marginTop: 8, borderRadius: 10, border: '1px solid var(--color-encore-border-light)', background: 'var(--color-encore-bg)', padding: '12px 10px 14px' }}>
-                {/* ナビゲーション行（月のみ、1〜12月） */}
-                <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
-                  <button
-                    onClick={() => goMonth(-1)}
-                    disabled={pickerMonth === 0}
-                    style={navBtnStyle(pickerMonth === 0)}
-                  >‹</button>
-                  <span style={{
-                    flex: 1, textAlign: 'center',
-                    fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                    fontSize: 16, fontWeight: 700, color: 'var(--color-encore-green)',
-                  }}>
-                    {pickerMonth + 1}月
-                  </span>
-                  <button
-                    onClick={() => goMonth(1)}
-                    disabled={pickerMonth === 11}
-                    style={navBtnStyle(pickerMonth === 11)}
-                  >›</button>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 4 }}>
-                  {DOW_LABELS.map((d, i) => (
-                    <div key={d} style={{ textAlign: 'center', padding: '2px 0', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 10, fontWeight: 700, color: i === 0 ? DOW_SUN_COLOR : i === 6 ? DOW_SAT_COLOR : 'var(--color-encore-text-muted)' }}>{d}</div>
-                  ))}
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px 0' }}>
-                  {calCells.map((day, idx) => {
-                    if (!day) return <div key={`e-${idx}`} />
-                    const isSelected = day === bdDay && pickerMonth + 1 === bdMonth
-                    const dow = (firstDow + (day - 1)) % 7
-                    return (
-                      <button
-                        key={day}
-                        onClick={() => { const mm = String(pickerMonth + 1).padStart(2, '0'); const dd = String(day).padStart(2, '0'); setBirthday(`2000-${mm}-${dd}`); setShowBdPicker(false) }}
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 36, borderRadius: 999, background: isSelected ? 'var(--color-encore-green)' : 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 12, fontWeight: isSelected ? 700 : 400, color: isSelected ? '#fff' : dow === 0 ? DOW_SUN_COLOR : dow === 6 ? DOW_SAT_COLOR : 'var(--color-encore-green)', WebkitTapHighlightColor: 'transparent', transition: 'background 0.12s' }}
-                      >
-                        {day}
-                      </button>
-                    )
-                  })}
-                </div>
+              <div style={{ marginTop: 8 }}>
+                <BirthdayCalendar
+                  value={birthday}
+                  onSelect={(v) => { setBirthday(v); setShowBdPicker(false) }}
+                />
               </div>
             )}
           </div>
@@ -972,14 +936,23 @@ export default function ArtistDetailPage() {
   // アーティスト削除ハンドラ（共通ダイアログ ArtistDeleteConfirmDialog 使用）
   // 2 択: イベントも削除 / イベントは残す
   // トーストは遷移先ページがマウントしてから表示させるため setTimeout で遅延実行。
-  const artistLinkedEventCount = lives.filter(l => l.artist === artist.name).length
+  //
+  // イベント紐付けの判定はプライマリ `l.artist` だけでなく
+  // 対バン/フェスの co-artist 配列 `l.artists?.[]` も含める。
+  // この関数は type-narrowed な artist（GrapeArtist）を前提とし、
+  // ハンドラ内では name を const で固定してレース条件を回避する。
+  const isLinked = (l: GrapeLive, name: string): boolean =>
+    l.artist === name || (l.artists?.includes(name) ?? false)
 
-  const handleDeleteArtistWithEvents = () => {
-    const name = artist.name
+  const artistLinkedEventCount = lives.filter(l => isLinked(l, artist.name)).length
+
+  const handleDeleteArtistWithEvents = (): void => {
+    const name: string = artist.name
+    const artistId: string = artist.id
     const count = artistLinkedEventCount
-    // 紐づくライブを削除
-    lives.forEach(l => { if (l.artist === name) deleteLive(l.id) })
-    deleteArtist(artist.id)
+    // 紐づくライブを削除（primary または co-artist）
+    lives.forEach(l => { if (isLinked(l, name)) deleteLive(l.id) })
+    deleteArtist(artistId)
     setShowDeleteDialog(false)
     router.back()
     setTimeout(() => {
@@ -991,15 +964,23 @@ export default function ArtistDetailPage() {
     }, 120)
   }
 
-  const handleDeleteArtistKeepEvents = () => {
-    const name = artist.name
-    // artistImage をクリアして Person アイコン fallback へ
+  const handleDeleteArtistKeepEvents = (): void => {
+    const name: string = artist.name
+    const artistId: string = artist.id
+    // primary artist の場合: 画像をクリア
+    // co-artist の場合: artists[] から該当アーティストを除外
     lives.forEach(l => {
       if (l.artist === name) {
         updateLive({ ...l, artistImage: undefined, artistImages: undefined })
+      } else if (l.artists?.includes(name)) {
+        const filteredArtists = l.artists.filter(a => a !== name)
+        updateLive({
+          ...l,
+          artists: filteredArtists.length > 0 ? filteredArtists : undefined,
+        })
       }
     })
-    deleteArtist(artist.id)
+    deleteArtist(artistId)
     setShowDeleteDialog(false)
     router.back()
     setTimeout(() => {

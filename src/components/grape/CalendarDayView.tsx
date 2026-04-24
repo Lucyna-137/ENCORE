@@ -5,6 +5,8 @@ import { CaretLeft, CaretRight, Cake, Warning } from '@phosphor-icons/react'
 import * as ty from '@/components/encore/typographyStyles'
 import type { GrapeLive, GrapeArtist } from '@/lib/grape/types'
 import { TODAY, HOUR_HEIGHT_DAY as HOUR_HEIGHT, TIME_COL_WIDTH_DAY as TIME_COL_WIDTH, DOW_SUN_FIRST as DOW_JA } from '@/lib/grape/constants'
+import { getHolidayName } from '@/lib/grape/holidays'
+import { useShowHolidays } from '@/lib/grape/useShowHolidays'
 import CyclingArtistImage from './CyclingArtistImage'
 
 interface CalendarDayViewProps {
@@ -121,6 +123,8 @@ export default function CalendarDayView({
 }: CalendarDayViewProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const isToday = date === TODAY
+  const showHolidays = useShowHolidays()
+  const holidayName = showHolidays ? getHolidayName(date) : null
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [isDragOver, setIsDragOver] = useState(false)
   // 空きスロットからの drag-to-create
@@ -129,7 +133,9 @@ export default function CalendarDayView({
   // iOS Safari 対策: touch は native addEventListener + 非パッシブ touchmove で処理。
   // React の onTouchMove は passive なため preventDefault が効かず、スクロール奪取できない。
   const eventAreaRef = useRef<HTMLDivElement>(null)
-  const LONG_PRESS_MS = 350
+  // 空きコマへのゴースト枠確保の長押し閾値。短すぎると誤タップで作成誘発、
+  // 長すぎると「応答遅い」印象。500ms がネイティブ長押しの感覚目安。
+  const LONG_PRESS_MS = 500
 
   // 当日の誕生日アーティスト
   const birthdayArtistsToday = useMemo(() => {
@@ -306,7 +312,11 @@ export default function CalendarDayView({
         </button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ ...ty.heading }}>{formatDateLabel(date)}</span>
+          <span style={{
+            ...ty.heading,
+            // 祝日なら日曜と同じ赤系で日付を強調
+            color: holidayName ? 'var(--color-encore-error)' : undefined,
+          }}>{formatDateLabel(date)}</span>
           {isToday && (
             <span
               style={{
@@ -320,6 +330,22 @@ export default function CalendarDayView({
               }}
             >
               今日
+            </span>
+          )}
+          {/* 祝日名（小さく控えめに・操作の邪魔にならないよう右側に配置）*/}
+          {holidayName && (
+            <span
+              style={{
+                ...ty.caption,
+                fontSize: 10,
+                fontWeight: 700,
+                padding: '2px 7px',
+                borderRadius: 999,
+                background: 'rgba(219,96,80,0.14)',
+                color: 'var(--color-encore-error)',
+              }}
+            >
+              {holidayName}
             </span>
           )}
         </div>
@@ -776,26 +802,28 @@ export default function CalendarDayView({
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 5, pointerEvents: 'none' }}>
-                    {live.coverImage ? (
+                    {/* アーティスト画像を優先（推し活ユーザーは小さいサイズでもアー写で即認識）
+                        カバーアートは大画面（EventPreviewScreen 等）専用。
+                        優先順位: 複数アーティストのサイクリング > 単独アー写 > カバー fallback */}
+                    {(live.artistImages && live.artistImages.length > 1) ? (
+                      <div style={{ flexShrink: 0 }}><CyclingArtistImage images={live.artistImages} alt={live.artist} size={20} intervalMs={2400} /></div>
+                    ) : live.artistImage ? (
+                      <img
+                        src={live.artistImage}
+                        alt={live.artist}
+                        style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+                      />
+                    ) : live.coverImage && (
                       <img
                         src={live.coverImage}
                         alt={live.title}
                         style={{ width: 20, height: 20, borderRadius: 4, objectFit: 'cover', flexShrink: 0 }}
                       />
-                    ) : (live.artistImages && live.artistImages.length > 1)
-                      ? <div style={{ flexShrink: 0 }}><CyclingArtistImage images={live.artistImages} alt={live.artist} size={20} intervalMs={2400} /></div>
-                      : live.artistImage && (
-                        <img
-                          src={live.artistImage}
-                          alt={live.artist}
-                          style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
-                        />
-                      )
-                    }
+                    )}
                     <span
                       style={{
                         fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: 700,
                         color: 'var(--color-encore-green)',
                         overflow: 'hidden',

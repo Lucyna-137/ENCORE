@@ -6,6 +6,9 @@ import { LIVES as SEED_LIVES, ARTISTS as SEED_ARTISTS } from './dummyData'
 
 const LIVES_KEY    = 'grape_lives_v1'
 const ARTISTS_KEY  = 'grape_artists_v1'
+/** Dev: これが 'true' のとき、空の localStorage でもシードデータを投入しない。
+ *       「インストールしたばかりの空の状態」シミュレーション用。 */
+const NO_SEED_KEY  = 'grape-no-seed'
 
 /** 旧チケットステータス → 新ステータスへのマイグレーションマップ */
 const LEGACY_TICKET_STATUS_MAP: Record<string, TicketStatus> = {
@@ -33,9 +36,16 @@ export function useGrapeStore() {
   useEffect(() => {
     const rawLives   = localStorage.getItem(LIVES_KEY)
     const rawArtists = localStorage.getItem(ARTISTS_KEY)
+    // 「空の状態で起動」フラグが立っているときはシードを投入しない（Dev 用）
+    const noSeed = localStorage.getItem(NO_SEED_KEY) === 'true'
 
-    const loadedLives   = (rawLives ? (JSON.parse(rawLives) as GrapeLive[]) : SEED_LIVES).map(migrateLive)
-    const rawArtistsParsed: GrapeArtist[] = rawArtists ? JSON.parse(rawArtists) : SEED_ARTISTS
+    const emptyLives: GrapeLive[] = []
+    const emptyArtists: GrapeArtist[] = []
+    const seedLives = noSeed ? emptyLives : SEED_LIVES
+    const seedArtists = noSeed ? emptyArtists : SEED_ARTISTS
+
+    const loadedLives   = (rawLives ? (JSON.parse(rawLives) as GrapeLive[]) : seedLives).map(migrateLive)
+    const rawArtistsParsed: GrapeArtist[] = rawArtists ? JSON.parse(rawArtists) : seedArtists
 
     // Migration: birthday フィールドが未設定の場合、シードから補完する
     const loadedArtists = rawArtistsParsed.map(a => {

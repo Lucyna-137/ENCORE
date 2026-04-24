@@ -4,7 +4,10 @@ import React, { useMemo, useState, useRef } from 'react'
 import * as ty from '@/components/encore/typographyStyles'
 import type { GrapeLive, GrapeArtist } from '@/lib/grape/types'
 import { TODAY, DOW_SUN_FIRST as DOW_LABELS, DOW_SUN_COLOR, DOW_SAT_COLOR } from '@/lib/grape/constants'
+import { getHolidayName } from '@/lib/grape/holidays'
+import { useShowHolidays } from '@/lib/grape/useShowHolidays'
 import AttendanceStatusMarker from './AttendanceStatusMarker'
+import CyclingArtistImage from './CyclingArtistImage'
 import { CaretLeft, CaretRight } from '@phosphor-icons/react'
 
 interface CalendarMonthViewProps {
@@ -143,6 +146,7 @@ export default function CalendarMonthView({
     labels: string[]
   } | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const showHolidays = useShowHolidays()
 
   // 誕生日マップ: 'MM-DD' -> GrapeArtist[]
   const birthdayMap = useMemo(() => {
@@ -510,10 +514,12 @@ export default function CalendarMonthView({
                 const outline = urgencyPalette
                   ? urgencyPalette.outline
                   : (isSelected && !isToday ? '2px solid var(--color-encore-green)' : 'none')
+                // 祝日は日曜と同じ赤系（トグル ON のときのみ）
+                const isHolidayDate = showHolidays && getHolidayName(dateStr) !== null
                 const textColor =
                   urgencyPalette?.textColor ?? (
                     isToday ? 'var(--color-encore-white)'
-                    : dow === 0 ? 'var(--color-encore-error)'
+                    : (dow === 0 || isHolidayDate) ? 'var(--color-encore-error)'
                     : dow === 6 ? 'var(--color-encore-green-muted)'
                     : 'var(--color-encore-green)'
                   )
@@ -601,9 +607,31 @@ export default function CalendarMonthView({
                       transition: 'opacity 0.15s',
                     }}
                   >
-                    {(primaryLive.coverImage || primaryLive.artistImage) && (
+                    {/* アーティスト画像を優先（複数アーティストは CyclingArtistImage でフェード切替）
+                        カバーアートは fallback（アーティスト画像が無い場合のみ）*/}
+                    {(primaryLive.artistImages && primaryLive.artistImages.length > 1) ? (
+                      <CyclingArtistImage
+                        images={primaryLive.artistImages}
+                        alt={primaryLive.artist}
+                        size={32}
+                        borderRadius={5}
+                        intervalMs={2400}
+                      />
+                    ) : primaryLive.artistImage ? (
                       <img
-                        src={primaryLive.coverImage ?? primaryLive.artistImage}
+                        src={primaryLive.artistImage}
+                        alt={primaryLive.artist}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          display: 'block',
+                          pointerEvents: 'none',
+                        }}
+                      />
+                    ) : primaryLive.coverImage && (
+                      <img
+                        src={primaryLive.coverImage}
                         alt={primaryLive.title}
                         style={{
                           width: '100%',

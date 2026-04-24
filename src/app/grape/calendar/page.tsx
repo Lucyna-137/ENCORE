@@ -177,12 +177,11 @@ function getTomorrow(today: string): string {
 }
 
 // ─── ビュー切り替え: 日付を引き継ぐためのヘルパー ───────────────────────────
-/** dateStr（YYYY-MM-DD）を含む週の月曜日を返す */
-function getMondayOf(dateStr: string): Date {
+/** dateStr（YYYY-MM-DD）を含む週の日曜日を返す（週頭 = 日曜） */
+function getSundayOf(dateStr: string): Date {
   const d = new Date(dateStr + 'T00:00:00')
   const dow = d.getDay() // 0=Sun
-  const diff = dow === 0 ? -6 : 1 - dow
-  d.setDate(d.getDate() + diff)
+  d.setDate(d.getDate() - dow)
   return d
 }
 
@@ -217,7 +216,7 @@ export default function CalendarPage() {
   const [prefillLive, setPrefillLive] = useState<Partial<GrapeLive> | null>(null)
   const isPremium = useIsPremium()
   // 週ビュー: 月曜始まりの週開始日
-  const [weekStart, setWeekStart] = useState(() => getMondayOf(TODAY))
+  const [weekStart, setWeekStart] = useState(() => getSundayOf(TODAY))
 
   // ─── ストア（localStorage 永続化） ───────────────────────────────────────
   const { lives, artists, addLive, updateLive, deleteLive, updateLives, addArtist } = useGrapeStore()
@@ -326,7 +325,7 @@ export default function CalendarPage() {
 
     // 新しいビューに注目日を適用
     if (newMode === '週') {
-      setWeekStart(getMondayOf(focused))
+      setWeekStart(getSundayOf(focused))
     } else if (newMode === '日') {
       setDayDate(focused)
     } else if (newMode === '月') {
@@ -423,7 +422,7 @@ export default function CalendarPage() {
     setYear(CURRENT_YEAR)
     setMonth(CURRENT_MONTH)
     setDayDate(TODAY)
-    setWeekStart(getMondayOf(TODAY))
+    setWeekStart(getSundayOf(TODAY))
     if (viewMode === 'リスト') {
       listViewRef.current?.scrollToToday()
     }

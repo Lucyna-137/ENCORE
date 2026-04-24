@@ -205,9 +205,9 @@ export default function PremiumUpgradeSheet({ onClose }: { onClose: () => void }
                 }}>{label}</div>
                 <div style={{
                   fontFamily: 'var(--font-google-sans), var(--font-noto-jp), sans-serif',
-                  fontSize: 12, fontWeight: 400,
+                  fontSize: 10, fontWeight: 400,
                   color: PUR.sub,
-                  lineHeight: 1.5,
+                  lineHeight: 1.55,
                 }}>{desc}</div>
               </div>
             </div>
