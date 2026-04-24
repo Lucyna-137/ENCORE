@@ -11,6 +11,7 @@ import * as ty from '@/components/encore/typographyStyles'
 import { useGrapeStore } from '@/lib/grape/useGrapeStore'
 import type { GrapeLive, GrapeArtist } from '@/lib/grape/types'
 import EventPreviewScreen from '@/components/grape/EventPreviewScreen'
+import PremiumUpgradeSheet from '@/components/grape/PremiumUpgradeSheet'
 import { ATTENDANCE_LABEL, CURRENT_YEAR, CURRENT_MONTH, TODAY, LIVE_TYPE_COLOR, DOW_SUN_COLOR, DOW_SAT_COLOR } from '@/lib/grape/constants'
 import ColorPicker from '@/components/encore/ColorPicker'
 import PhoneFrame from '@/components/grape/PhoneFrame'
@@ -946,6 +947,7 @@ export default function ArtistDetailPage() {
 
   // EventPreviewScreen
   const [previewLive, setPreviewLive] = useState<GrapeLive | null>(null)
+  const [showPremiumSheet, setShowPremiumSheet] = useState(false)
 
   if (!artist) {
     return (
@@ -1499,7 +1501,13 @@ export default function ArtistDetailPage() {
             addLive(dup)
             setPreviewLive(null)
           }}
+          onUpgradePremium={() => setShowPremiumSheet(true)}
         />
+
+        {/* ── PremiumUpgradeSheet ── */}
+        {showPremiumSheet && (
+          <PremiumUpgradeSheet onClose={() => setShowPremiumSheet(false)} />
+        )}
     </PhoneFrame>
   )
 }

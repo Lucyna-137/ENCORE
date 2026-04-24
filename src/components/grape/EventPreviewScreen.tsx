@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
   X, PencilSimple, DotsThree,
   CalendarBlank, Clock, MapPin, Ticket, Note,
@@ -168,6 +168,21 @@ export default function EventPreviewScreen({
   const { show: showToast } = useGrapeToast()
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
   const [lbScale, setLbScale] = useState(1)
+  // カバーアート単体のライトボックス（live.images とは独立、枚数 1 専用）
+  const [coverLightbox, setCoverLightbox] = useState(false)
+  const [coverLbScale, setCoverLbScale] = useState(1)
+
+  // 前後ライブソート済みリスト（dots インジケーター用の位置と総数）
+  const sortedAll = useMemo(() => {
+    if (!allLives || !live) return []
+    const sorted = [...allLives].sort((a, b) => {
+      const k = a.date.localeCompare(b.date)
+      if (k !== 0) return k
+      return (a.startTime ?? '').localeCompare(b.startTime ?? '')
+    })
+    return sorted
+  }, [allLives, live])
+  const currentIdx = useMemo(() => sortedAll.findIndex(l => l.id === live?.id), [sortedAll, live])
   const lbLastDist = useRef(0)
   const menuRef = useRef<HTMLDivElement>(null)
   const isOpen = live !== null
@@ -175,7 +190,14 @@ export default function EventPreviewScreen({
   // ── drag-to-dismiss + swipe-to-navigate ───────────────────────────────────
   const [dragY, setDragY] = useState(0)
   const [dragX, setDragX] = useState(0)
-  const [navTransition, setNavTransition] = useState<'left' | 'right' | null>(null)
+  // ナビゲーション遷移のフェーズ:
+  //   'exit-left'       : 現カードが左へ退場中（次のライブへ移動）
+  //   'exit-right'      : 現カードが右へ退場中（前のライブへ移動）
+  //   'enter-from-right': 新カードを右端にスナップ配置（アニメ前）
+  //   'enter-from-left' : 新カードを左端にスナップ配置（アニメ前）
+  //   null              : 静止中
+  type NavPhase = 'exit-left' | 'exit-right' | 'enter-from-right' | 'enter-from-left' | null
+  const [navPhase, setNavPhase] = useState<NavPhase>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const touchStartX = useRef(0)
@@ -242,6 +264,23 @@ export default function EventPreviewScreen({
     }
   }
 
+  // 方向性のある遷移アニメーション共通ロジック。
+  // exit → onNavigate → 新カードを反対側へスナップ → 中心へスライドイン、の 3 段階で
+  // 「消えた方向と逆側から次カードが現れる」直感に合わせる。
+  const animateNavigate = (dir: 'next' | 'prev', target: GrapeLive) => {
+    setNavPhase(dir === 'next' ? 'exit-left' : 'exit-right')
+    setTimeout(() => {
+      // 新カードを反対側（enter）に配置 → live 差し替え
+      setNavPhase(dir === 'next' ? 'enter-from-right' : 'enter-from-left')
+      setDragX(0)
+      onNavigate?.(target)
+      // 2 フレーム待ってから null に戻し transform:translate(0,0) へ遷移を開始させる
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setNavPhase(null))
+      })
+    }, 180)
+  }
+
   const onTouchEnd = () => {
     if (!activeDrag.current) { activeDrag.current = false; return }
     const elapsed = Math.max(Date.now() - touchStartTime.current, 1)
@@ -257,13 +296,9 @@ export default function EventPreviewScreen({
       const velocity = Math.abs(dragX) / elapsed
       const shouldNav = Math.abs(dragX) > SWIPE_THRESHOLD || velocity > DISMISS_VEL
       if (shouldNav && dragX < 0 && nextLive) {
-        // 左へスワイプ = 次のイベントへ
-        setNavTransition('left')
-        setTimeout(() => { onNavigate?.(nextLive); setDragX(0); setNavTransition(null) }, 180)
+        animateNavigate('next', nextLive)
       } else if (shouldNav && dragX > 0 && prevLive) {
-        // 右へスワイプ = 前のイベントへ
-        setNavTransition('right')
-        setTimeout(() => { onNavigate?.(prevLive); setDragX(0); setNavTransition(null) }, 180)
+        animateNavigate('prev', prevLive)
       } else {
         setDragX(0)
       }
@@ -323,11 +358,13 @@ export default function EventPreviewScreen({
 
   return (
     <>
-      {/* ── バックドロップ ───────────────────────────────────── */}
+      {/* ── バックドロップ ─────────────────────────────────────
+          position: fixed で viewport 基準にする（iPhone PWA のノッチ／ホームインジケーター
+          領域まで含めて全画面をカバー。phone-frame の overflow:hidden を超えて描画される） */}
       <div
         onClick={onClose}
         style={{
-          position: 'absolute',
+          position: 'fixed',
           inset: 0,
           zIndex: 300,
           background: isOpen && mounted ? 'rgba(0,0,0,0.52)' : 'rgba(0,0,0,0)',
@@ -358,15 +395,21 @@ export default function EventPreviewScreen({
           flexDirection: 'column',
           // ジェスチャーに応じて translate を合成（縦ドラッグ・横スワイプ・ナビ遷移）
           transform: (() => {
-            if (navTransition === 'left')  return 'translateX(-100%)'
-            if (navTransition === 'right') return 'translateX(100%)'
+            if (navPhase === 'exit-left')        return 'translateX(-100%)'
+            if (navPhase === 'exit-right')       return 'translateX(100%)'
+            if (navPhase === 'enter-from-right') return 'translateX(100%)'
+            if (navPhase === 'enter-from-left')  return 'translateX(-100%)'
             if (dragX !== 0) return `translateX(${dragX}px)`
             if (dragY > 0)   return `translateY(${dragY}px)`
             return isOpen && mounted ? 'translate(0,0)' : 'translateY(105%)'
           })(),
-          transition: (dragY > 0 || dragX !== 0) && navTransition === null
-            ? 'none'
-            : 'transform 0.28s cubic-bezier(0.32, 0.72, 0, 1)',
+          // enter-from-* のフレームだけ transition:none で新カードを反対側に瞬間スナップし、
+          // 次フレームで null 化したときに transform:0 へアニメが走る（スライドイン）。
+          transition: (() => {
+            if (navPhase === 'enter-from-right' || navPhase === 'enter-from-left') return 'none'
+            if ((dragY > 0 || dragX !== 0) && navPhase === null) return 'none'
+            return 'transform 0.28s cubic-bezier(0.32, 0.72, 0, 1)'
+          })(),
         }}
       >
         {/* ── カバーアート ──────────────────────────────────────── */}
@@ -376,7 +419,11 @@ export default function EventPreviewScreen({
             <img
               src={live.coverImage}
               alt={live?.title ?? ''}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              onClick={() => { setCoverLightbox(true); setCoverLbScale(1) }}
+              style={{
+                width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+                cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+              }}
             />
           ) : (
             <div
@@ -427,52 +474,42 @@ export default function EventPreviewScreen({
             </div>
           )}
 
-          {/* ── 左右スワイプナビ用ヒント（前後イベントがあるとき） ── */}
-          {prevLive && (
-            <button
-              onClick={() => onNavigate?.(prevLive)}
-              title={`前へ: ${prevLive.title}`}
-              style={{
-                position: 'absolute',
-                left: 8, top: '50%',
-                transform: 'translateY(-50%)',
-                width: 32, height: 32, borderRadius: '50%',
-                background: 'rgba(0,0,0,0.14)',
-                border: 'none',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer',
-                backdropFilter: 'blur(2px)',
-                WebkitBackdropFilter: 'blur(2px)',
-                WebkitTapHighlightColor: 'transparent',
-                zIndex: 2,
-                opacity: 0.7,
-              }}
-            >
-              <CaretLeft size={14} weight="bold" color="#fff" />
-            </button>
-          )}
-          {nextLive && (
-            <button
-              onClick={() => onNavigate?.(nextLive)}
-              title={`次へ: ${nextLive.title}`}
-              style={{
-                position: 'absolute',
-                right: 8, top: '50%',
-                transform: 'translateY(-50%)',
-                width: 32, height: 32, borderRadius: '50%',
-                background: 'rgba(0,0,0,0.14)',
-                border: 'none',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer',
-                backdropFilter: 'blur(2px)',
-                WebkitBackdropFilter: 'blur(2px)',
-                WebkitTapHighlightColor: 'transparent',
-                zIndex: 2,
-                opacity: 0.7,
-              }}
-            >
-              <CaretRight size={14} weight="bold" color="#fff" />
-            </button>
+          {/* ── スワイプ位置インジケーター（右下のドット/件数ピル） ── */}
+          {sortedAll.length > 1 && currentIdx >= 0 && (
+            <div style={{
+              position: 'absolute',
+              right: 12, bottom: 10,
+              display: 'flex', gap: 5, alignItems: 'center',
+              padding: '4px 8px', borderRadius: 999,
+              background: 'rgba(0,0,0,0.32)',
+              backdropFilter: 'blur(4px)',
+              WebkitBackdropFilter: 'blur(4px)',
+              zIndex: 2,
+              maxWidth: '70%',
+              overflow: 'hidden',
+            }}>
+              {sortedAll.length <= 10 ? (
+                sortedAll.map((_, i) => (
+                  <span key={i} style={{
+                    width: i === currentIdx ? 14 : 5,
+                    height: 5, borderRadius: 999,
+                    background: i === currentIdx ? '#fff' : 'rgba(255,255,255,0.5)',
+                    transition: 'width 0.25s, background 0.25s',
+                    flexShrink: 0,
+                  }} />
+                ))
+              ) : (
+                <span style={{
+                  fontFamily: 'var(--font-google-sans), sans-serif',
+                  fontSize: 10, fontWeight: 400,
+                  color: '#fff',
+                  fontVariantNumeric: 'tabular-nums',
+                  letterSpacing: '0.04em',
+                }}>
+                  {currentIdx + 1} / {sortedAll.length}
+                </span>
+              )}
+            </div>
           )}
 
           {/* ── ヘッダーボタン群 ─────────────────────────────── */}
@@ -944,7 +981,7 @@ export default function EventPreviewScreen({
         <div
           onClick={() => setShowStatusSheet(false)}
           style={{
-            position: 'absolute', inset: 0, zIndex: 400,
+            position: 'fixed', inset: 0, zIndex: 400,
             background: 'rgba(0,0,0,0.32)',
             display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
           }}
@@ -1020,7 +1057,7 @@ export default function EventPreviewScreen({
         <div
           onClick={() => setLightboxIdx(null)}
           style={{
-            position: 'absolute', inset: 0, zIndex: 500,
+            position: 'fixed', inset: 0, zIndex: 500,
             background: 'rgba(0,0,0,0.92)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
@@ -1069,7 +1106,9 @@ export default function EventPreviewScreen({
           <button
             onClick={() => setLightboxIdx(null)}
             style={{
-              position: 'absolute', top: 16, right: 16,
+              position: 'absolute',
+              top: 'calc(env(safe-area-inset-top) + 16px)',
+              right: 16,
               width: 36, height: 36, borderRadius: '50%',
               background: 'rgba(255,255,255,0.15)', border: 'none',
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -1127,6 +1166,73 @@ export default function EventPreviewScreen({
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── カバーアート単体ライトボックス（枚数1専用・prev/next なし） ── */}
+      {coverLightbox && live?.coverImage && (
+        <div
+          onClick={() => setCoverLightbox(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 500,
+            background: 'rgba(0,0,0,0.92)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => {
+              if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX
+                const dy = e.touches[0].clientY - e.touches[1].clientY
+                lbLastDist.current = Math.sqrt(dx * dx + dy * dy)
+              }
+            }}
+            onTouchMove={(e) => {
+              if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX
+                const dy = e.touches[0].clientY - e.touches[1].clientY
+                const dist = Math.sqrt(dx * dx + dy * dy)
+                const delta = dist / (lbLastDist.current || dist)
+                setCoverLbScale(s => Math.min(5, Math.max(1, s * delta)))
+                lbLastDist.current = dist
+              }
+            }}
+            onTouchEnd={(e) => {
+              if (e.touches.length < 2) lbLastDist.current = 0
+            }}
+            style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <img
+              src={live.coverImage}
+              alt={live.title ?? ''}
+              style={{
+                maxWidth: '100%', maxHeight: '100%',
+                objectFit: 'contain', display: 'block',
+                transform: `scale(${coverLbScale})`,
+                transformOrigin: 'center',
+                transition: coverLbScale === 1 ? 'transform 0.2s' : 'none',
+                touchAction: 'none',
+              }}
+              onDoubleClick={() => setCoverLbScale(s => s > 1 ? 1 : 2.5)}
+            />
+          </div>
+
+          <button
+            onClick={() => setCoverLightbox(false)}
+            style={{
+              position: 'absolute',
+              // iOS ノッチ/Dynamic Island 下に X が隠れないよう safe-area を加算
+              top: 'calc(env(safe-area-inset-top) + 16px)',
+              right: 16,
+              width: 36, height: 36, borderRadius: '50%',
+              background: 'rgba(255,255,255,0.15)', border: 'none',
+              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            <X size={18} weight="bold" color="#fff" />
+          </button>
         </div>
       )}
 

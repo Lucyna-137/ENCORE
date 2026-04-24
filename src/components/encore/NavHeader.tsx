@@ -15,7 +15,7 @@ interface NavHeaderProps {
 function StatusBar({ dark = false }: { dark?: boolean }) {
   return (
     <div
-      className="flex justify-between items-center px-6 pt-4 pb-2"
+      className="grape-statusbar flex justify-between items-center px-6 pt-4 pb-2"
       style={{ background: dark ? 'var(--color-encore-green)' : 'var(--color-encore-bg)' }}
     >
       <span

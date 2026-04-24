@@ -213,7 +213,7 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
 
   return (
     <div style={{
-      position: 'absolute', inset: 0,
+      position: 'fixed', inset: 0,
       background: 'var(--color-encore-bg)',
       zIndex: 200,
       display: 'flex', flexDirection: 'column',
@@ -710,7 +710,7 @@ export default function URLImportSheet({ onClose, onImport, artists, onAddArtist
         <div
           onClick={() => setShowCloseConfirm(false)}
           style={{
-            position: 'absolute', inset: 0,
+            position: 'fixed', inset: 0,
             background: 'rgba(26, 58, 45, 0.48)',
             zIndex: 400,
             display: 'flex',

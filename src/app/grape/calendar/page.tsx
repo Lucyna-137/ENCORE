@@ -814,6 +814,7 @@ export default function CalendarPage() {
           onDelete={handleDeleteLive}
           onDuplicate={handleDuplicateLive}
           onStatusChange={handleStatusChange}
+          onUpgradePremium={() => setShowPremiumSheet(true)}
         />
 
         {/* Toast は PhoneFrame 内の共通 ToastHost が表示（useGrapeToast 経由） */}

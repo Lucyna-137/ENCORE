@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
@@ -25,6 +25,22 @@ const notoSansJP = Noto_Sans_JP({
 export const metadata: Metadata = {
   title: "ENCORE UI Kit",
   description: "ENCORE component showcase",
+  appleWebApp: {
+    capable: true,
+    title: 'GRAPE',
+    // black-translucent にすると StatusBar 配下までコンテンツが伸びる（ノッチまで到達）
+    statusBarStyle: 'black-translucent',
+  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  // iOS Safari: input フォーカス時の auto-zoom を抑制（ネイティブアプリ感を優先）。
+  // ユーザーのピンチズームも無効化されるが、Capacitor WKWebView 挙動とも整合。
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({

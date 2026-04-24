@@ -58,17 +58,20 @@ export default function PremiumUpgradeSheet({ onClose }: { onClose: () => void }
     /* フルカバー — スクロール可能なシート
        borderRadiusは親PhoneFrameの overflow:hidden による clipping に任せる */
     <div style={{
-      position: 'absolute', inset: 0,
+      position: 'fixed', inset: 0,
       background: PUR.bg,
       zIndex: 900,
       display: 'flex', flexDirection: 'column',
       overflow: 'hidden',
     }}>
 
-      {/* ── トップバー ── */}
+      {/* ── トップバー ──
+          iOS PWA のノッチ/Dynamic Island に X と「購入を復元」が
+          潜るのを防ぐため、safe-area-inset-top を加算。
+          デスクトップ（env=0）では従来の 14px が維持される */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '14px 16px 0',
+        padding: 'calc(env(safe-area-inset-top) + 14px) 16px 0',
         flexShrink: 0,
       }}>
         {/* × 閉じる */}

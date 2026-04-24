@@ -50,7 +50,7 @@ export default function ArtistDeleteConfirmDialog({
   }
   return (
     <div style={{
-      position: 'absolute', inset: 0,
+      position: 'fixed', inset: 0,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       zIndex: 80,
     }}>

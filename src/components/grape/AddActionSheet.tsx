@@ -23,7 +23,7 @@ export default function AddActionSheet({ onClose, onNewEvent, onImportFromUrl }:
     <div
       onClick={onClose}
       style={{
-        position: 'absolute', inset: 0,
+        position: 'fixed', inset: 0,
         background: 'rgba(26, 58, 45, 0.42)',
         zIndex: 180,
         display: 'flex',

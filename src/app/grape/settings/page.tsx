@@ -1438,14 +1438,14 @@ export default function SettingsPage() {
               icon={<SettingsIconWrap bg="rgba(175,82,222,0.15)" color="#AF52DE"><CloudArrowDown size={15} weight="regular" /></SettingsIconWrap>}
               label="iCloudにバックアップ"
               description="データをiCloudに保存"
-              onClick={() => {}}
+              onClick={() => showToast('iCloud バックアップは App Store 版で利用可能になります')}
             />
             <SettingsDivider />
             <SettingsRow
               icon={<SettingsIconWrap bg="rgba(175,82,222,0.15)" color="#AF52DE"><CloudArrowUp size={15} weight="regular" /></SettingsIconWrap>}
               label="iCloudから復元"
               description="iCloudからデータを取得"
-              onClick={() => {}}
+              onClick={() => showToast('iCloud 復元は App Store 版で利用可能になります')}
             />
             <BackupNote />
           </SettingsSection>

@@ -426,6 +426,9 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   }
   body {
     min-height: 0;
+    /* PWA（standalone + black-translucent）で body 背景がノッチ領域に
+       透けるため、デバイスフレーム用の灰色ではなくアプリ背景に揃える */
+    background-color: var(--color-encore-bg);
   }
   .grape-outer {
     min-height: 0;
@@ -440,5 +443,40 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     min-height: 0;
     border-radius: 0;
     box-shadow: none;
+  }
+}
+
+/* フォーム入力欄: フォーカス時にプレースホルダを薄く（opacity 0.5）。
+   入力開始のフォーカス時には「お手本」のプレースホルダを主張させない。
+   チケット価格は数値を明示したいので除外（bare input に本クラスを付けないこと）。 */
+.grape-soft-placeholder::placeholder {
+  transition: opacity 0.15s ease;
+}
+.grape-soft-placeholder:focus::placeholder {
+  opacity: 0.5;
+}
+
+/* 実機（タッチ系デバイス）でだけ StatusBar の中身を隠す。
+   デスクトップ Chrome（スクショ撮影）では従来通り時計・アンテナ・バッテリーを表示する。
+
+   さらに、iPhone PWA のノッチ・ホームインジケーター領域を
+   env(safe-area-inset-*) で自動確保。
+   - ノッチ機: 約 59px / ノッチ無し機: 約 20px / デスクトップ: 0
+   - ホームインジケーター: iPhone X 以降は約 34px */
+@media (hover: none) and (pointer: coarse) {
+  .grape-statusbar {
+    /* 固定 pt-4 pb-2 を上書き。safe-area 実測値に追従 */
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    height: env(safe-area-inset-top);
+    min-height: 0;
+  }
+  .grape-statusbar > * {
+    visibility: hidden;
+  }
+  /* PWA 下端: TabBar がホームインジケーター下に潜らないよう、
+     phone frame 下部に safe-area 分のパディングを追加 */
+  .grape-phone-frame {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }

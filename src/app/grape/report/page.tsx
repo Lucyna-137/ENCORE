@@ -6,7 +6,7 @@ import { StatusBar } from '@/components/encore/NavHeader'
 import type { GrapeLive, GrapeArtist } from '@/lib/grape/types'
 import { useGrapeStore } from '@/lib/grape/useGrapeStore'
 import { LIVE_TYPE_COLOR } from '@/lib/grape/constants'
-import { CalendarBlank, Ticket, ChartBar, GearSix, CaretLeft, CaretRight } from '@phosphor-icons/react'
+import { CalendarBlank, Ticket, ChartBar, GearSix, CaretLeft, CaretRight, MusicNote } from '@phosphor-icons/react'
 import ArtistCard from '@/components/encore/ArtistCard'
 import PhoneFrame from '@/components/grape/PhoneFrame'
 import ArtistStackChart from '@/components/encore/ArtistStackChart'
@@ -553,7 +553,7 @@ function EmptyState({ period }: { period: Period }) {
       display: 'flex', flexDirection: 'column', alignItems: 'center',
       padding: '64px 32px 32px', gap: 10,
     }}>
-      <div style={{ fontSize: 40, lineHeight: 1 }}>🎵</div>
+      <MusicNote size={40} weight="light" color="var(--color-encore-border)" />
       <div style={{ ...ty.section, textAlign: 'center', marginTop: 8 }}>
         まだレポートが育っていません
       </div>

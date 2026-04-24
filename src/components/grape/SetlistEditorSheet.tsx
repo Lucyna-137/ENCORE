@@ -229,7 +229,7 @@ export default function SetlistEditorSheet({ live, isOpen, onClose, onSaved }: S
   return (
     <div
       style={{
-        position: 'absolute', inset: 0, zIndex: 500,
+        position: 'fixed', inset: 0, zIndex: 500,
         background: 'var(--color-encore-bg)',
         display: 'flex', flexDirection: 'column',
       }}
@@ -752,7 +752,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 function DiscardConfirm({ onKeep, onDiscard }: { onKeep: () => void; onDiscard: () => void }) {
   return (
     <div style={{
-      position: 'absolute', inset: 0, zIndex: 600,
+      position: 'fixed', inset: 0, zIndex: 600,
       display: 'flex', alignItems: 'flex-end',
       background: 'rgba(0,0,0,0.45)',
     }}>

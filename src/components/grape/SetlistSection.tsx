@@ -26,6 +26,7 @@ import * as ty from '@/components/encore/typographyStyles'
 import type { GrapeLive, SetlistItem } from '@/lib/grape/types'
 import { useIsPremium } from '@/lib/grape/premium'
 import { useSetlistStore } from '@/lib/grape/useSetlistStore'
+import { TODAY } from '@/lib/grape/constants'
 
 interface SetlistSectionProps {
   live: GrapeLive
@@ -49,9 +50,14 @@ export default function SetlistSection({
   const setlist = getSetlist(live.id)
   const hasData = !!setlist && setlist.items.length > 0
 
-  // ─── Free × 未参戦: セクション非表示 ─────────────────────────────────
-  if (!isPremium && live.attendanceStatus !== 'attended') {
-    return null
+  // ─── Free: 非表示条件 ──────────────────────────────────────────────
+  // 複数推しユーザーは「行けなかったライブのセトリも記録したい」ニーズあり
+  // （配信・友人レポ・X セトリ速報で入手可能）。
+  // → 過去日の公演はステータス不問で表示。未来日とスキップのみ非表示。
+  if (!isPremium) {
+    const isPast = live.date < TODAY
+    const isSkipped = live.attendanceStatus === 'skipped'
+    if (!isPast || isSkipped) return null
   }
 
   // ─── Free × 参戦済み: ロックカード ──────────────────────────────────

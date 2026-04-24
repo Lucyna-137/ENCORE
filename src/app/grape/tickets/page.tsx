@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useRef, useEffect } from 'react'
 import * as ty from '@/components/encore/typographyStyles'
 import { StatusBar } from '@/components/encore/NavHeader'
 import type { GrapeLive, TicketStatus } from '@/lib/grape/types'
@@ -284,6 +284,94 @@ export default function TicketsPage() {
   const isPremium = useIsPremium()
   const searchInputRef = React.useRef<HTMLInputElement>(null)
 
+  // ── タブ横スワイプ: 現タブを退場 → 新タブを反対側にスナップ → 中央へスライドイン
+  // （EventPreviewScreen 同様パターン。方向性のある遷移で「隣のタブから現れた」感を出す）
+  type SwipePhase = 'exit-left' | 'exit-right' | 'enter-from-right' | 'enter-from-left' | null
+  const [dragX, setDragX] = useState(0)
+  const [swipePhase, setSwipePhase] = useState<SwipePhase>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const swipeWrapRef = useRef<HTMLDivElement>(null)
+  const SWIPE_THRESHOLD = 50
+  const GESTURE_DECIDE_PX = 10
+
+  const activeTabIdxRef = useRef(0)
+  useEffect(() => {
+    activeTabIdxRef.current = TAB_KEYS.indexOf(activeTab)
+  }, [activeTab])
+
+  const animateToTab = (dir: 'next' | 'prev') => {
+    const cur = activeTabIdxRef.current
+    const newIdx = dir === 'next' ? cur + 1 : cur - 1
+    if (newIdx < 0 || newIdx >= TAB_KEYS.length) { setDragX(0); return }
+    const newTab = TAB_KEYS[newIdx]
+    setSwipePhase(dir === 'next' ? 'exit-left' : 'exit-right')
+    setTimeout(() => {
+      setSwipePhase(dir === 'next' ? 'enter-from-right' : 'enter-from-left')
+      setDragX(0)
+      setActiveTab(newTab)
+      if (scrollRef.current) scrollRef.current.scrollTop = 0
+      requestAnimationFrame(() => requestAnimationFrame(() => setSwipePhase(null)))
+    }, 180)
+  }
+
+  // native touch events（iOS Safari で passive:false の touchmove が必要）
+  useEffect(() => {
+    const el = swipeWrapRef.current
+    if (!el) return
+    let startX = 0, startY = 0
+    let mode: 'h' | 'v' | null = null
+    let curDx = 0
+
+    const onStart = (e: TouchEvent) => {
+      startX = e.touches[0].clientX
+      startY = e.touches[0].clientY
+      mode = null
+      curDx = 0
+    }
+    const onMove = (e: TouchEvent) => {
+      const dx = e.touches[0].clientX - startX
+      const dy = e.touches[0].clientY - startY
+      if (mode === null) {
+        if (Math.abs(dx) > GESTURE_DECIDE_PX && Math.abs(dx) > Math.abs(dy)) mode = 'h'
+        else if (Math.abs(dy) > GESTURE_DECIDE_PX) mode = 'v'
+      }
+      if (mode === 'h') {
+        e.preventDefault()
+        const cur = activeTabIdxRef.current
+        const atStart = cur === 0
+        const atEnd = cur === TAB_KEYS.length - 1
+        const drag = ((dx > 0 && atStart) || (dx < 0 && atEnd)) ? dx * 0.35 : dx
+        curDx = drag
+        setDragX(drag)
+      }
+    }
+    const onEnd = () => {
+      if (mode === 'h') {
+        const cur = activeTabIdxRef.current
+        if (Math.abs(curDx) > SWIPE_THRESHOLD) {
+          if (curDx < 0 && cur < TAB_KEYS.length - 1) animateToTab('next')
+          else if (curDx > 0 && cur > 0) animateToTab('prev')
+          else setDragX(0)
+        } else {
+          setDragX(0)
+        }
+      }
+      mode = null
+      curDx = 0
+    }
+
+    el.addEventListener('touchstart', onStart, { passive: true })
+    el.addEventListener('touchmove', onMove, { passive: false })
+    el.addEventListener('touchend', onEnd, { passive: true })
+    el.addEventListener('touchcancel', onEnd, { passive: true })
+    return () => {
+      el.removeEventListener('touchstart', onStart)
+      el.removeEventListener('touchmove', onMove)
+      el.removeEventListener('touchend', onEnd)
+      el.removeEventListener('touchcancel', onEnd)
+    }
+  }, [])
+
   const urgentLives = useMemo(
     () => lives.filter(l => l.ticketStatus === 'payment-due'),
     [lives]
@@ -441,13 +529,35 @@ export default function TicketsPage() {
 
         {/* ── Main scrollable content ── */}
         <div
+          ref={scrollRef}
           style={{
             flex: 1,
             overflowY: 'auto',
+            overflowX: 'hidden',
             background: 'var(--color-encore-bg)',
             position: 'relative',
           }}
         >
+          {/* 横スワイプでタブ遷移するラッパ（translateX で現カード→退場→新カード→中央）*/}
+          <div
+            ref={swipeWrapRef}
+            style={{
+              touchAction: 'pan-y',
+              transform: (() => {
+                if (swipePhase === 'exit-left')        return 'translateX(-100%)'
+                if (swipePhase === 'exit-right')       return 'translateX(100%)'
+                if (swipePhase === 'enter-from-right') return 'translateX(100%)'
+                if (swipePhase === 'enter-from-left')  return 'translateX(-100%)'
+                if (dragX !== 0) return `translateX(${dragX}px)`
+                return 'translate(0,0)'
+              })(),
+              transition: (() => {
+                if (swipePhase === 'enter-from-right' || swipePhase === 'enter-from-left') return 'none'
+                if (dragX !== 0 && swipePhase === null) return 'none'
+                return 'transform 0.28s cubic-bezier(0.32, 0.72, 0, 1)'
+              })(),
+            }}
+          >
           {/* Urgency Banner */}
           {showUrgencyBanner && (
             <UrgencyBanner
@@ -575,6 +685,7 @@ export default function TicketsPage() {
 
           {/* Bottom padding for FAB */}
           <div style={{ height: 80 }} />
+          </div>
         </div>
 
         {/* ── Tab Bar ── */}
@@ -734,6 +845,7 @@ export default function TicketsPage() {
               setEditLive(l)
               setEditOpenSection(section)
             }}
+            onUpgradePremium={() => setShowPremiumSheet(true)}
           />
         )}
     </PhoneFrame>

@@ -122,6 +122,7 @@ function FlatInput({
     <FieldWrap label={label} focused={focused}>
       <input
         type={type}
+        className="grape-soft-placeholder"
         style={flatInputStyle}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -455,7 +456,7 @@ function NewArtistSheet({
 
   return (
     <div style={{
-      position: 'absolute', inset: 0, zIndex: 600,
+      position: 'fixed', inset: 0, zIndex: 600,
       display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
       background: 'rgba(0,0,0,0.35)',
     }}>
@@ -554,6 +555,7 @@ function BigTitleInput({ value, onChange }: { value: string; onChange: (v: strin
           lineHeight: 1.3,
           padding: '6px 0 10px',
         }}
+        className="grape-soft-placeholder"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onFocus={() => setFocused(true)}
@@ -875,7 +877,7 @@ function BrandedTimePicker({ value, label, onChange, onClose }: {
     <div
       onClick={onClose}
       style={{
-        position: 'absolute', inset: 0, zIndex: 500,
+        position: 'fixed', inset: 0, zIndex: 500,
         background: mounted ? 'rgba(0,0,0,0.3)' : 'transparent',
         transition: 'background 0.25s',
         display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
@@ -1030,7 +1032,7 @@ function DateTimePickerSheet({
     <div
       onClick={onClose}
       style={{
-        position: 'absolute', inset: 0, zIndex: 500,
+        position: 'fixed', inset: 0, zIndex: 500,
         background: mounted ? 'rgba(0,0,0,0.3)' : 'transparent',
         transition: 'background 0.25s',
         display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
@@ -1292,6 +1294,7 @@ function FlatTextarea({ label, value, onChange, placeholder }: { label: string; 
   return (
     <FieldWrap label={label} focused={focused}>
       <textarea
+        className="grape-soft-placeholder"
         style={{
           ...flatInputStyle,
           height: 80,
@@ -1313,7 +1316,7 @@ function FlatTextarea({ label, value, onChange, placeholder }: { label: string; 
 function ConfirmDiscardDialog({ onDiscard, onCancel }: { onDiscard: () => void; onCancel: () => void }) {
   return (
     <div style={{
-      position: 'absolute', inset: 0, zIndex: 700,
+      position: 'fixed', inset: 0, zIndex: 700,
       display: 'flex', alignItems: 'flex-end',
       background: 'rgba(0,0,0,0.45)',
     }}>
@@ -1652,7 +1655,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          position: 'absolute',
+          position: 'fixed',
           inset: 0,
           zIndex: 301,
           background: 'var(--color-encore-bg)',
@@ -1662,9 +1665,9 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
           flexDirection: 'column',
         }}
       >
-        {/* ナビバー風ヘッダー */}
+        {/* ナビバー風ヘッダー（iOS ノッチに キャンセル/保存 が重ならないよう safe-area 加算） */}
         <div style={{
-          padding: '52px 16px 10px',
+          padding: 'calc(env(safe-area-inset-top) + 14px) 16px 10px',
           borderBottom: '1px solid var(--color-encore-border-light)',
           flexShrink: 0,
         }}>
@@ -2207,6 +2210,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
               <FieldWrap label="チケットURL" focused={false}>
                 <input
                   type="url"
+                  className="grape-soft-placeholder"
                   style={flatInputStyle}
                   value={ticketUrl}
                   onChange={(e) => setTicketUrl(e.target.value)}
@@ -2675,7 +2679,7 @@ function CoverArtPicker({
     <div
       onClick={onClose}
       style={{
-        position: 'absolute', inset: 0,
+        position: 'fixed', inset: 0,
         background: 'rgba(26, 58, 45, 0.48)',
         zIndex: 300,
         display: 'flex',
