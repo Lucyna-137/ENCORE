@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   description: "ENCORE component showcase",
   appleWebApp: {
     capable: true,
-    title: 'GRAPE',
+    title: 'Grape',
     // black-translucent にすると StatusBar 配下までコンテンツが伸びる（ノッチまで到達）
     statusBarStyle: 'black-translucent',
   },

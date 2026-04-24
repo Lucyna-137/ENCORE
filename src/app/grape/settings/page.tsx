@@ -339,7 +339,7 @@ function PremiumInfoCard({
           marginBottom: 4,
           display: 'flex', alignItems: 'center', gap: 8,
         }}>
-          GRAPE Premium
+          Grape Premium
           {isPremium && (
             <span style={{
               fontFamily: 'var(--font-google-sans), sans-serif',

@@ -22,7 +22,7 @@ export interface GrapeExportPayload {
   schemaVersion: number
   exportedAt: string
   source: {
-    app: 'GRAPE'
+    app: 'Grape'
     appVersion: string
   }
   stats: {
@@ -46,7 +46,7 @@ export function buildExportPayload(args: {
     schemaVersion: EXPORT_SCHEMA_VERSION,
     exportedAt: new Date().toISOString(),
     source: {
-      app: 'GRAPE',
+      app: 'Grape',
       appVersion: APP_VERSION,
     },
     stats: {

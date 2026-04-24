@@ -1413,6 +1413,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
 
   const [price, setPrice]                       = useState<string>(live?.price != null ? String(live.price) : '')
   const [drink1Sep, setDrink1Sep]               = useState<boolean>(live?.drink1Separate ?? false)
+  const [merchAmount, setMerchAmount]           = useState<string>(live?.merchandiseAmount != null ? String(live.merchandiseAmount) : '')
   const [ticketStatus, setTicketStatus]         = useState<TicketStatus | ''>(live?.ticketStatus ?? '')
   const [salePhase, setSalePhase]               = useState(live?.salePhase ?? '')
   const [ticketDeadline, setTicketDeadline]     = useState(live?.ticketDeadline ?? '')
@@ -1530,7 +1531,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
         localStorage.setItem(DRAFT_KEY, JSON.stringify({
           title, artistIds, liveDate, openingTime, startTime, endTime,
           venue, liveType, status,
-          price, drink1Sep, ticketStatus, salePhase,
+          price, drink1Sep, merchAmount, ticketStatus, salePhase,
           ticketDeadline, announcementDate, announcementTime,
           saleStartDate, saleStartTime, ticketUrl,
           memo, transportMemo, accommodationMemo,
@@ -1544,7 +1545,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
   }, [
     title, artistIds, liveDate, openingTime, startTime, endTime,
     venue, liveType, status,
-    price, drink1Sep, ticketStatus, salePhase,
+    price, drink1Sep, merchAmount, ticketStatus, salePhase,
     ticketDeadline, announcementDate, announcementTime,
     saleStartDate, saleStartTime, ticketUrl,
     memo, coverImage, isDirty, isEditMode,
@@ -1563,6 +1564,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
     if (draft.status) setStatus(draft.status as AttendanceStatus)
     setPrice(s(draft.price))
     setDrink1Sep(!!draft.drink1Sep)
+    setMerchAmount(s(draft.merchAmount))
     if (draft.ticketStatus !== undefined) setTicketStatus(draft.ticketStatus as TicketStatus | '')
     setSalePhase(s(draft.salePhase))
     setTicketDeadline(s(draft.ticketDeadline))
@@ -1633,6 +1635,7 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
       salePhase: salePhase || undefined,
       price: price !== '' ? Number(price) : undefined,
       drink1Separate: drink1Sep || undefined,
+      merchandiseAmount: merchAmount !== '' ? Number(merchAmount) : undefined,
       memo: memo || undefined,
       coverImage: coverImage || undefined,
       coverImagePosition: coverImagePosition !== '50% 50%' ? coverImagePosition : undefined,
@@ -2203,6 +2206,25 @@ export default function QuickEventSheet({ date, startMin, endMin, live, artists:
                     )}
                     1 Drink別途
                   </button>
+                </div>
+              </FieldWrap>
+            </div>
+            {/* ── 物販代（円）──
+                推し活の「総支出」集計用。チケットと合算して Report で可視化される。
+                値 0 のときはデフォルトで非表示として扱う（undefined と同じ）*/}
+            <div>
+              <FieldWrap label="グッズ・物販代（円）" focused={false}>
+                <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                  <span style={{ ...flatInputStyle, width: 'auto', paddingRight: 4, color: 'var(--color-encore-text-sub)' }}>¥</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    style={{ ...flatInputStyle, flex: 1, MozAppearance: 'textfield' } as React.CSSProperties}
+                    value={merchAmount}
+                    onChange={(e) => setMerchAmount(e.target.value.replace(/[^0-9]/g, ''))}
+                    placeholder="0"
+                  />
                 </div>
               </FieldWrap>
             </div>

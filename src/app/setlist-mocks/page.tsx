@@ -2038,7 +2038,7 @@ export default function SetlistMocksPage() {
             maxWidth: 720,
             margin: 0,
           }}>
-            GRAPE Premium 向けセットリスト機能のビジュアルリファレンス。
+            Grape Premium 向けセットリスト機能のビジュアルリファレンス。
             Editor / Preview / OCR / Report を網羅した静的モック。
             本実装と独立したプロトタイプページです。
           </p>
@@ -2193,7 +2193,7 @@ export default function SetlistMocksPage() {
               「一期一会の曲」カードは全履歴で
               1度きりだった曲を検出。
               LiveRock にはない、推し活の希少性×ロマンを
-              可視化する GRAPE だけの体験。
+              可視化する Grape だけの体験。
             </div>
           </div>
           <div>
@@ -2218,7 +2218,7 @@ export default function SetlistMocksPage() {
           color: 'var(--color-encore-text-muted)',
           textAlign: 'center',
         }}>
-          GRAPE · VISUAL MOCKS · 2026-04-22
+          Grape · VISUAL MOCKS · 2026-04-22
         </div>
       </footer>
     </div>

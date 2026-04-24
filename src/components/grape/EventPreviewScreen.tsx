@@ -842,16 +842,24 @@ export default function EventPreviewScreen({
               </InfoRow>
             ) : null}
 
-            {/* 価格 */}
-            {typeof live?.price === 'number' && live.price > 0 && (
+            {/* 価格 + 物販代（推し活の総支出） */}
+            {((typeof live?.price === 'number' && live.price > 0) ||
+              (typeof live?.merchandiseAmount === 'number' && live.merchandiseAmount > 0)) && (
               <InfoRow icon={<CurrencyJpy size={16} weight="regular" />}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                  <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 16, fontWeight: 700, color: 'var(--color-encore-green)' }}>
-                    ¥{live.price.toLocaleString('ja-JP')}
-                  </span>
-                  {live.drink1Separate && (
+                  {typeof live?.price === 'number' && live.price > 0 && (
+                    <span style={{ fontFamily: 'var(--font-google-sans), sans-serif', fontSize: 16, fontWeight: 700, color: 'var(--color-encore-green)' }}>
+                      ¥{live.price.toLocaleString('ja-JP')}
+                    </span>
+                  )}
+                  {live?.drink1Separate && (
                     <span style={{ ...ty.captionMuted }}>
                       + 1Drink 別途
+                    </span>
+                  )}
+                  {typeof live?.merchandiseAmount === 'number' && live.merchandiseAmount > 0 && (
+                    <span style={{ ...ty.bodySM, color: 'var(--color-encore-text-sub)' }}>
+                      + グッズ・物販 ¥{live.merchandiseAmount.toLocaleString('ja-JP')}
                     </span>
                   )}
                 </div>

@@ -17,7 +17,7 @@ const CONTENT = {
     sections: [
       {
         heading: 'はじめに',
-        body: 'GRAPEアプリ（以下「本アプリ」）は、KARABINA LLCが提供するライブ・イベント管理アプリです。本プライバシーポリシーは、本アプリをご利用いただく際の情報の取り扱いについて説明します。',
+        body: 'Grapeアプリ（以下「本アプリ」）は、KARABINA LLCが提供するライブ・イベント管理アプリです。本プライバシーポリシーは、本アプリをご利用いただく際の情報の取り扱いについて説明します。',
       },
       {
         heading: '収集する情報',
@@ -63,7 +63,7 @@ const CONTENT = {
     sections: [
       {
         heading: 'Introduction',
-        body: 'GRAPE (the "App") is a live event management app provided by KARABINA LLC. This Privacy Policy explains how we handle information when you use our App.',
+        body: 'Grape (the "App") is a live event management app provided by KARABINA LLC. This Privacy Policy explains how we handle information when you use our App.',
       },
       {
         heading: 'Information We Collect',
@@ -161,7 +161,7 @@ export default function PrivacyPage() {
         }}>
           {/* アプリ名 */}
           <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: '0.06em' }}>
-            GRAPE
+            Grape
           </span>
 
           {/* 言語トグル */}

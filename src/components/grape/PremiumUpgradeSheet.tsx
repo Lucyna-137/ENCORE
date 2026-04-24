@@ -1,26 +1,31 @@
 'use client'
 
 import React from 'react'
-import { Crown, X, UsersThree, ChartLineUp, Sparkle, Check } from '@phosphor-icons/react'
+import { Crown, X, UsersThree, ChartLineUp, Sparkle, Check, MusicNotes } from '@phosphor-icons/react'
 import { useIsPremium } from '@/lib/grape/premium'
 import { useGrapeToast } from '@/lib/grape/useGrapeToast'
 
-// ─── Premium 特典リスト ──────────────────────────────────────────────────────
+// ─── Premium 特典リスト（LP コピーと統一）──────────────────────────────────
 export const PREMIUM_FEATURES = [
   {
     icon: UsersThree,
     label: 'アーティスト無制限登録',
-    desc: '好きなアーティストを何組でも登録できます',
+    desc: '何人推しても、Grape はすべて受け止める。',
   },
   {
     icon: Sparkle,
-    label: 'URL/画像からイベント自動取り込み',
-    desc: '公式サイトやチケットページのURLを貼るだけで、日時・会場・出演者を自動入力',
+    label: 'URL / 画像からイベント自動取り込み',
+    desc: '公式サイトやチケット販売URLを貼るだけ。AI がイベント情報を一瞬で埋める。',
+  },
+  {
+    icon: MusicNotes,
+    label: 'セットリスト記録',
+    desc: 'あのライブで聴いた曲を、そのまま残す。うろ覚えでも OK。',
   },
   {
     icon: ChartLineUp,
-    label: '詳細レポート・統計機能',
-    desc: 'ライブ参加履歴をグラフで深く振り返れます',
+    label: 'より高度な振り返りレポート機能',
+    desc: 'アーティスト別・月別・累計。推し活の全貌を、すべての角度から。',
   },
 ]
 
@@ -146,9 +151,9 @@ export default function PremiumUpgradeSheet({ onClose }: { onClose: () => void }
             marginBottom: 6,
           }}>
             {isPremium ? (
-              <>GRAPE Premium<br />ご利用中</>
+              <>Grape Premium<br />ご利用中</>
             ) : (
-              'GRAPE Premium'
+              'Grape Premium'
             )}
           </div>
           <div style={{
@@ -221,7 +226,7 @@ export default function PremiumUpgradeSheet({ onClose }: { onClose: () => void }
               fontSize: 12, fontWeight: 400, lineHeight: 1.8,
               color: PUR.sub,
             }}>
-              いつも GRAPE をご利用いただき、<br />
+              いつも Grape をご利用いただき、<br />
               ありがとうございます。
             </div>
           </div>

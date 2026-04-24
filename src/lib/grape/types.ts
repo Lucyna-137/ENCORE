@@ -44,6 +44,7 @@ export interface GrapeLive {
   priority?: 'high' | 'medium' | 'low'  // チケット処理の優先度
   price?: number
   drink1Separate?: boolean          // 「1 Drink別途」フラグ
+  merchandiseAmount?: number    // 物販代（円）。推し活の総支出集計用
   memo?: string
   color?: string                        // イベントカラー（HEX）。未設定 = デフォルト配色
 }

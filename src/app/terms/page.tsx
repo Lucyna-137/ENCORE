@@ -16,7 +16,7 @@ const CONTENT = {
     sections: [
       {
         heading: 'はじめに',
-        body: '本利用規約（以下「本規約」）は、KARABINA LLC（以下「当社」）が提供するライブ・イベント管理アプリ「GRAPE」（以下「本アプリ」）のご利用にあたり、ユーザーと当社との間の権利義務関係を定めるものです。本アプリをご利用いただく前に、本規約を必ずお読みください。本アプリをインストールまたは使用することで、本規約に同意したものとみなします。',
+        body: '本利用規約（以下「本規約」）は、KARABINA LLC（以下「当社」）が提供するライブ・イベント管理アプリ「Grape」（以下「本アプリ」）のご利用にあたり、ユーザーと当社との間の権利義務関係を定めるものです。本アプリをご利用いただく前に、本規約を必ずお読みください。本アプリをインストールまたは使用することで、本規約に同意したものとみなします。',
       },
       {
         heading: '第1条　サービスの利用',
@@ -65,7 +65,7 @@ const CONTENT = {
     sections: [
       {
         heading: 'Introduction',
-        body: 'These Terms of Service ("Terms") govern your use of GRAPE, a live event management app ("App") provided by KARABINA LLC ("we," "us," or "our"). Please read these Terms carefully before using the App. By installing or using the App, you agree to be bound by these Terms.',
+        body: 'These Terms of Service ("Terms") govern your use of Grape, a live event management app ("App") provided by KARABINA LLC ("we," "us," or "our"). Please read these Terms carefully before using the App. By installing or using the App, you agree to be bound by these Terms.',
       },
       {
         heading: 'Article 1 — Use of the App',
@@ -166,7 +166,7 @@ export default function TermsPage() {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
           <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: '0.06em' }}>
-            GRAPE
+            Grape
           </span>
           <LangToggle lang={lang} setLang={setLang} />
         </div>

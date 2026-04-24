@@ -886,10 +886,11 @@ export default function ArtistDetailPage() {
   const planned   = useMemo(() => artistLives.filter(l => l.attendanceStatus === 'planned'), [artistLives])
   const candidate = useMemo(() => artistLives.filter(l => l.attendanceStatus === 'candidate'), [artistLives])
   // 合計費用: 「参戦済み」+「行く」のみ（スキップ・気になる は除外）
+  // チケット価格 + 物販代 を合算（推し活の総支出）
   const totalSpend = useMemo(() =>
     artistLives
       .filter(l => l.attendanceStatus === 'attended' || l.attendanceStatus === 'planned')
-      .reduce((s, l) => s + (l.price ?? 0), 0),
+      .reduce((s, l) => s + (l.price ?? 0) + (l.merchandiseAmount ?? 0), 0),
     [artistLives]
   )
 
@@ -1224,7 +1225,8 @@ export default function ArtistDetailPage() {
                   transform: 'rotate(45deg)',
                   borderRadius: 2,
                 }} />
-                「行く」または「参戦済み」のイベント費用の合計です
+                「行く」または「参戦済み」のイベントの<br />
+                チケット代 + グッズ・物販代の合計です
               </div>
             </>
           )}
